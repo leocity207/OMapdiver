@@ -1,7 +1,7 @@
 // line-schedule.js
 import Line_Station from './line-station.js';
-import Utils from "/src/utils/utils.js"
-import Fold_Plus_Minus from '/src/components/fold-plus-minus.js';
+import Utils from "../utils/utils.js"
+import Fold_Plus_Minus from '../components/fold-plus-minus.js';
 
 /**
  * The **Ligne schedule** is an object used to display schedule information about a line.
