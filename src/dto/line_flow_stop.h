@@ -21,9 +21,9 @@ class Line_Flow_Stop_DTO : public oatpp::DTO {
 		DTO_FIELD(List<String>::ObjectWrapper, flags, "flags") = List<String>::createShared();
 
 		// Helper methods to check if optional fields exist
-		bool hasArrivalMinute() const;
-		bool hasDepartureMinute() const;
-		bool hasFlags() const;
+		bool Has_Arrival_Minute() const;
+		bool Has_Departure_Minute() const;
+		bool Has_Flags() const;
 };
 
 

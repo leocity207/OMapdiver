@@ -11,9 +11,13 @@ class Station_DTO : public oatpp::DTO {
 
 public:
 	DTO_INIT(Station_DTO, DTO)
-
 	DTO_FIELD(String, label, "label");
 	DTO_FIELD(String, code, "code");
+	DTO_FIELD(Boolean, disabled_equipment, "disabled_equipment");
+	DTO_FIELD(Boolean, bike_parking, "bike_parking");
+	DTO_FIELD(Boolean, car_parking, "car_parking");
+	DTO_FIELD(String, opening_hour, "opening_hour");
+	DTO_FIELD(String, closing_hour, "closing_hour");
 	DTO_FIELD(List<String>, linked_lines, "lines");
 	DTO_FIELD(Fields<String>, directions, "direction");
 };

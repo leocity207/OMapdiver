@@ -18,18 +18,18 @@
 
 #include OATPP_CODEGEN_BEGIN(ApiController) //<-- Begin Codegen
 
-class NetworkDataHandler : public oatpp::web::server::api::ApiController {
+class Network_Data_Handler : public oatpp::web::server::api::ApiController {
 	public:
-		NetworkDataHandler(OATPP_COMPONENT(std::shared_ptr<oatpp::web::mime::ContentMappers>, apiContentMappers));
+		Network_Data_Handler(OATPP_COMPONENT(std::shared_ptr<oatpp::web::mime::ContentMappers>, apiContentMappers));
 
-		std::string readFile() {
+		std::string Read_Line_File() {
 			std::ifstream file(RESOURCE_PATH().generic_string() + std::string("data/ligne.json"));
 			std::stringstream buffer;
 			buffer << file.rdbuf();
 			return buffer.str();
 		}
 
-		ENDPOINT("GET", "dyn/network_data", get_network_data) {
+		ENDPOINT("GET", "dyn/network_data", Get_Network_Data) {
 
 			std::string base_path = RESOURCE_PATH().generic_string();
 			oatpp::json::ObjectMapper json_object_mapper;

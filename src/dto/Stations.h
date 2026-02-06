@@ -13,7 +13,7 @@ public:
 
 	DTO_INIT(Stations_DTO, DTO)
 
-		DTO_FIELD(List<String>, stations, "stations");
+	DTO_FIELD(List<String>, stations, "stations");
 
 };
 
