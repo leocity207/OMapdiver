@@ -14,14 +14,14 @@
 	"license": "ISC",
 	"packageManager": "pnpm@10.12.1",
 	"devDependencies": {
-		"@rollup/plugin-commonjs": "^28.0.6",
-		"@rollup/plugin-node-resolve": "^16.0.1",
-		"rollup": "^4.44.0",
+		"@rollup/plugin-commonjs": "^28.0.9",
+		"@rollup/plugin-node-resolve": "^16.0.3",
+		"rollup": "^4.57.1",
 		"rollup-plugin-terser": "^7.0.2"
 	},
 	"dependencies": {
-		"animejs": "^4.0.2",
-		"fabric": "^6.7.0",
+		"animejs": "^4.3.5",
+		"fabric": "^6.9.1",
 		"hammerjs": "^2.0.8",
 		"normalize-wheel": "^1.0.1",
 		"rxjs": "^7.8.2"
