@@ -24,11 +24,11 @@ async function Read_Json_File(filePath) {
  * Build the network object by reading index files and per-item files.
  * Returns { lines: {id:lineDTO}, stations: {id:stationDTO} }
  */
-async function Build_Network(basePath) {
+async function Build_Network(network_data_path) {
 	const network = { lines: {}, stations: {} };
 
-	const lines_index_path = path.join(basePath, 'line.json');
-	const stations_index_path = path.join(basePath, 'station.json');
+	const lines_index_path = path.join(network_data_path, 'data/line.json');
+	const stations_index_path = path.join(network_data_path, 'data/station.json');
 
 	const lines_index = await Read_Json_File(lines_index_path);
 	if (!lines_index || !Array.isArray(lines_index.lines)) {
@@ -42,7 +42,7 @@ async function Build_Network(basePath) {
 
 	// Load station files
 	for (const station_id of stations_index.stations) {
-		const p = path.join(basePath, 'station', `${station_id}.json`);
+		const p = path.join(network_data_path, 'data/station', `${station_id}.json`);
 		const stationDto = await Read_Json_File(p);
 		if (stationDto) {
 			network.stations[station_id] = stationDto;
@@ -53,7 +53,7 @@ async function Build_Network(basePath) {
 
 	// Load line files
 	for (const line_id of lines_index.lines) {
-		const p = path.join(basePath, 'line', `${line_id}.json`);
+		const p = path.join(network_data_path, 'data/line', `${line_id}.json`);
 		const lineDto = await Read_Json_File(p);
 		if (lineDto) {
 			network.lines[line_id] = lineDto;
@@ -66,36 +66,36 @@ async function Build_Network(basePath) {
 }
 
 /**
- * Collect list of all relevant file paths given basePath:
+ * Collect list of all relevant file paths given network_data_path:
  */
-async function Collect_Relevant_Paths(basePath) {
-	const lines_index_path = path.join(basePath, 'line.json');
-	const stations_index_path = path.join(basePath, 'station.json');
+async function Collect_Relevant_Paths(network_data_path) {
+	const lines_index_path = path.join(network_data_path, 'data/line.json');
+	const stations_index_path = path.join(network_data_path, 'data/station.json');
 
 	const lines_index = await Read_Json_File(lines_index_path);
 	const stations_index = await Read_Json_File(stations_index_path);
 
 	if (!lines_index || !Array.isArray(lines_index.lines) || !stations_index || !Array.isArray(stations_index.stations)) {
-		return { paths: [lines_index_path, stations_index_path], valid: false };
+		return { "valid": false };
 	}
 
-	const paths = [lines_index_path, stations_index_path];
+	let lines_paths = [];
+	let stations_path = [];
 
 	for (const id of lines_index.lines) {
-		paths.push(path.join(basePath, 'line', `${id}.json`));
+		lines_paths.push(path.join(network_data_path, 'data/line', `${id}.json`));
 	}
 	for (const id of stations_index.stations) {
-		paths.push(path.join(basePath, 'station', `${id}.json`));
+		stations_path.push(path.join(network_data_path, 'data/station', `${id}.json`));
 	}
-
-	return { paths, valid: true };
+	return { "lines_path": lines_paths,"stations_path":stations_path , "valid": true };
 }
 
 /**
  * Main loader function.
  * Uses File_cache to avoid re-reading all individual JSON files on each request.
  */
-async function Load_Data(basePath = config.PUBLIC_DATA_DIR) {
+async function Load_Data(network_data_path = config.PUBLIC_DATA_DIR) {
 	// Use a single in-flight promise to serialize concurrent calls
 	if (load_in_progress) {
 		return load_in_progress;
@@ -103,7 +103,7 @@ async function Load_Data(basePath = config.PUBLIC_DATA_DIR) {
 
 	load_in_progress = (async () => {
 		try {
-			const { paths, valid } = await Collect_Relevant_Paths(basePath);
+			const { lines_path, stations_path, valid } = await Collect_Relevant_Paths(network_data_path);
 			if (!valid) {
 				throw new Error('Index files missing or malformed (line.json / station.json).');
 			}
@@ -113,13 +113,13 @@ async function Load_Data(basePath = config.PUBLIC_DATA_DIR) {
 			const file_cache = new File_Cache_JSON(cache_file_path);
 
 			// ask cache if valid compared to source paths
-			const cacheCheck = await file_cache.Load_If_Valid(paths);
+			const cacheCheck = await file_cache.Load_If_Valid([lines_path, stations_path, path.join(network_data_path, 'line.json'), path.join(network_data_path, 'station.json')]);
 			if (cacheCheck.valid) {
 				return cacheCheck.data;
 			}
-
+			console.log("[INFO] rebuilding cache file")
 			// cache not valid -> rebuild network
-			const network = await Build_Network(basePath);
+			const network = await Build_Network(network_data_path);
 
 			// write fresh cache with computed mtime (cacheCheck.mtime could be null)
 			const mtimeToWrite = (typeof cacheCheck.mtime === 'number' && cacheCheck.mtime !== null) ? cacheCheck.mtime : Date.now();
@@ -142,7 +142,7 @@ async function Get(res) {
 	try {
 		const data = await Load_Data();
 		res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-		res.end(JSON.stringify({ success: true, data }));
+		res.end(JSON.stringify( data ));
 	} catch (err) {
 		console.error('Failed to load timetable:', err && err.stack ? err.stack : err);
 		res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });

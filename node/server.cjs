@@ -73,7 +73,7 @@ const server = http.createServer(async (req, res) => {
 			await Time_Table.Get(res);
 			return;
 		}
-		else if(method === 'GET' && pathname === '/data/dyn/network_data')
+		else if(method === 'GET' && pathname === '/dyn/network_data')
 		{
 			await Map_Data.Get(res);
 			return;

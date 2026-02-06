@@ -69,3 +69,5 @@ pnpm-debug.log*
 .DS_Store
 resources/bundle.js
 resources/bundle.js.map
+
+node/cache/network_data_cache.json
