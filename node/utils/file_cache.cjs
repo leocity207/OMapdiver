@@ -2,7 +2,8 @@ const fs = require('fs').promises;
 const fsSync = require('fs');
 const path = require('path');
 
-class File_Cache_JSON {
+class File_Cache_JSON
+{
 	/**
 	 * @param {string} cache_file_path absolute path to cache file
 	 */
@@ -25,7 +26,7 @@ class File_Cache_JSON {
 		return obj ? obj.data : null;
 	}
 
-	async write(data, mtime = Date.now()) {
+	async Write(data, mtime = Date.now()) {
 		try {
 			const dir = path.dirname(this.cache_file_path);
 			// ensure directory exists
@@ -80,7 +81,7 @@ class File_Cache_JSON {
 	 * - valid=true: cache contains data and its mtime === current max mtime
 	 * - mtime is the computed current max mtime (or null)
 	 */
-	async Load_If_Valid(source_paths) {
+	async Try_Load(source_paths) {
 		const currentMax = await File_Cache_JSON.Compute_Max_MTime(source_paths);
 		const raw = await this._Read_Raw();
 		if (raw && typeof raw.mtime === 'number' && raw.data && raw.mtime === currentMax) {

@@ -10,16 +10,16 @@ async function Load_Data(timetableFile)
 				"validFrom": "2025-12-14",
 				"validTo": "2026-12-12"
 			},
-			"patter":[
+			"pattern":[
 				{
 					"type" : "USUAL",
 					"key" : "weekday",
 					"label": "weekday"
 				},
 				{
-					"type" : "Exception",
+					"type" : "EXCEPTIONAL",
 					"key" : "31.12",
-					"label" : "fête de noël"
+					"label" : "concert"
 				}
 			],
 			"stations": [
