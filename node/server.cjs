@@ -7,7 +7,7 @@ const fsPromises = fs.promises;
 
 const config = require('./config.cjs');
 const Time_Table = require('./endpoint/timetable.cjs');
-const Map_Data = require('./endpoint/map_data.cjs');
+const Map_Data = require('./endpoint/network_data.cjs');
 
 
 // Small map of MIME types useful for static files
@@ -64,41 +64,35 @@ const server = http.createServer(async (req, res) => {
 	try 
 	{
 		const parsed = url.parse(req.url, true);
-		const method = req.method;
 		const pathname = decodeURIComponent(parsed.pathname || '/');
+		let served = true;
 
-
-		if (method === 'GET' && pathname === '/data/timetable-data')
-		{
-			await Time_Table.Get(res);
-			return;
+		/// Main service handler
+		if(req.method === 'GET' && pathname === '/dyn/network_data') {
+			served = await Map_Data.Get(res, parsed.searchParams);
 		}
-		else if(method === 'GET' && pathname === '/dyn/network_data')
-		{
-			await Map_Data.Get(res);
-			return;
-		}
-
-		if (pathname === '/favicon.ico') {
+		else if (pathname === '/favicon.ico') {
 			const faviconPath = path.join(config.PUBLIC_DIR, 'resources-config/image/favicon.ico');
-			await Serve_Static(faviconPath, res);
-			return;
+			served = Serve_Static(faviconPath, res);
 		}
-		let safePath = path.normalize(pathname).replace(/^([\/.]+)+/, '');
-		if (safePath === '' || safePath === '/') safePath = '/';
-		let filePath = path.join(config.PUBLIC_DIR, safePath);
-		if (safePath === '/' || pathname.endsWith('/'))
-		{
-			filePath = path.join(config.PUBLIC_DIR, safePath, 'index.html');
+		else {
+
+			/// Normalize filepath
+			let safePath = path.normalize(pathname).replace(/^([\/.]+)+/, '');
+			if (safePath === '' || safePath === '/') safePath = '/';
+			let filePath = path.join(config.PUBLIC_DIR, safePath); {
+				filePath = path.join(config.PUBLIC_DIR, safePath, 'index.html');
+			}
+
+			served = await Serve_Static(filePath, res);
 		}
-		const served = await Serve_Static(filePath, res);
-		if (served) return;
 
-
-		Set_Common_Headers(res);
-		res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
-		res.end('<h1>404 Not Found</h1>');
-
+		/// Check if served
+		if(!served) {
+			Set_Common_Headers(res);
+			res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
+			res.end('<h1>404 Not Found</h1>');
+		}
 
 	} catch (err) {
 		console.error('Server error:', err);

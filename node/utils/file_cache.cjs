@@ -4,9 +4,6 @@ const path = require('path');
 
 class File_Cache_JSON
 {
-	/**
-	 * @param {string} cache_file_path absolute path to cache file
-	 */
 	constructor(cache_file_path) {
 		if (!cache_file_path) throw new Error('[ERROR] cache_file_path required');
 		this.cache_file_path = cache_file_path;
@@ -54,12 +51,6 @@ class File_Cache_JSON
 		}
 	}
 
-	/**
-	 * Compute maximum mtime (in ms) among the provided paths.
-	 * Ignores missing files. Returns null if none exist.
-	 * @param {string[]} paths
-	 * @returns {number|null}
-	 */
 	static async Compute_Max_MTime(paths) {
 		if (!Array.isArray(paths) || paths.length === 0) return null;
 		let max = null;
@@ -75,12 +66,6 @@ class File_Cache_JSON
 		return max;
 	}
 
-	/**
-	 * Check the cache validity against a set of source file paths.
-	 * Returns an object: { valid: boolean, data: any|null, mtime: number|null }
-	 * - valid=true: cache contains data and its mtime === current max mtime
-	 * - mtime is the computed current max mtime (or null)
-	 */
 	async Try_Load(source_paths) {
 		const currentMax = await File_Cache_JSON.Compute_Max_MTime(source_paths);
 		const raw = await this._Read_Raw();
