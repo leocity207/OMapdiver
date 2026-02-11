@@ -1,0 +1,8 @@
+{
+	"id" : "String M: key to find the service type",
+	"label" : "String M: label of the service",
+	"level": "Int M: ordering level of the service",
+	"variant": "list<String> M: list of key variant that are equivalent to this service but designant slightly different path",
+	"color" : "String M: main color of the service",
+	"icon" : "String M: icon of the service"
+}

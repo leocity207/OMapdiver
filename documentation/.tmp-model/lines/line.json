@@ -1,5 +1,5 @@
 {
-	"code": "String M: ligne code",
+	"id": "String M: ligne id",
 	"label": "String M: ligne label",
 	"url": "String M: URL to acces the line data",
 	"color": {
@@ -13,7 +13,7 @@
     ],
 	"patterns": [
 		{
-			"code": "String M: Reference code of the pattern",
+			"id": "String M: Reference id of the pattern",
 			"label": "String M: labbel of the pattern",
 			"interval_minutes": "Int M :interval time between two train",
 			"departure_minute": "Int M : departure minute of the train",
@@ -38,7 +38,7 @@
     "timetables": 
     [
         {
-            "code": "String M: Service Mission code",
+            "id": "String M: Service Mission id",
             "label": "String M: Service Mission label",
             "pattern": "String M: Service pattern key",
             "info_messages": [

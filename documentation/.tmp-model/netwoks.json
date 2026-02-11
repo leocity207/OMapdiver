@@ -1,0 +1,11 @@
+{
+	"netwoks" : [
+		{
+			"is_local" : "boolean M: to tell if the data of the network should be requested or are locals",
+			"id": "String M: identifier of the network",
+			"label":"String M: commercial name string of the network",
+			"version": "String M: version of the data X.X.X",
+			"URL" : "String M: url to fetch data or path to the data"
+		}
+	]
+}

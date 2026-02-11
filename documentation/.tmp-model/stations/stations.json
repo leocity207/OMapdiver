@@ -1,0 +1,17 @@
+{
+	"id":   "String M: stations id",
+	"label": "String M: stations label",
+	"url":  "String M: URL to acces the stations data",
+	"lines": [
+		"String : ligne id of stations passing at this stations"
+	],
+	"directions": {
+		"keys" : "String: direction id of theline in the form Lineid_type_minutes",
+		"value": "String: direction destination"
+	},
+	"disabled_friendly": "Boolean O: tells if the stations is accessible for low mobility persones",
+	"has_bike_parking" : "Boolean O: tells if the stations has a parking for bikes",
+	"has_car_parking" : "Boolean O: tells if the stations has a car parking",
+	"opening_hour": "String O: opening hour of the stations",
+	"clossing_hour" : "String O: closing hour of the stations"
+}

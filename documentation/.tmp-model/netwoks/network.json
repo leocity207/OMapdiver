@@ -1,0 +1,20 @@
+{
+	"lines": [
+		"String: id of lines" 
+	],
+	"stations": [
+		"String: id of the stations" 
+	],
+	"landmarks" : [
+		"String: id of landmarks" 
+	],
+	"operator" : [
+		"String: id of operators" 
+	],
+	"organiser" : [
+		"String: id of organiser" 
+	],
+	"patterns" : [
+		"String: id of stations" 
+	],
+}
