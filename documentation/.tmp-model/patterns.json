@@ -1,0 +1,22 @@
+{
+    "timetable":
+    [
+        {
+            "exceptional" : "Bool M: if this timetable pattern is exceptional or regular",
+            "key" : "String M: key to find the pattern inside timetable",
+            "label": "String M: displayed name of the pattern",
+            "info": "String O: description or information about the pattern",
+            "icon": "String O: icon of the pattern",
+        }
+    ],
+    "services":
+    [
+        {
+            "key" : "String M: key to find the service type",
+            "level": "Int M: ordering level of the service",
+            "variant": "list<String> M: list of key variant that are equivalent to this service but designant slightly different path",
+            "color" : "String M: main color of the service",
+            "icon" : "String M: icon of the service"
+        },
+    ]
+}
