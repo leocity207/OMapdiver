@@ -93,7 +93,7 @@ const server = http.createServer(async (req, res) => {
 			res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
 			res.end('<h1>404 Not Found</h1>');
 		}
-
+		
 	} catch (err) {
 		console.error('Server error:', err);
 		Set_Common_Headers(res);

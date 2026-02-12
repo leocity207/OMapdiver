@@ -1,76 +1,62 @@
-const fs = require('fs').promises;
+
+const Memory_Cache = require('./memory_cache.cjs');
+const Config = require('../config.cjs')
 const path = require('path');
-const File_Cache_JSON = require('./file_cache.cjs');
+const fs = require('fs').promises;
 
 let load_in_progress = {};
 
-class Agregate_Folder
+class Cache_Memory_Agregate_JSON extends Memory_Cache
 {
-	static async Collect_Relevant_Paths(aggregating_file, key, aggregate_folder)
+	constructor (name, key = name)
 	{
-		const ids = await Read_Json_File(aggregating_file);
+		super(name);
+		this.agregate_path_file = path.join(Config.PUBLIC_DATA_DIR, name, ".json");
+		this.agregate_path_folder = path.join(Config.PUBLIC_DATA_DIR, name);
+		this.key_in_file = key;
+	}
 
-		if (!ids || !Array.isArray(ids[key]))
-			throw new Error('Index files missing or malformed.');
+	async _Compute_Update() {
+		files = _Collect_Relevant_Paths(this.agregate_path_file, this.key, this.agregate_path_folder);
+		return Memory_Cache.Compute_Files_Closest_Last_Update(files);
+	}
+
+	async _Update() {
+		files_paths = _Collect_Relevant_Paths();
+		agregated_data = _Build_Agregate(files_paths)
+		this._Set(agregated_data);
+		return agregated_data;
+	}
+
+	async _Collect_Relevant_Paths()
+	{
+		const raw = await fs.readFile(this.aggregating_file, { encoding: 'utf8' });
+		if(!raw) throw new Error('[ERROR] Could not open aggregate file.');
+		const ids = JSON.parse(raw);
+		if (!ids || !Array.isArray(ids[this.key])) throw new Error('[ERROR] Index files missing or malformed.');
 
 		let paths = [];
 
-		for (const id of ids[key])
-			paths.push(path.join(aggregate_folder, `${id}.json`));
+		for (const id of ids[this.key])
+			paths.push(path.join(this.agregate_path_folder, `${id}.json`));
 
 		return paths ;
 	}
 
-	static async Build_Agregate(paths, key) {
+	async _Build_Agregate(files_paths) {
 		const agregate = {};
-		agregate[key] = {};
+		agregate[this.key] = {};
 
 		// Load line files
-		for (const line_id of lines_index.lines) {
-			const p = path.join(network_data_path, 'data/line', `${line_id}.json`);
-			const data = await Read_Json_File(p);
-			if (data)
-				agregate[key][line_id] = lineDto;
-			else
-				console.warn(`[WARN] Missing or invalid line file: ${p}`);
+		for (const file_path of files_paths) {
+			const raw = await fs.readFile(file_path, { encoding: 'utf8' });
+			if(!raw) throw new Error(`[ERROR] Could not open file : ${file_path}.`);
+			const data = JSON.parse(raw);
+			if(!data) throw new Error(`[ERROR] One of the file is not json : ${file_path}.`);
+			agregate[this.key][line_id] = data;
 		}
 		return agregate;
 	}
-
-	static async Load_Agregated_Data(aggregating_file, key, aggregate_folder, cache_file_path)
-	{
-		// Use a single in-flight promise to serialize concurrent calls
-		if (load_in_progress[aggregating_file])
-			return load_in_progress[aggregating_file].promise;
-
-		load_in_progress[aggregating_file] = {};
-		load_in_progress[aggregating_file].promise = (async () => {
-			try {
-				const paths = await Collect_Relevant_Paths(aggregating_file, key, aggregate_folder, extension);
-					
-				// instantiate File_cache
-				const file_cache = new File_Cache_JSON(cache_file_path);
-				const loaded_data = await file_cache.Try_Load(paths);
-				if (loaded_data.valid) {
-					return loaded_data.data;
-				}
-				console.log("[INFO] rebuilding cache file")
-				// cache not valid -> rebuild network
-				const agregate = await Build_Agregate(network_data_path, key);
-
-				// write fresh cache with computed mtime (cacheCheck.mtime could be null)
-				const new_mTime = (typeof loaded_data.mtime === 'number' && loaded_data.mtime !== null) ? cacheCheck.mtime : Date.now();
-
-				await file_cache.Write(agregate, new_mTime);
-
-				return network;
-			} finally {
-				load_in_progress[aggregating_file] = null;
-			}
-		})();
-
-		return load_in_progress[aggregating_file].promise;
-	}
 }
 
-module.exports = Agregate_Folder;
+module.exports = { Cache_Memory_Agregate_JSON };
