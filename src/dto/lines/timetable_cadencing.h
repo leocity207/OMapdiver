@@ -23,8 +23,8 @@ class Timetable_Cadencing_DTO : public oatpp::DTO {
 		DTO_FIELD(String, last_departure, "last_departure");
 		DTO_FIELD(String, service, "service");
 
-		DTO_FIELD(List<Object<Info_Message_DTO>>, infomessages, "infomessages");
-		DTO_FIELD(List<Object<Line_Flow_Stop_DTO>>, lineflowstops, "lineflowstops");
+		DTO_FIELD(List<Object<Info_Message>>, infomessages, "infomessages");
+		DTO_FIELD(List<Object<Line_Flow_Stop>>, lineflowstops, "lineflowstops");
 };
 
 
