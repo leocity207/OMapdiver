@@ -7,34 +7,48 @@ const path = require('path');
  */
 class Cache
 {
-	constructor(identifier) {
+	constructor(identifier)
+	{
 		if (!identifier) throw new Error('[ERROR] identifier required.');
 		this.identifier = identifier
 		this.last_update = null;
 	}
-	async _Get() {
+
+	async _Get()
+	{
 		throw new Error("[ERROR] This function must be overriden");
 	}
 
-	async _Exists() {
+	async _Exists()
+	{
 		throw new Error("[ERROR] This function must be overriden");
 	}
 
-	async _Compute_Update() {
+	async _Compute_Update()
+	{
 		throw new Error("[ERROR] This function must be overriden");
 	}
 
-	async _Update() {
+	async _Update()
+	{
 		throw new Error("[ERROR] This function must be overriden");
 	}
 
-	_Need_Update(expected_last_update) {
+	_Need_Update(expected_last_update)
+	{
 		if(this.last_update === null) return true;
 		if(this.last_update === expected_last_update) return false;
 		return true;
 	}
 
-	async Load() {
+	async Need_Update()
+	{
+		const expected_last_update = await this._Compute_Update();
+		return this._Need_Update(expected_last_update);
+	}
+
+	async Load()
+	{
 		const exists = await this._Exists();
 
 		const expected_last_update = await this._Compute_Update();
@@ -47,7 +61,8 @@ class Cache
 		return await this._Get();
 	}
 
-	static async Compute_Files_Closest_Last_Update(paths) {
+	static async Compute_Files_Closest_Last_Update(paths)
+	{
 		if (!Array.isArray(paths) || paths.length === 0) return null;
 		let max = null;
 		for (const p of paths) {

@@ -1,14 +1,17 @@
-class service {
+/**
+ * base class of Services
+ */
+class Service {
 
 	constructor(name)
 	{
 		this.name = name;
 	}
 
-	async Serve(method, resource, querry)
+	async Serve(req, pathname, connection)
 	{
 		throw new Error("[ERROR] this method should be overiden");
 	}
 }
 
-module.exports = { service };
+module.exports = { Service };

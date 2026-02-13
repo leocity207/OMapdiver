@@ -4,8 +4,10 @@ const Config = require('../config.cjs')
 const path = require('path');
 const fs = require('fs').promises;
 
-let load_in_progress = {};
 
+/**
+ * Cache that agregate the data found inside a folder
+ */
 class Cache_Memory_Agregate_JSON extends Memory_Cache
 {
 	constructor (name, key = name)
@@ -16,12 +18,15 @@ class Cache_Memory_Agregate_JSON extends Memory_Cache
 		this.key_in_file = key;
 	}
 
-	async _Compute_Update() {
+	async _Compute_Update()
+	{
 		files = _Collect_Relevant_Paths(this.agregate_path_file, this.key, this.agregate_path_folder);
+		files.push(this.agregate_path_file);
 		return Memory_Cache.Compute_Files_Closest_Last_Update(files);
 	}
 
-	async _Update() {
+	async _Update()
+	{
 		files_paths = _Collect_Relevant_Paths();
 		agregated_data = _Build_Agregate(files_paths)
 		this._Set(agregated_data);
@@ -43,7 +48,8 @@ class Cache_Memory_Agregate_JSON extends Memory_Cache
 		return paths ;
 	}
 
-	async _Build_Agregate(files_paths) {
+	async _Build_Agregate(files_paths)
+	{
 		const agregate = {};
 		agregate[this.key] = {};
 
