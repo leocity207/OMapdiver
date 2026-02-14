@@ -3,14 +3,14 @@
 	"label": "String M: ligne label",
 	"url": "String M: URL to acces the line data",
 	"color": {
-        "keys" : "description of the key",
+		"keys" : "description of the key",
 		"values" : "String M: color in the #XXXXXX format"
 	},
 	"svg_icon":"String M: full icon of the line",
-    "Square_icon":"String M: fixed size icon of the line ",
-    "stations": [
-        "String: station at wich the line stop this should be ordered with the timetablePattern" 
-    ],
+	"Square_icon":"String M: fixed size icon of the line ",
+	"stations": [
+		"String: station at wich the line stop this should be ordered with the timetablePattern" 
+	],
 	"patterns": [
 		{
 			"id": "String M: Reference id of the pattern",
@@ -19,41 +19,42 @@
 			"departure_minute": "Int M : departure minute of the train",
 			"service": "String M: service variant of teh train",
 			"info_messages": [
-                {
-                    "index": "Int/null M: station index or whole line information",
-                    "level": "Int M: level of message (0,1,2 are accepted)",
-                    "message": "String M: information message",
-                }
-            ],
+				{
+					"index": "Int/null M: station index or whole line information",
+					"level": "Int M: level of message (0,1,2 are accepted)",
+					"message": "String M: information message",
+				}
+			],
+			"is_reversed" : "boolean M, if we should look at the station in reversed way",
 			"first_departure":"String M: time of the first departure in the day",
 			"last_departure":"String M: time of the last departure of the day",
-            "arrival_minutes": [
-                "Int/null, minut of arrival at station",
-            ],
-            "departure_minutes": [
-                "Int/null, minute of departure at station",
-            ]
+			"arrival_minutes": [
+				"Int/null, minut of arrival at station",
+			],
+			"departure_minutes": [
+				"Int/null, minute of departure at station",
+			]
 		}
 	],
-    "timetables": 
-    [
-        {
-            "id": "String M: Service Mission id",
-            "label": "String M: Service Mission label",
-            "pattern": "String M: Service pattern key",
-            "info_messages": [
-                {
-                    "index": "Int/null M: station index or whole line information",
-                    "level": "Int M: level of message (0,1,2 are accepted)",
-                    "message": "String M: information message",
-                }
-            ],
-            "arrival_minutes": [
-                "Int/null, minut of arrival at station",
-            ],
-            "departure_minutes": [
-                "Int/null, minute of departure at station",
-            ]
-        }
-    ]
+	"timetables": 
+	[
+		{
+			"id": "String M: Service Mission id",
+			"label": "String M: Service Mission label",
+			"pattern": "String M: Service pattern key",
+			"info_messages": [
+				{
+					"index": "Int/null M: station index or whole line information",
+					"level": "Int M: level of message (0,1,2 are accepted)",
+					"message": "String M: information message",
+				}
+			],
+			"arrival_minutes": [
+				"Int/null, minut of arrival at station",
+			],
+			"departure_minutes": [
+				"Int/null, minute of departure at station",
+			]
+		}
+	]
 }
