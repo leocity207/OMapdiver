@@ -1,3 +1,5 @@
-[
-	"String: Id of the organiser to be found inside the line folder"
-]
+{
+	"organiser":[
+		"String: Id of the organiser to be found inside the line folder"
+	]
+}

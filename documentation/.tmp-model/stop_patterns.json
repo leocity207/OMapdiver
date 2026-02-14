@@ -1,3 +1,5 @@
-[
-	"String: Id of stop patterns to find inside the folder"
-]
+{
+	"stop_patterns":[
+		"String: Id of stop patterns to find inside the folder"
+	]
+}

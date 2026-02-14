@@ -1,3 +1,5 @@
-[
-	"String: Id of the calendar_patterns to find inside the folder"
-]
+{
+	"calendar_patterns": [
+		"String: Id of the calendar_patterns to find inside the folder"
+	]
+}

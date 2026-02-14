@@ -1,3 +1,5 @@
-[
-	"String: Id of the operator to be found inside the line folder"
-]
+{
+	"operators":[
+		"String: Id of the operator to be found inside the line folder"
+	]
+}

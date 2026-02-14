@@ -1,3 +1,5 @@
-[
-	"String: Id of the landmark to find inside the folder"
-]
+{
+	"landmarks":[
+		"String: Id of the landmark to find inside the folder"
+	]
+}
