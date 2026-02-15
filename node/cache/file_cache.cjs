@@ -25,7 +25,7 @@ class File_Cache extends Memory_Cache
 
 	async _Update()
 	{
-		const {data, size} = Read_File(file_path)
+		const {data, size} = await File_Cache.Read_File(this.file_path)
 		this.data = data;
 		this.size = size;
 		return this.data;
@@ -41,4 +41,4 @@ class File_Cache extends Memory_Cache
 	} 
 }
 
-module.exports = { File_Cache };
+module.exports = File_Cache;

@@ -15,10 +15,12 @@ module.exports = {
 	/**
 	 * specific website data
 	 */
-	PUBLIC_DATA_DIR: path.join(__dirname, '../resources/resources-config'),
+	PUBLIC_DATA_DIR: path.join(__dirname, '../resources/resources-config/data'),
 
 	/**
 	 * Cache data folder for files
 	 */
 	CACHE_FOLDER: path.join(__dirname, 'cache'),
+
+	VERBOSE: true,
 };

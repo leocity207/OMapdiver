@@ -27,4 +27,4 @@ class Memory_Cache extends Cache
 	}
 }
 
-module.exports = { Memory_Cache };
+module.exports = Memory_Cache;
