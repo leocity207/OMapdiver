@@ -7,7 +7,6 @@
 		"values" : "String M: color in the #XXXXXX format"
 	},
 	"svg_icon":"String M: full icon of the line",
-	"Square_icon":"String M: fixed size icon of the line ",
 	"stations": [
 		"String: station at wich the line stop this should be ordered with the timetablePattern" 
 	],
@@ -17,7 +16,7 @@
 			"label": "String M: labbel of the pattern",
 			"interval_minutes": "Int M :interval time between two train",
 			"departure_minute": "Int M : departure minute of the train",
-			"service": "String M: service variant of teh train",
+			"stop_pattern": "String M: stop patterne variant of the train",
 			"info_messages": [
 				{
 					"index": "Int/null M: station index or whole line information",
@@ -41,7 +40,8 @@
 		{
 			"id": "String M: Service Mission id",
 			"label": "String M: Service Mission label",
-			"pattern": "String M: Service pattern key",
+			"stop_pattern": "String M: stop_pattern pattern key",
+			"calendar_pattern": "String M: stop_pattern pattern key",
 			"info_messages": [
 				{
 					"index": "Int/null M: station index or whole line information",
