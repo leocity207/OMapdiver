@@ -28,4 +28,4 @@ namespace O::DTO
 }
 #include OATPP_CODEGEN_END(DTO)
 
-#endif /* LINE_DTO_H */
+#endif /* NETWORK_DTO_H */

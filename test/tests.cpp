@@ -1,12 +1,9 @@
 
-#include "StationDTOTest.h"
-#include "LineDTOTest.h"
-
+#include "dto_tests.h"
 #include <iostream>
 
 void runTests() {
-  OATPP_RUN_TEST(StationDTOTest);
-  OATPP_RUN_TEST(LineDTOTest);
+  OATPP_RUN_TEST(DTO_Test);
 }
 
 int main() {
