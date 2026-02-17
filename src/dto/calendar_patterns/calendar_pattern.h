@@ -10,10 +10,10 @@ namespace O::DTO
 	/**
 	 * @brief DTO about callendar patterns
 	 */
-	class Calendar_Patterns : public Base
+	class Calendar_Pattern : public Base
 	{
 		public:
-			DTO_INIT(Landmark, ::DTO)
+			DTO_INIT(Calendar_Pattern, DTO)
 
 			// Mandatory fields
 			DTO_FIELD(Boolean, urls, "urls");

@@ -1,7 +1,7 @@
 #include "dto_tests.h"
 
 template<class Exemple>
-void DTO_Test::onRun()
+void DTO_Test<Exemple>::onRun()
 {
 	OATPP_LOGi("[Info]", "deserialization Test");
 	Exemple::Test_Deserialize(Exemple::json);

@@ -13,7 +13,7 @@ namespace O::DTO
 	class Landmark : public Base
 	{
 		public:
-			DTO_INIT(Landmark, ::DTO)
+			DTO_INIT(Landmark, DTO)
 
 	};
 }

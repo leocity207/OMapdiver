@@ -17,7 +17,6 @@ namespace O::DTO
 		DTO_INIT(Service_Mission, DTO)
 
 		// Mandatory Fields
-		DTO_FIELD(String, composition, "composition");
 		DTO_FIELD(String, stop_pattern, "stop_pattern");
 		DTO_FIELD(String, calendar_pattern, "calendar_pattern");
 		DTO_FIELD(List<Object<Info_Message>>, info_messages, "info_messages");

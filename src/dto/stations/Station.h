@@ -11,11 +11,11 @@ namespace O::DTO
 	/**
 	* @brief DTO about stations
 	*/
-	class Station_DTO : public Base
+	class Station : public Base
 	{
 
 	public:
-		DTO_INIT(Station_DTO, DTO)
+		DTO_INIT(Station, DTO)
 
 		// Mandatory fields
 		DTO_FIELD(String, url, "url");

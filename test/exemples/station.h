@@ -1,11 +1,15 @@
 #ifndef TEST_EXEMPLE_STATION_PATTERN_H
 #define TEST_EXEMPLE_STATION_PATTERN_H
 
+// DTO
 #include "src/dto/stations/station.h"
+
+// OATPP
+#include <oatpp/json/ObjectMapper.hpp>
 
 struct Station_Exemple
 {
-	static std::string json = R"(
+	static inline const  std::string json = R"(
 	{
 		"label": "Rennes",
 		"code": "FR_03190_0",
@@ -18,13 +22,13 @@ struct Station_Exemple
 	}
 	)";
 
-	static void Test_Deserialize()
+	static void Test_Deserialize(const std::string& str)
 	{
 		auto jsonObjectMapper = oatpp::json::ObjectMapper();
 		auto object = jsonObjectMapper.readFromString<oatpp::Object<O::DTO::Station>>(str);
 	}
 
-	static std::string serialized = "";
+	static inline const std::string serialized = "";
 
 	static std::string Test_Serialize()
 	{

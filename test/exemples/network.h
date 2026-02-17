@@ -1,11 +1,15 @@
 #ifndef TEST_EXMPLE_NETWORK_H
 #define TEST_EXMPLE_NETWORK_H
 
+// DTO
 #include "src/dto/networks/network.h"
 
-struct Calendar_Pattern_Exemple
+// OATPP
+#include <oatpp/json/ObjectMapper.hpp>
+
+struct Network_Exemple
 {
-	static std::string json = R"(
+	static inline const  std::string json = R"(
 	{
 		"calendar_patterns": [
 			"p1",
@@ -39,13 +43,13 @@ struct Calendar_Pattern_Exemple
 	}
 	)";
 
-	static void Test_Deserialize()
+	static void Test_Deserialize(const std::string& str)
 	{
 		auto jsonObjectMapper = oatpp::json::ObjectMapper();
 		auto object = jsonObjectMapper.readFromString<oatpp::Object<O::DTO::Network>>(str);
 	}
 
-	static std::string serialized = "";
+	static inline const std::string serialized = "";
 
 	static std::string Test_Serialize()
 	{

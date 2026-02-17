@@ -13,7 +13,7 @@ namespace O::DTO
 	{
 
 	public:
-		DTO_INIT(Timetable_Cadencing_DTO, DTO)
+		DTO_INIT(Pattern, DTO)
 
 		DTO_FIELD(UInt16, interval_minutes, "interval_minutes");
 		DTO_FIELD(UInt16, departure_minute, "departure_minute");

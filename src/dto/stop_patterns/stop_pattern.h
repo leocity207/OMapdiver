@@ -10,10 +10,10 @@ namespace O::DTO
 	/**
 	 * @brief DTO about territoriess
 	 */
-	class Stop_Patterns : public Base
+	class Stop_Pattern : public Base
 	{
 		public:
-			DTO_INIT(Stop_Patterns, ::DTO)
+			DTO_INIT(Stop_Pattern, DTO)
 
 			// Mandatory fields
 			DTO_FIELD(Boolean, urls, "urls");

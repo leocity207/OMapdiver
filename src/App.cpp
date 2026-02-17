@@ -18,7 +18,7 @@ void run() {
 
 	//Create Rooter and add componant
 	OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
-	router->addController(std::make_shared<Network_Data_Handler>());
+	router->addController(std::make_shared<O::Controller::Network_Data_Handler>());
 	router->addController(std::make_shared<Static_File_Manager>());
 
 	// Create the server
