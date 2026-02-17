@@ -9,13 +9,18 @@ namespace O::DTO
 {
 	/**
 	 * @brief DTO about territoriess
-	 * 
 	 */
 	class Stop_Patterns : public Base
 	{
 		public:
 			DTO_INIT(Stop_Patterns, ::DTO)
 
+			// Mandatory fields
+			DTO_FIELD(Boolean, urls, "urls");
+			DTO_FIELD(UInt16, level, "level");
+			DTO_FIELD(List<String>, variant, "variant");
+			DTO_FIELD(String, color, "color");
+			DTO_FIELD(String, icon, "icon");
 	};
 }
 

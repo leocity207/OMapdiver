@@ -6,7 +6,7 @@
 		"keys" : "description of the key",
 		"values" : "String M: color in the #XXXXXX format"
 	},
-	"svg_icon":"String M: full icon of the line",
+	"icon":"String M: full icon of the line svg format",
 	"stations": [
 		"String: station at wich the line stop this should be ordered with the timetablePattern" 
 	],
@@ -16,7 +16,10 @@
 			"label": "String M: labbel of the pattern",
 			"interval_minutes": "Int M :interval time between two train",
 			"departure_minute": "Int M : departure minute of the train",
+			"first_departure":"String M: time of the first departure in the day",
+			"last_departure":"String M: time of the last departure of the day",
 			"stop_pattern": "String M: stop patterne variant of the train",
+			"is_reversed" : "boolean M, if we should look at the station in reversed way",
 			"info_messages": [
 				{
 					"index": "Int/null M: station index or whole line information",
@@ -24,9 +27,6 @@
 					"message": "String M: information message",
 				}
 			],
-			"is_reversed" : "boolean M, if we should look at the station in reversed way",
-			"first_departure":"String M: time of the first departure in the day",
-			"last_departure":"String M: time of the last departure of the day",
 			"arrival_minutes": [
 				"Int/null, minut of arrival at station",
 			],
@@ -50,10 +50,10 @@
 				}
 			],
 			"arrival_minutes": [
-				"Int/null, minut of arrival at station",
+				"String/null, minut of arrival at station",
 			],
 			"departure_minutes": [
-				"Int/null, minute of departure at station",
+				"String/null, minute of departure at station",
 			]
 		}
 	]

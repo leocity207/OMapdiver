@@ -8,7 +8,7 @@
 namespace O::DTO
 {
 	/**
-	 * @brief DTO about territoriess
+	 * @brief DTO about territories
 	 * 
 	 */
 	class Territory : public Base

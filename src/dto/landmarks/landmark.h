@@ -9,7 +9,6 @@ namespace O::DTO
 {
 	/**
 	 * @brief DTO about landmark
-	 * 
 	 */
 	class Landmark : public Base
 	{

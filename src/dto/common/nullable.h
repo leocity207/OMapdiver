@@ -1,5 +1,5 @@
-#ifndef BASE_DTO_H
-#define BASE_DTO_H
+#ifndef NULLABLE_DTO_H
+#define NULLABLE_DTO_H
 
 #include <oatpp/macro/codegen.hpp>
 #include <oatpp/Types.hpp>
@@ -11,16 +11,16 @@ namespace O::DTO
 	/**
 	 * @brief Base DTO class shared by all other Data transfer object
 	 */
-	class Base : public oatpp::DTO
+	template<class Type>
+	class Nullable : public oatpp::DTO
 	{
-		public:
-			DTO_INIT(Base, DTO)
+	public:
+		DTO_INIT(Nullable, DTO)
 
-			DTO_FIELD(String, id, "id");
-			DTO_FIELD(String, label, "label");
+		DTO_FIELD(Type, id, "id");
 	};
 }
 
 #include OATPP_CODEGEN_END(DTO)
 
-#endif /* BASE_DTO_H */
+#endif /* NULLABLE_DTO_H */

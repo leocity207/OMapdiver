@@ -9,13 +9,11 @@ namespace O::DTO
 {
 	/**
 	 * @brief DTO about organisers
-	 * 
 	 */
 	class Organiser : public Base
 	{
 		public:
 			DTO_INIT(Organiser, ::DTO)
-
 	};
 }
 

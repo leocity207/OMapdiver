@@ -8,8 +8,7 @@
 namespace O::DTO
 {
 	/**
-	 * @brief DTO about operator
-	 * 
+	 * @brief DTO about operators
 	 */
 	class Operator : public Base
 	{

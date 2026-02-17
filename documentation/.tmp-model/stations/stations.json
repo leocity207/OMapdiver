@@ -9,9 +9,10 @@
 		"keys" : "String: direction id of theline in the form Lineid_type_minutes",
 		"value": "String: direction destination"
 	},
-	"disabled_friendly": "Boolean O: tells if the stations is accessible for low mobility persones",
-	"has_bike_parking" : "Boolean O: tells if the stations has a parking for bikes",
-	"has_car_parking" : "Boolean O: tells if the stations has a car parking",
+	"have_disabled_equipment": "Boolean O: tells if the stations is accessible for low mobility persones",
+	"have_bike_parking" : "Boolean O: tells if the stations has a parking for bikes",
+	"have_car_parking" : "Boolean O: tells if the stations has a car parking",
+	"have_car_sharing" : "Boolean O: tells if the stations has care sharing",
 	"opening_hour": "String O: opening hour of the stations",
-	"clossing_hour" : "String O: closing hour of the stations"
+	"closing_hour" : "String O: closing hour of the stations"
 }

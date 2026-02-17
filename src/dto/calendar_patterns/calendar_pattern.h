@@ -9,13 +9,23 @@ namespace O::DTO
 {
 	/**
 	 * @brief DTO about callendar patterns
-	 * 
 	 */
 	class Calendar_Patterns : public Base
 	{
 		public:
 			DTO_INIT(Landmark, ::DTO)
 
+			// Mandatory fields
+			DTO_FIELD(Boolean, urls, "urls");
+			DTO_FIELD(Fields<String>, is_exceptional, "is_exceptional");
+
+			// Optional fields
+			DTO_FIELD(String, info, "info") = nullptr;
+			DTO_FIELD(String, icon, "icon") = nullptr;
+
+			// Optional field checker
+			bool Has_Info() const;
+			bool Has_Icon() const;
 	};
 }
 

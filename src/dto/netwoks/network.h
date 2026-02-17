@@ -7,12 +7,15 @@
 
 namespace O::DTO
 {
-
+	/**
+	* @brief DTO about networks
+	*/
 	class Network : public oatpp::DTO {
 
 	public:
 		DTO_INIT(Network, DTO)
 
+		// Mandatory fields
 		DTO_FIELD(List<String>, calendar_patterns, "calendar_patterns");
 		DTO_FIELD(List<String>, landmarks        , "landmarks");
 		DTO_FIELD(List<String>, lines            , "lines");
