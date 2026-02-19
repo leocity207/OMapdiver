@@ -13,7 +13,7 @@ namespace O::DTO
 	class Organiser : public Base
 	{
 		public:
-			DTO_INIT(Organiser, DTO)
+			DTO_INIT(Organiser, Base)
 	};
 }
 

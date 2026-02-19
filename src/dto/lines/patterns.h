@@ -13,13 +13,14 @@ namespace O::DTO
 	{
 
 	public:
-		DTO_INIT(Pattern, DTO)
+		DTO_INIT(Pattern, Base)
 
 		DTO_FIELD(UInt16, interval_minutes, "interval_minutes");
 		DTO_FIELD(UInt16, departure_minute, "departure_minute");
 		DTO_FIELD(String, first_departure, "first_departure");
 		DTO_FIELD(String, last_departure, "last_departure");
 		DTO_FIELD(String, stop_pattern, "stop_pattern");
+		DTO_FIELD(Boolean, is_reversed, "is_reversed");
 
 		DTO_FIELD(List<Object<Info_Message>>, info_messages, "info_messages");
 

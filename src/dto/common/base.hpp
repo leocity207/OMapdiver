@@ -9,6 +9,7 @@
 // OATPP
 #include <oatpp/Types.hpp>
 #include <oatpp/json/ObjectMapper.hpp>
+#include <oatpp/base/Log.hpp>
 
 
 // CONFIGURATION

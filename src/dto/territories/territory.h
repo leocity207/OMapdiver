@@ -14,7 +14,7 @@ namespace O::DTO
 	class Territory : public Base
 	{
 		public:
-			DTO_INIT(Territory, DTO)
+			DTO_INIT(Territory, Base)
 
 	};
 }

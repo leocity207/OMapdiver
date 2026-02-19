@@ -50,7 +50,16 @@ include_directories(${PROJECT_SOURCE_DIR})
 FILE(GLOB CONTROLER_SRC src/controller/*.cpp)
 FILE(GLOB CONTROLER_H src/controller/*.h*)
 FILE(GLOB DTO_H src/dto/*.h*)
-FILE(GLOB DTO_SRC src/dto/*.cpp*)
+FILE(GLOB DTO_SRC src/dto/*.cpp)
+FILE(GLOB DTO_SRC_CALENDAR_PATTERNS src/dto/calendar_patterns/*.cpp)
+FILE(GLOB DTO_SRC_COMMON src/dto/common/*.cpp*)
+FILE(GLOB DTO_SRC_LINES src/dto/lines/*.cpp*)
+FILE(GLOB DTO_SRC_NETWORKS src/dto/networks/*.cpp)
+FILE(GLOB DTO_SRC_OPERATORS src/dto/operators/*.cpp*)
+FILE(GLOB DTO_SRC_ORGANISERS src/dto/organisers/*.cpp*)
+FILE(GLOB DTO_SRC_STATIONS src/dto/stations/*.cpp*)
+FILE(GLOB DTO_SRC_STOP_PATTERNS src/dto/stop_patterns/*.cpp*)
+FILE(GLOB DTO_SRC_TERRITORIES src/dto/territories/*.cpp*)
 FILE(GLOB APP_SRC src/*.cpp*)
 FILE(GLOB APP_H src/*.h*)
 
@@ -60,6 +69,15 @@ add_library(${project_name}-lib
 	${CONTROLER_H}
 	${CONTROLER_SRC}
 	${DTO_SRC}
+	${DTO_SRC_CALENDAR_PATTERNS}
+	${DTO_SRC_COMMON}
+	${DTO_SRC_LINES}
+	${DTO_SRC_NETWORKS}
+	${DTO_SRC_OPERATORS}
+	${DTO_SRC_ORGANISERS}
+	${DTO_SRC_STATIONS}
+	${DTO_SRC_STOP_PATTERNS}
+	${DTO_SRC_TERRITORIES}
 )
 
 #----------------------------------

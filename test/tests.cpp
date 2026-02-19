@@ -24,6 +24,8 @@ void runTests() {
 	OATPP_RUN_TEST(DTO_Test<Territory_Exemple>);
 }
 
+
+
 int main() {
 
 	oatpp::Environment::init();

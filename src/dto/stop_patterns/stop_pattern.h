@@ -13,7 +13,7 @@ namespace O::DTO
 	class Stop_Pattern : public Base
 	{
 		public:
-			DTO_INIT(Stop_Pattern, DTO)
+			DTO_INIT(Stop_Pattern, Base)
 
 			// Mandatory fields
 			DTO_FIELD(Boolean, urls, "urls");

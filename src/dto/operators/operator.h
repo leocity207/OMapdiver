@@ -13,7 +13,7 @@ namespace O::DTO
 	class Operator : public Base
 	{
 		public:
-			DTO_INIT(Operator, DTO)
+			DTO_INIT(Operator, Base)
 
 	};
 }

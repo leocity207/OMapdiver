@@ -12,21 +12,28 @@ struct Operator_Exemple
 	static inline const  std::string json = R"(
 	{
 		"id" : "SNCF",
-		"label": "sociter national des chemin de fer",
+		"label": "sociter national des chemin de fer"
 	}
 	)";
 
-	static void Test_Deserialize()
-	{
-
-	}
-
-	static inline const std::string serialized = "";
-
-	static std::string Test_Serialize(const std::string& str)
+	static void Test_Deserialize(const std::string& str)
 	{
 		auto jsonObjectMapper = oatpp::json::ObjectMapper();
-		auto object = jsonObjectMapper.readFromString<oatpp::Object<O::DTO::Operator>>(str);
+		auto object = jsonObjectMapper.readFromString<oatpp::Object<O::DTO::Landmark>>(str);
+
+		OATPP_ASSERT(object->id == "SNCF");
+		OATPP_ASSERT(object->label == "sociter national des chemin de fer");
+	}
+
+	static inline const std::string serialized = R"({"id":"SNCF","label":"sociter national des chemin de fer"})";
+
+	static std::string Test_Serialize()
+	{
+		auto op = O::DTO::Operator::createShared();
+		op->id = "SNCF";
+		op->label = "sociter national des chemin de fer";
+		auto jsonObjectMapper = oatpp::json::ObjectMapper();
+		return  jsonObjectMapper.writeToString(op);
 	}
 };
 

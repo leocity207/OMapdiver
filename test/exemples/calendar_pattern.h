@@ -12,9 +12,9 @@ struct Calendar_Pattern_Exemple
 	static inline const std::string json = R"(
 	{	
 		"id" : "31.12",
-		"label": "jounr�e mondial sp�cial",
+		"label": "jounrée mondial spécial",
 		"is_exceptional" : true,
-		"info": "journ�e special"
+		"info": "journée special"
 	}
 	)";
 
@@ -22,13 +22,30 @@ struct Calendar_Pattern_Exemple
 	{
 		auto jsonObjectMapper = oatpp::json::ObjectMapper();
 		auto object = jsonObjectMapper.readFromString<oatpp::Object<O::DTO::Calendar_Pattern>>(str);
+
+
+		OATPP_ASSERT(object->id == "31.12");
+		OATPP_ASSERT(object->label == "jounrée mondial spécial");
+		OATPP_ASSERT(object->is_exceptional == true);
+		OATPP_ASSERT(object->info == "journée special");
+
+		OATPP_ASSERT(object->Has_Info() == true);
+		OATPP_ASSERT(object->Has_Icon() == false);
+
 	}
 
-	static inline const std::string serialized = "";
+	static inline const std::string serialized = R"({"id":"31.12","label":"jounr\u00E9e mondial sp\u00E9cial","is_exceptional":true,"info":"journ\u00E9e special","icon":null})";
 
 	static std::string Test_Serialize()
 	{
+		auto calendar_pattern = O::DTO::Calendar_Pattern::createShared();
+		calendar_pattern->id = "31.12";
+		calendar_pattern->label = "jounrée mondial spécial";
+		calendar_pattern->is_exceptional = true;
+		calendar_pattern->info = "journée special";
 
+		auto jsonObjectMapper = oatpp::json::ObjectMapper();
+		return  jsonObjectMapper.writeToString(calendar_pattern);
 	}
 
 };

@@ -15,12 +15,12 @@ namespace O::DTO
 	{
 
 	public:
-		DTO_INIT(Station, DTO)
+		DTO_INIT(Station, Base)
 
 		// Mandatory fields
 		DTO_FIELD(String, url, "url");
 		DTO_FIELD(List<String>, lines, "lines");
-		DTO_FIELD(Fields<String>, directions, "direction");
+		DTO_FIELD(Fields<String>, directions, "directions");
 
 		// Optional fields
 		DTO_FIELD(Boolean, have_disabled_equipment, "have_disabled_equipment");

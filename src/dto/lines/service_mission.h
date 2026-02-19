@@ -14,7 +14,7 @@ namespace O::DTO
 
 	public:
 
-		DTO_INIT(Service_Mission, DTO)
+		DTO_INIT(Service_Mission, Base)
 
 		// Mandatory Fields
 		DTO_FIELD(String, stop_pattern, "stop_pattern");

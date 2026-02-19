@@ -12,7 +12,7 @@ struct Organiser_Exemple
 	static inline const  std::string json = R"(
 	{
 		"id" : "idfm",
-		"label": "�le de france mobilit�",
+		"label": "île de france mobilité"
 	}
 	)";
 
@@ -20,13 +20,20 @@ struct Organiser_Exemple
 	{
 		auto jsonObjectMapper = oatpp::json::ObjectMapper();
 		auto object = jsonObjectMapper.readFromString<oatpp::Object<O::DTO::Organiser>>(str);
+
+		OATPP_ASSERT(object->id == "idfm");
+		OATPP_ASSERT(object->label == "île de france mobilité");
 	}
 
-	static inline const std::string serialized = "";
+	static inline const std::string serialized = R"({"id":"idfm","label":"\u00EEle de france mobilit\u00E9"})";
 
 	static std::string Test_Serialize()
 	{
-
+		auto organiser = O::DTO::Organiser::createShared();
+		organiser->id = "idfm";
+		organiser->label = "île de france mobilité";
+		auto jsonObjectMapper = oatpp::json::ObjectMapper();
+		return  jsonObjectMapper.writeToString(organiser);
 	}
 };
 

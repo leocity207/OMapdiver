@@ -13,11 +13,10 @@ namespace O::DTO
 	class Calendar_Pattern : public Base
 	{
 		public:
-			DTO_INIT(Calendar_Pattern, DTO)
+			DTO_INIT(Calendar_Pattern, Base)
 
 			// Mandatory fields
-			DTO_FIELD(Boolean, urls, "urls");
-			DTO_FIELD(Fields<String>, is_exceptional, "is_exceptional");
+			DTO_FIELD(Boolean, is_exceptional, "is_exceptional");
 
 			// Optional fields
 			DTO_FIELD(String, info, "info") = nullptr;

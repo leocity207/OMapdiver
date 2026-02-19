@@ -14,7 +14,7 @@ struct Stop_Pattern_Exemple
 		"id" : "express",
 		"label" : "express",
 		"level": 1,
-		"variant": [],
+		"variant": ["sub-express", "express"],
 		"color" : "#FFFFFF",
 		"icon" : "<svg> my icon </svg>"
 	}
@@ -24,13 +24,33 @@ struct Stop_Pattern_Exemple
 	{
 		auto jsonObjectMapper = oatpp::json::ObjectMapper();
 		auto object = jsonObjectMapper.readFromString<oatpp::Object<O::DTO::Stop_Pattern>>(str);
+
+		OATPP_ASSERT(object->id == "express");
+		OATPP_ASSERT(object->label == "express");
+		OATPP_ASSERT(object->level == 1);
+		OATPP_ASSERT(object->color == "#FFFFFF");
+		OATPP_ASSERT(object->icon == "<svg> my icon </svg>");
+
+		OATPP_ASSERT(object->variant->size() == 2);
+
+		auto it = object->variant->begin();
+		OATPP_ASSERT(*(it) == "sub-express");
+		OATPP_ASSERT(*(++it) == "express");
 	}
 
-	static inline const std::string serialized = "";
+	static inline const std::string serialized = R"({"id":"express","label":"express","urls":null,"level":1,"variant":["sub-express","express"],"color":"#FFFFFF","icon":"<svg> my icon <\/svg>"})";
 
 	static std::string Test_Serialize()
 	{
-
+		auto stop_pattern = O::DTO::Stop_Pattern::createShared();
+		stop_pattern->id = "express";
+		stop_pattern->label = "express";
+		stop_pattern->level = 1;
+		stop_pattern->color = "#FFFFFF";
+		stop_pattern->icon = "<svg> my icon </svg>";
+		stop_pattern->variant = { "sub-express" ,"express" };
+		auto jsonObjectMapper = oatpp::json::ObjectMapper();
+		return  jsonObjectMapper.writeToString(stop_pattern);
 	}
 };
 

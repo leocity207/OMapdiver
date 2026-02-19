@@ -12,7 +12,7 @@ struct Territory_Exemple
 	static inline const  std::string json = R"(
 	{
 		"id" : "fr",
-		"label": "france",
+		"label": "france"
 	}
 	)";
 
@@ -20,13 +20,20 @@ struct Territory_Exemple
 	{
 		auto jsonObjectMapper = oatpp::json::ObjectMapper();
 		auto object = jsonObjectMapper.readFromString<oatpp::Object<O::DTO::Territory>>(str);
+
+		OATPP_ASSERT(object->id == "fr");
+		OATPP_ASSERT(object->label == "france");
 	}
 
-	static inline const std::string serialized = "";
+	static inline const std::string serialized = R"({"id":"fr","label":"france"})";
 
 	static std::string Test_Serialize()
 	{
-
+		auto territory = O::DTO::Territory::createShared();
+		territory->id = "fr";
+		territory->label = "france";
+		auto jsonObjectMapper = oatpp::json::ObjectMapper();
+		return  jsonObjectMapper.writeToString(territory);
 	}
 };
 
