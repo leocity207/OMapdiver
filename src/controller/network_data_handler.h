@@ -31,7 +31,7 @@ namespace O::Controller
 			if (Check_Update())
 				Rebuild_Network_String();
 
-			auto response = createDtoResponse(Status::CODE_200, m_full_network_json);
+			auto response = ResponseFactory::createResponse(Status::CODE_200, m_full_network_json);
 			response->putHeader("Content-Type", "application/json");
 			return response;
 		}
@@ -50,6 +50,7 @@ namespace O::Controller
 		std::pair<Fields<Object<O::DTO::Operator>>        , std::filesystem::file_time_type> m_operators;
 		std::pair<Fields<Object<O::DTO::Organiser>>       , std::filesystem::file_time_type> m_organiser;
 		std::pair<Fields<Object<O::DTO::Station>>         , std::filesystem::file_time_type> m_station;
+		std::pair<Fields<Object<O::DTO::Stop_Pattern>>    , std::filesystem::file_time_type> m_stop_patterns;
 		std::pair<Fields<Object<O::DTO::Territory>>       , std::filesystem::file_time_type> m_territories;
 		 
 		oatpp::String m_full_network_json;

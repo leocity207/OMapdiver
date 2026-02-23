@@ -42,7 +42,7 @@ inline bool O::DTO::Base::Need_Update(std::string_view key, const std::filesyste
 	//check individual files
 	for (const auto& id : *types->list)
 	{
-		std::filesystem::path single_filepath = RESOURCE_PATH() / "resources-config/data" / (std::string(id) + ".json");
+		std::filesystem::path single_filepath = RESOURCE_PATH() / "resources-config/data" / std::string(key) / (std::string(id) + ".json");
 		
 		if (!std::filesystem::exists(single_filepath)) {
 			OATPP_LOGi("[warning]", "File not found: %s", single_filepath.generic_string());
@@ -82,7 +82,7 @@ inline std::pair<oatpp::Fields<oatpp::Object<Type>>, std::filesystem::file_time_
 	//check individual files
 	for (const auto& id : *types->list)
 	{
-		std::filesystem::path single_filepath = RESOURCE_PATH() / "resources-config/data" / (std::string(id) + ".json");
+		std::filesystem::path single_filepath = RESOURCE_PATH() / "resources-config/data" / std::string(key) /(std::string(id) + ".json");
 
 		if (!std::filesystem::exists(single_filepath)) {
 			OATPP_LOGi("[warning]", "File not found: %s", single_filepath.generic_string());

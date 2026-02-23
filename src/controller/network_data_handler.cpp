@@ -12,13 +12,14 @@ O::Controller::Network_Data_Handler::Network_Data_Handler(std::shared_ptr<oatpp:
 	m_calendar_patterns(O::DTO::Base::Load_From_File<O::DTO::Calendar_Patterns, O::DTO::Calendar_Pattern>("calendar_patterns")),
 	m_landmarks(O::DTO::Base::Load_From_File<O::DTO::Landmarks, O::DTO::Landmark>("landmarks")),
 	m_lines(O::DTO::Base::Load_From_File<O::DTO::Lines, O::DTO::Line>("lines")),
-	m_operators(O::DTO::Base::Load_From_File<O::DTO::Operators, O::DTO::Operator>("oparators")),
+	m_operators(O::DTO::Base::Load_From_File<O::DTO::Operators, O::DTO::Operator>("operators")),
 	m_organiser(O::DTO::Base::Load_From_File<O::DTO::Organisers, O::DTO::Organiser>("organisers")),
 	m_station(O::DTO::Base::Load_From_File<O::DTO::Stations, O::DTO::Station>("stations")),
+	m_stop_patterns(O::DTO::Base::Load_From_File<O::DTO::Stop_Patterns, O::DTO::Stop_Pattern>("stop_patterns")),
 	m_territories(O::DTO::Base::Load_From_File<O::DTO::Territories, O::DTO::Territory>("territories")),
 	m_full_network_json()
 {
-
+	Rebuild_Network_String();
 }
 
 void O::Controller::Network_Data_Handler::Rebuild_Network_String()
@@ -32,7 +33,9 @@ void O::Controller::Network_Data_Handler::Rebuild_Network_String()
 	full_network->operators = m_operators.first;
 	full_network->organisers = m_organiser.first;
 	full_network->stations = m_station.first;
+	full_network->stop_patterns = m_stop_patterns.first;
 	full_network->territories = m_territories.first;
+	
 
 	auto jsonObjectMapper = oatpp::json::ObjectMapper();
 	 m_full_network_json = jsonObjectMapper.writeToString(full_network);
@@ -56,9 +59,9 @@ bool O::Controller::Network_Data_Handler::Check_Update()
 		m_lines = O::DTO::Base::Load_From_File<O::DTO::Lines, O::DTO::Line>("lines");
 		need_update = true;
 	}
-	if (O::DTO::Base::Need_Update<O::DTO::Operators>("oparators", m_calendar_patterns.second))
+	if (O::DTO::Base::Need_Update<O::DTO::Operators>("operators", m_calendar_patterns.second))
 	{
-		m_operators = O::DTO::Base::Load_From_File<O::DTO::Operators, O::DTO::Operator>("oparators");
+		m_operators = O::DTO::Base::Load_From_File<O::DTO::Operators, O::DTO::Operator>("operators");
 		need_update = true;
 	}
 	if (O::DTO::Base::Need_Update<O::DTO::Organisers>("organisers", m_calendar_patterns.second))

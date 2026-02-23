@@ -214,7 +214,7 @@ Example with All Features
 			"default": "#FF0000",
 			"night": "#880000"
 		},
-		"timetable_pattern": [
+		patterns: [
 			{
 				"code": "EXPRESS_1_A_00",
 				"label": "North Terminal → South Terminal",
