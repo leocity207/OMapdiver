@@ -110,8 +110,8 @@ class Line_Info extends HTMLElement {
 		const message_node = Utils.Get_Subnode(this.shadowRoot, ".line-infomessages");
 		message_node.style.display = 'none';
 		Utils.Empty_Node(message_node);
-		if(this.line_data.line.infomessages) {
-			this.line_data.line.infomessages.forEach(msg => {
+		if(this.line_data.line.info_messages) {
+			this.line_data.line.info_messages.forEach(msg => {
 				const p = document.createElement('p');
 				p.classList.add('infomessage');
 				p.textContent = msg.text.fr;
@@ -124,7 +124,7 @@ class Line_Info extends HTMLElement {
 		// Render schedule
 		const schedules_node = Utils.Get_Subnode(this.shadowRoot, ".schedules");
 		Utils.Empty_Node(schedules_node);
-		this.line_data.line.timetable_pattern.forEach(schedule => {
+		this.line_data.line.patterns.forEach(schedule => {
 			schedule.parent = this.line_data.line;
 			schedules_node.appendChild(Line_Schedule.Create(schedule, this.line_data.stations));
 		});

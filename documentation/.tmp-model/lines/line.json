@@ -6,6 +6,13 @@
 		"keys" : "description of the key",
 		"values" : "String M: color in the #XXXXXX format"
 	},
+	"info_messages": [
+		{
+			"index": "Int/null M: station index or whole line information",
+			"level": "Int M: level of message (0,1,2 are accepted)",
+			"message": "String M: information message",
+		}
+	],
 	"icon":"String M: full icon of the line svg format",
 	"stations": [
 		"String: station at wich the line stop this should be ordered with the timetablePattern" 

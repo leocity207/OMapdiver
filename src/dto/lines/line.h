@@ -21,6 +21,7 @@ namespace O::DTO
 			DTO_FIELD(List<String>, stations, "stations");
 			DTO_FIELD(List<Object<Pattern>>, patterns, "patterns");
 			DTO_FIELD(List<Object<Service_Mission>>, timetables, "timetables");
+			DTO_FIELD(List<Object<Info_Message>>, info_messages, "info_messages");
 	};
 }
 
