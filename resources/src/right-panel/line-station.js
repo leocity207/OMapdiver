@@ -30,9 +30,9 @@ class Line_Station extends HTMLElement {
 	station_data = null;
 
 	/**
-	 * station about all the datas
+	 * data bout the whole network
 	 */
-	stations_data = null;
+	network_data = null;
 
 	/**
 	 * start path with rounded corner at the top
@@ -157,10 +157,10 @@ class Line_Station extends HTMLElement {
 	 * @param {Object} stations_data - Master dataset of all stations
 	 * @returns {Line_Station}
 	 */
-	static Create(station_data, stations_data) {
+	static Create(station_data, network_data) {
 		const object = document.createElement('line-station');
 		object.station_data = station_data;
-		object.stations_data = stations_data;
+		object.network_data = network_data;
 		return object;
 	}
 
@@ -187,7 +187,7 @@ class Line_Station extends HTMLElement {
 		this._Render_Path_Shape(path);
 		this._Render_Times(origin_time, cadence_arrival, cadence_departure);
 		if(this.station_data.station_ID)
-			station_name.textContent = this.stations_data[this.station_data.station_ID].label;
+			station_name.textContent = this.network_data.stations[this.station_data.station_ID].label;
 	}
 
 	/**
@@ -196,14 +196,14 @@ class Line_Station extends HTMLElement {
 	 * @param {string} color
 	 */
 	_Render_Icon(path, color) {
-		if (this.station_data.flags.includes('gray'))
+		if (this.station_data.property === 'gray')
 			path.setAttribute('fill', '#888888');
-		else if(this.station_data.flags.includes('blank')) {
+		else if(this.station_data.property === 'blank') {
 			const circle = Utils.Get_Subnode(this.shadowRoot, 'circle');
 			circle.setAttribute('display', 'none');
 			path.setAttribute('fill', '#888888');
 		}
-		else if (this.station_data.flags.includes('half-grayed')) {
+		else if (this.station_data.property === 'half-grayed' ) {
 			const gradient_color = Utils.Get_Subnode(this.shadowRoot, '.station-gradient-color');
 			gradient_color.setAttribute('stop-color', color);
 			path.setAttribute('fill', 'url(#station-vertical-gradient)');
@@ -221,7 +221,7 @@ class Line_Station extends HTMLElement {
 		const has_arrival = arrival_minute != null;
 		const has_departure = departure_minute != null;
 
-		if(this.station_data.flags.includes("blank"))
+		if(this.station_data.property === "blank")
 			path.setAttribute('d', Line_Station.blank_station_path);
 		else if (!has_arrival && has_departure)
 			path.setAttribute('d', Line_Station.start_icon_path);
@@ -238,12 +238,12 @@ class Line_Station extends HTMLElement {
 	 * @param {HTMLElement} cadence_departure
 	 */
 	_Render_Times(origin_time, cadence_arrival, cadence_departure) {
-		if(this.station_data.flags.includes('blank')) return;
+		if(this.station_data.property === 'blank') return;
 		const { arrival_minute, departure_minute, reference_minute} = this.station_data;
 		const base = this.station_data.parent.departure_minute;
 
 
-		origin_time.textContent = Utils.Format_Minute(arrival_minute - reference_minute);
+		origin_time.textContent = arrival_minute ? Utils.Format_Minute(arrival_minute - reference_minute) : null;
 
 		const hours_to_remove = Math.floor((base + reference_minute) / 60)*60;
 		if (arrival_minute != null) {

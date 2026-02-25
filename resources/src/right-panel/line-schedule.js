@@ -29,14 +29,19 @@ class Line_Schedule extends HTMLElement {
 	schedule_data = null;
 
 	/**
-	 * all data about stations
+	 * all data about the network
 	 */
-	stations_data = null;
+	network_data = null;
 
 	/**
-	 * the station of reference if null the first station is the reference station
+	 * the station of reference if null the first station is the reference station this is used to find the starting point of the displayed line if null is provided it is assumed to be the first station of the line
 	 */
 	reference_station = null;
+
+	/**
+	 * the line data that we are displaying the data of
+	 */
+	reference_line = null;
 
 
 	/**
@@ -106,13 +111,15 @@ class Line_Schedule extends HTMLElement {
 	 * Factory to create the Node
 	 * @param {Object} schedule_data  information about the line-schedule
 	 * @param {Object} stations_data  information about all stations
+	 * @param {Object} reference_station reference station we are displaying the line info from
 	 * @returns instance of Line_Schedule
 	 */
-	static Create(schedule_data, stations_data, reference_station) {
+	static Create(schedule_data, network_data, reference_station) {
 		const object = document.createElement('line-schedule');
 		object.schedule_data = schedule_data;
-		object.stations_data = stations_data;
+		object.network_data = network_data;
 		object.reference_station = reference_station;
+		object.reference_line = schedule_data.parent;
 		return object;
 	}
 
@@ -149,64 +156,77 @@ class Line_Schedule extends HTMLElement {
 		const header_info_icon = Utils.Get_Subnode(this.shadowRoot,'.header-icon');
 
 		Utils.Empty_Node(details);
-		if (!this.schedule_data.infomessages?.length)
+		if (!this.schedule_data.info_messages?.length)
 			header_info_icon.style.display = 'none';
 		header_title.textContent = this.schedule_data.label;
 		header_minute.textContent = ":" + String(this.schedule_data.departure_minute).padStart(2, '0');
-		fetch("src/../resources-config/image/service/" + this.schedule_data.service + ".svg")
-			.then(icon => icon.text())
-			.then(svg => header_left_icon.innerHTML = svg);
+		header_left_icon.innerHTML = this.network_data.stop_patterns[this.schedule_data.stop_pattern].icon
 
-		const stops = this.schedule_data.lineflowstops;
-		let referenceIndex = stops.findIndex(stop => stop.station_ID === this.reference_station);
+
+		let reference_index = this.reference_line.stations.findIndex(stop => stop === this.reference_station);
 
 		// Reference station not found – fallback to index 0
-		if (referenceIndex === -1)
-			referenceIndex = 0;
+		if (reference_index === -1)
+			reference_index = 0;
 
-		const reference_minute = stops[referenceIndex].arrival_minute;
+		const reference_minute = this.schedule_data.arrival_minutes[reference_index];
+
 
 		const refStation_stop = {
-			...stops[referenceIndex],
+			arrival_minutes: reference_minute,
+			departure_minute: this.schedule_data.departure_minutes[reference_index],
+			station_ID: this.reference_line.stations[reference_index],
 			reference_minute: reference_minute,
-			flags: [...(stops[referenceIndex].flags || [])],
+			info_message: this.reference_line.info_messages.filter( item => item.index === reference_index),
+			property: null,
 			parent: this.schedule_data
 		};
 
 		// Add the first station as Gray_Station if it's not the reference
-		if (referenceIndex > 0) {
+		if (reference_index > 0) {
 			const firstStop= {
-				...stops[0],
+				arrival_minute: this.schedule_data.arrival_minutes[0],
+				departure_minute: this.schedule_data.departure_minutes[0],
+				station_ID: this.reference_line.stations[0],
 				reference_minute: reference_minute,
-				flags: [...(stops[0].flags || [])],
+				info_messages: null,
+				property : "gray",
 				parent: this.schedule_data
 			};
-			firstStop.flags.push("gray");
-			details.appendChild(Line_Station.Create(firstStop, this.stations_data));
-			refStation_stop.flags.push("half-grayed");
+			details.appendChild(Line_Station.Create(firstStop, this.network_data));
+			refStation_stop.property = "half-grayed";
 		}
 
-		if (referenceIndex > 1) {
-			const blank = {
-				flags: ["blank"]
+		if (reference_index > 1) {
+			const blank_stop = {
+				arrival_minute: null,
+				departure_minute: null,
+				station_ID: null,
+				reference_minute: null,
+				info_messages: null,
+				property : "blank",
+				parent: this.schedule_data
 			};
-			details.appendChild(Line_Station.Create(blank, this.stations_data));
+			details.appendChild(Line_Station.Create(blank_stop, this.network_data));
 		}
 
-		details.appendChild(Line_Station.Create(refStation_stop, this.stations_data));
+		details.appendChild(Line_Station.Create(refStation_stop, this.network_data));
 
 
 		// Add visible stations from reference onward
-		stops.slice(referenceIndex + 1).forEach(originalStop => {
+		for (let i = reference_index + 1; i < this.reference_line.stations.length; i++) {
 			const stop_object = {
-				...originalStop,
+				arrival_minute: this.schedule_data.arrival_minutes[i],
+				departure_minute: this.schedule_data.departure_minutes[i],
+				station_ID: this.reference_line.stations[i],
 				reference_minute: reference_minute,
-				flags: [...(originalStop.flags || [])],
+				info_messages: this.reference_line.info_messages.filter( item => item.index === i),
+				property : null,
 				parent: this.schedule_data
 			};
 
-			details.appendChild(Line_Station.Create(stop_object, this.stations_data));
-		});
+			details.appendChild(Line_Station.Create(stop_object, this.network_data));
+		}
 	}
 }
 

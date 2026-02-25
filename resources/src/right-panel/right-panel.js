@@ -38,12 +38,12 @@ class Right_Panel extends Base_Panel {
 	 * 		- stations: list of all station on the map
 	 * 		- line: line that is being displayed
 	 */
-	Open_Line_Info = async function(line_data) {
+	Open_Line_Info = async function(line_data, network_data) {
 		this.Open();
 		let base_panel = Utils.Get_Subnode(this.shadowRoot,".base-panel")
 		while (base_panel.firstChild)
 			base_panel.removeChild(base_panel.firstChild);
-		base_panel.appendChild(Line_Info.Create(line_data));
+		base_panel.appendChild(Line_Info.Create(line_data, network_data));
 	}
 
 	/**
@@ -54,12 +54,12 @@ class Right_Panel extends Base_Panel {
 	 * 		- station: the station that should be displayed
 	 * 		- lines: list of all the lines
 	 */
-	Open_Station_Info(station_data) {
+	Open_Station_Info(station_data, network_data) {
 		this.Open();
 		let base_panel = Utils.Get_Subnode(this.shadowRoot,".base-panel")
 		while (base_panel.firstChild)
 			base_panel.removeChild(base_panel.firstChild);
-		base_panel.appendChild(Station_Info.Create(station_data));
+		base_panel.appendChild(Station_Info.Create(station_data, network_data));
 	}
 }
 

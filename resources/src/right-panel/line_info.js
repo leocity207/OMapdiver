@@ -36,6 +36,11 @@ class Line_Info extends HTMLElement {
 	line_data = null;
 
 	/**
+	 * Data about the Network
+	 */
+	Network_data = null;
+
+	/**
 	 * Base template strucutre
 	 */
 	static template_base = (() => {
@@ -68,12 +73,13 @@ class Line_Info extends HTMLElement {
 
 	/**
 	 * Factory to create the Node
-	 * @param {Object} line_data the line data
+	 * @param {Object} data the line data
 	 * @returns instance of Line_Info
 	 */
-	static Create(line_data) {
+	static Create(line_ID, network_data) {
 		const object = document.createElement('line-info');
-		object.line_data = line_data;
+		object.line_data = network_data.lines[line_ID];
+		object.network_data = network_data;
 		return object;
 	}
 
@@ -95,26 +101,26 @@ class Line_Info extends HTMLElement {
 		const line_text = Utils.Get_Subnode(this.shadowRoot, ".line-title");
 
 		// Update line logo
-		line_logo.innerHTML = this.line_data.line.svg_icon;
+		line_logo.innerHTML = this.line_data.icon;
 		const rect = line_logo.querySelector('rect');
 		if (rect)
-			rect.setAttribute('fill', this.line_data.line.color.default);
+			rect.setAttribute('fill', this.line_data.color.default);
 		else
 			console.warn('No <rect> element found in SVG.');
 
 		// Update line text
-		line_text.textContent = "Ligne " + this.line_data.line.label;
+		line_text.textContent = "Ligne " + this.line_data.label;
 
 		// Render message node if needed
 
 		const message_node = Utils.Get_Subnode(this.shadowRoot, ".line-infomessages");
 		message_node.style.display = 'none';
 		Utils.Empty_Node(message_node);
-		if(this.line_data.line.info_messages) {
-			this.line_data.line.info_messages.forEach(msg => {
+		if(this.line_data.info_messages) {
+			this.line_data.info_messages.forEach(info => {
 				const p = document.createElement('p');
 				p.classList.add('infomessage');
-				p.textContent = msg.text.fr;
+				p.textContent = info.message;
 				message_node.appendChild(p);
 				message_node.style.display = 'block';
 			});
@@ -124,9 +130,9 @@ class Line_Info extends HTMLElement {
 		// Render schedule
 		const schedules_node = Utils.Get_Subnode(this.shadowRoot, ".schedules");
 		Utils.Empty_Node(schedules_node);
-		this.line_data.line.patterns.forEach(schedule => {
-			schedule.parent = this.line_data.line;
-			schedules_node.appendChild(Line_Schedule.Create(schedule, this.line_data.stations));
+		this.line_data.patterns.forEach(pattern => {
+			pattern.parent = this.line_data;
+			schedules_node.appendChild(Line_Schedule.Create(pattern, this.network_data));
 		});
 	}
 }
