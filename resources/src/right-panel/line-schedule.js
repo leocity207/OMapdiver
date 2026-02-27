@@ -173,7 +173,7 @@ class Line_Schedule extends HTMLElement {
 
 
 		const refStation_stop = {
-			arrival_minutes: reference_minute,
+			arrival_minute: reference_minute,
 			departure_minute: this.schedule_data.departure_minutes[reference_index],
 			station_ID: this.reference_line.stations[reference_index],
 			reference_minute: reference_minute,
