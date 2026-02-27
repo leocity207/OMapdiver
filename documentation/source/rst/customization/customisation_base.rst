@@ -7,12 +7,25 @@ To customize the web application, you need to provide your own resources in the 
 
 		config.js
 		data/
-			├── line.json
-			├── station.json
+			├── calendar_patterns
+			├── landmarks
+			├── lines
+			├── networks
+			├── operators
+			├── organisers
+			├── stations
+			├── stop_patterns
+			├── territories
+			├── calendar_patterns.json
+			├── landmarks.json
+			├── lines.json
+			├── networks.json
+			├── operators.json
+			├── organisers.json
+			├── stations.json
+			├── stop_patterns.json
+			├── territories.json
 		image/
-			service/
-				├── local.svg
-				├── express.svg
 			├── favicon.ico
 			├── logo.svg
 			├── map.svg

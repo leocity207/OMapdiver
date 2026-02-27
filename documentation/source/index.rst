@@ -76,6 +76,7 @@ Documentation Index
 	:maxdepth: 2
 	:caption: Backend
 
+	rst/backend/node
 	rst/backend/oatpp
 	rst/backend/endpoint
 	rst/backend/dto
