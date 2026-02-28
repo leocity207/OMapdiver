@@ -47,11 +47,12 @@ class App extends Displayable
 	 * @param {Icon} icon
 	 * @returns {App} a new instance App (it should be added to the dom via an App_Container object)
 	 */
-	static Create(loader, main_page, icon) {
+	static Create(loader, main_page, icon, name) {
 		let elt = document.createElement("app-app");
 		elt.loader = loader;
 		elt.main_page = main_page;
 		elt.icon = icon;
+		elt.setAttribute("title", name);
 		return elt;
 	}
 

@@ -79,6 +79,31 @@ class Map_Page extends Page {
 	static Create() {
 		return document.createElement('svg-map-page');
 	}
+
+	static icon = '<?xml version="1.0" encoding="UTF-8"?>\
+	<svg version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">\
+		<g fill="none" stroke-linecap="round" stroke-linejoin="round">\
+			<path d="m92.297 17.676-27.814-6.9536-27.814 6.9536-27.814-6.9536v73.012l27.814 6.9536 27.814-6.9536 27.814 6.9536zm-27.814 66.059v-73.012m-28.288 6.9259 0.47345 73.04" stroke-width="8.4834"/>\
+			<g stroke-width="4.7284">\
+				<path d="m92.297 39.289-27.814-9.2201-7.9507 2.1304-13.486 23.144-6.5989 1.2596-27.593-7.3936"/>\
+				<path d="m22.762 87.212 13.83-8.4061 27.891-48.737 15.477-15.477"/>\
+				<path d="m22.762 14.2 13.564 23.493 28.158 16.257 20.098 34.81"/>\
+			</g>\
+		</g>\
+		<g fill="#fff">\
+			<circle cx="51.982" cy="46.472" r="5.4415" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5772" style="paint-order:stroke fill markers"/>\
+			<circle cx="20.398" cy="52.128" r="2.0082" style="paint-order:stroke fill markers"/>\
+			<circle cx="46.655" cy="60.976" r="2.0082" style="paint-order:stroke fill markers"/>\
+			<circle cx="30.192" cy="82.61" r="2.0082" style="paint-order:stroke fill markers"/>\
+			<circle cx="73.13" cy="32.843" r="2.0082" style="paint-order:stroke fill markers"/>\
+			<circle cx="73.108" cy="21.265" r="2.0082" style="paint-order:stroke fill markers"/>\
+			<circle cx="55.642" cy="34.013" r="2.0082" style="paint-order:stroke fill markers"/>\
+			<circle cx="84.332" cy="36.654" r="2.0082" style="paint-order:stroke fill markers"/>\
+			<circle cx="71.644" cy="66.427" r="2.0082" style="paint-order:stroke fill markers"/>\
+			<circle cx="78.797" cy="78.731" r="2.0082" style="paint-order:stroke fill markers"/>\
+			<circle cx="29.437" cy="25.697" r="2.0082" style="paint-order:stroke fill markers"/>\
+		</g>\
+	</svg>';
 }
 
 customElements.define("svg-map-page", Map_Page);
