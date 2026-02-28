@@ -4,6 +4,7 @@ import Network_Map_Page from './page/network-map-page.js';
 import Train_Animation from './loader/Train_Animation.js';
 import { App_Config} from "../resources-config/config.js";
 import Timetables_Page from './page/time_tables_page.js';
+import Full_Departure_Boards from './page/full_departure_boards.js';
 
 
 async function Initialize() {
@@ -14,25 +15,34 @@ async function Initialize() {
 	if(App_Config.HAVE_NETWORK_MAP)
 	{
 		let map_page = Network_Map_Page.Create();
-		let app = App.Create(loader,map_page,null);
+		let app = App.Create(loader, map_page, Network_Map_Page.icon, "Map");
 		expanding_list.Add_App(app);
-		Initialize_Network(app);
 		app.Loading();
-		await app.Page.Initialize_Map();
-		app.Loaded();
-		await app.Page.Initial_Zoom_Move();
+		app.Page.Initialize_Map().then(async () => {
+			app.Loaded();
+			await app.Page.Initial_Zoom_Move();
+		});
+
 	}
 	if(App_Config.HAVE_STATION_SCHEDULES)
 	{
-		throw new Error("Not yet implemented");
+		let departure_board_page = Full_Departure_Boards.Create();
+		let app = App.Create(loader, departure_board_page, Full_Departure_Boards.icon, "Departure board");
+		expanding_list.Add_App(app);
+		app.Loading();
+		departure_board_page.Initialize_Departure_Boards().then(async () => {
+			app.Loaded();
+		});
 	}
 	if(App_Config.HAVE_LINE_TIMETABLE)
 	{
 		let timetable_page = Timetables_Page.Create();
-		let app = App.Create(loader,timetable_page,null);
+		let app = App.Create(loader, timetable_page, Timetables_Page.icon, "Timetable");
+		expanding_list.Add_App(app);
 		app.Loading();
-		timetable_page.Initialize_Timetable();
-		app.Loaded();
+		timetable_page.Initialize_Timetables().then(async () => {
+			app.Loaded();
+		});
 	}
 }
 
