@@ -1,0 +1,24 @@
+#ifndef TERRITORY_DTO_H
+#define TERRITORY_DTO_H
+
+#include "src/dto/common/base.h"
+
+#include OATPP_CODEGEN_BEGIN(DTO)
+
+namespace O::DTO
+{
+	/**
+	 * @brief DTO about territories
+	 * 
+	 */
+	class Territory : public Base
+	{
+		public:
+			DTO_INIT(Territory, Base)
+
+	};
+}
+
+#include OATPP_CODEGEN_END(DTO)
+
+#endif /* TERRITORY_DTO_H */

@@ -1,0 +1,7 @@
+{	
+	"id" : "String M: key to find the pattern inside timetable",
+	"label": "String M: displayed name of the pattern",
+	"is_exceptional" : "Bool M: if this timetable pattern is exceptional or regular",
+	"info": "String O: description or information about the pattern",
+	"icon": "String O: icon of the pattern",
+}

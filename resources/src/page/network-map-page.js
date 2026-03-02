@@ -34,7 +34,7 @@ class Network_Map_Page extends Map_Page {
 	 */
 	On_Station_CLicked(event) {
 		this.map.Highlight_All_Lines_At_Station(event.detail);
-		Utils.Get_Subnode(this.shadowRoot, 'right-panel').Open_Station_Info(this.map.Get_Station_Data(event.detail));
+		Utils.Get_Subnode(this.shadowRoot, 'right-panel').Open_Station_Info(event.detail, this.network_data);
 		this.map.Zoom_Highlighted_Stations(event.detail);
 		this.prev_event = {type: "station", detail: event.detail};
 	}
@@ -46,7 +46,7 @@ class Network_Map_Page extends Map_Page {
 	 */
 	On_Line_CLicked(event) {
 		this.map.Highlight_Lines([event.detail]);
-		Utils.Get_Subnode(this.shadowRoot, 'right-panel').Open_Line_Info(this.map.Get_Line_Data(event.detail));
+		Utils.Get_Subnode(this.shadowRoot, 'right-panel').Open_Line_Info(event.detail, this.network_data);
 		this.map.Zoom_Highlighted_Line(event.detail);
 		this.prev_event = {type: "line", detail: event.detail};
 	}

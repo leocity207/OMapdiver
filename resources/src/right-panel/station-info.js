@@ -31,6 +31,11 @@ class Station_Info extends HTMLElement {
 	station_data = null;
 
 	/**
+	 * Data about all the network
+	 */
+	network_data = null;
+
+	/**
 	 * Base template structure
 	 */
 	static template_base = (() => {
@@ -74,12 +79,13 @@ class Station_Info extends HTMLElement {
 
 	/**
 	 * Factory to create this component instance
-	 * @param {Object} station_data - full data about the station
+	 * @param {Object} data - full data about the station
 	 * @returns {Station_Info}
 	 */
-	static Create(station_data) {
+	static Create(station_ID, network_data) {
 		const object = document.createElement('station-info');
-		object.station_data = station_data;
+		object.station_data = network_data.stations[station_ID];
+		object.network_data = network_data;
 		return object;
 	}
 
@@ -104,7 +110,7 @@ class Station_Info extends HTMLElement {
 	_Render_Title_And_Subtitle() {
 		const title_node = Utils.Get_Subnode(this.shadowRoot, '.station-title');
 		const subtitle_node = Utils.Get_Subnode(this.shadowRoot, '.station-subtitle');
-		const station_name = this.station_data.station.label;
+		const station_name = this.station_data.label;
 
 		title_node.textContent = station_name;
 		subtitle_node.textContent = `Liaisons grandes lignes directes\n${station_name} → Toutes les directions`;
@@ -120,14 +126,14 @@ class Station_Info extends HTMLElement {
 		const direction_map = this._Group_Schedules_By_Direction();
 
 		for (const [direction_code, schedule_group] of direction_map.entries()) {
-			const direction_label = this.station_data.stations[direction_code]?.label || direction_code;
+			const direction_label = this.network_data.stations[direction_code]?.label || direction_code;
 
 			const group_header = Station_Info.direction_header_template.content.cloneNode(true);
 			group_header.querySelector('.direction-label').textContent = 'Direction: ' + direction_label;
 			schedules_node.appendChild(group_header);
 
 			schedule_group.forEach(schedule => {
-				const schedule_node = Line_Schedule.Create(schedule, this.station_data.stations, this.station_data.station.code);
+				const schedule_node = Line_Schedule.Create(schedule, this.network_data, this.station_data.id);
 				schedules_node.appendChild(schedule_node);
 			})
 		}
@@ -140,17 +146,17 @@ class Station_Info extends HTMLElement {
 	_Group_Schedules_By_Direction() {
 		const direction_map = new Map();
 
-		this.station_data.station.lines.forEach(line_ID => {
-			const line = this.station_data.lines[line_ID];
+		this.station_data.lines.forEach(line_ID => {
+			const line = this.network_data.lines[line_ID];
 
-			line.timetable_pattern.forEach(schedule => {
-				const last_stop = schedule.lineflowstops.at(-1)
-				if (last_stop.station_ID === this.station_data.station.code)
+			line.patterns.forEach(schedule => {
+				const last_stop = line.stations.at(-1)
+				if (last_stop === this.station_data.id)
 					return;
 
 				schedule.parent = line;
 
-				const direction_code = this.station_data.station.direction[schedule.code];
+				const direction_code = this.station_data.directions[schedule.id];
 				if (!direction_map.has(direction_code))
 					direction_map.set(direction_code, []);
 

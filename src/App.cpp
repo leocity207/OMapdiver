@@ -1,5 +1,5 @@
-#include "src/controller/StaticFileHandler.h"
-#include "src/controller/NetworkDataHandler.h"
+#include "src/controller/static_file_handler.h"
+#include "src/controller/network_data_handler.h"
 #include "src/AppComponent.h"
 #include "config.h"
 
@@ -18,8 +18,8 @@ void run() {
 
 	//Create Rooter and add componant
 	OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
-	router->addController(std::make_shared<NetworkDataHandler>());
-	router->addController(std::make_shared<StaticFilesManager>());
+	router->addController(std::make_shared<O::Controller::Network_Data_Handler>());
+	router->addController(std::make_shared<Static_File_Manager>());
 
 	// Create the server
 	OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, connectionHandler);
