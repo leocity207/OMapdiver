@@ -12,7 +12,7 @@ endif()
 #-----------------
 # Creating Project
 set(project_name Mapdiver)
-project(${project_name} VERSION 1.0)
+project(${project_name} VERSION 1.0.13)
 
 #---------------------------------------
 #get the current commit hash for version
