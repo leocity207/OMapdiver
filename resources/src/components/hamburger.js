@@ -1,6 +1,7 @@
 import Observable from "../utils/Observable.js";
 import MixHTMLElementWith from "../utils/MixHTMLElement.js";
 import Utils from "../utils/utils.js"
+import CSS_hamburger from '../../style/hamburger.css';
 
 /**
  * Hamburger emits an event when clicked.
@@ -41,7 +42,7 @@ class Hamburger extends MixHTMLElementWith(Observable) {
 	constructor() {
 		super();
 		this.attachShadow({ mode: "open" });
-		Utils.Add_Stylesheet(this.shadowRoot, "style/hamburger.css");
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_hamburger);
 		Utils.Clone_Node_Into(this.shadowRoot, Hamburger.template);
 	}
 

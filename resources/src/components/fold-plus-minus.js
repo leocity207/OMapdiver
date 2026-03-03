@@ -1,6 +1,7 @@
 import Toggleable from "../utils/toggleable.js";
 import MixHTMLElementWith from "../utils/MixHTMLElement.js";
 import Utils from "../utils/utils.js"
+import CSS_fold_plus_minus from '../../style/fold-plus-minus.css';
 
 /**
  * Plus_Minus cycles between "plus" and "minus" states visually.
@@ -41,7 +42,7 @@ class Fold_Plus_Minus extends MixHTMLElementWith(Toggleable) {
 		super();
 		this.attachShadow({ mode: "open" });
 
-		Utils.Add_Stylesheet(this.shadowRoot, "style/fold-plus-minus.css");
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_fold_plus_minus);
 		Utils.Clone_Node_Into(this.shadowRoot, Fold_Plus_Minus.template);
 	}
 

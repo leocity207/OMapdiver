@@ -1,5 +1,6 @@
 import App from './app.js';
 import Utils from '../utils/utils.js';
+import CSS_fold_plus_minus from '../../style/fold-plus-minus.css';
 
 
 /**
@@ -59,7 +60,7 @@ class App_Container extends HTMLElement
 	constructor() {
 		super();
 		this.attachShadow({ mode: "open" });
-		Utils.Add_Stylesheet(this.shadowRoot, "style/app-container.css");
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_fold_plus_minus);
 		Utils.Clone_Node_Into(this.shadowRoot,App_Container.template_base);
 	}
 

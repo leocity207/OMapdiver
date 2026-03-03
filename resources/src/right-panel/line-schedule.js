@@ -2,6 +2,7 @@
 import Line_Station from './line-station.js';
 import Utils from "../utils/utils.js"
 import Fold_Plus_Minus from '../components/fold-plus-minus.js';
+import CSS_line_schedule from '../../style/line-schedule.css';
 
 /**
  * The **Ligne schedule** is an object used to display schedule information about a line.
@@ -103,7 +104,7 @@ class Line_Schedule extends HTMLElement {
 	constructor() {
 		super();
 		this.attachShadow({ mode: 'open' });
-		Utils.Add_Stylesheet(this.shadowRoot, "style/line-schedule.css");
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_line_schedule);
 		Utils.Clone_Node_Into(this.shadowRoot,Line_Schedule.template_base);
 	}
 

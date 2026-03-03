@@ -2,6 +2,7 @@
 import Line_Schedule from './line-schedule.js';
 import Round_Cross from '../components/round-cross.js';
 import Utils from "../utils/utils.js"
+import CSS_line_info from '../../style/line-info.css';
 
 /**
  * The **Ligne info** is an object used to display line information.
@@ -68,7 +69,7 @@ class Line_Info extends HTMLElement {
 		super();
 		this.attachShadow({ mode: 'open' });
 		Utils.Clone_Node_Into(this.shadowRoot, Line_Info.template_base)
-		Utils.Add_Stylesheet(this.shadowRoot, "style/line-info.css");
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_line_info);
 	}
 
 	/**

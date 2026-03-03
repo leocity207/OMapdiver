@@ -1,4 +1,6 @@
 import Utils from '../utils/utils.js'
+import CSS_line_station from '../../style/line-station.css';
+
 const SVG_NS = 'http://www.w3.org/2000/svg'
 
 /**
@@ -147,7 +149,7 @@ class Line_Station extends HTMLElement {
 	constructor() {
 		super();
 		this.attachShadow({ mode: 'open' });
-		Utils.Add_Stylesheet(this.shadowRoot, 'style/line-station.css');
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_line_station);
 		Utils.Clone_Node_Into(this.shadowRoot, Line_Station.base_template);
 	}
 

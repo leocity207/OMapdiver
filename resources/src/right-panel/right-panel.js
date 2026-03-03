@@ -2,6 +2,7 @@ import Base_Panel from "../components/panel.js";
 import Line_Info from "./line_info.js"
 import Station_Info from "./station-info.js";
 import Utils from "../utils/utils.js";
+import CSS_right_panel from '../../style/right-panel.css';
 
 /**
  * The **Right Panel** is a user interface element that remains fixed on the right side of the screen.
@@ -19,7 +20,7 @@ class Right_Panel extends Base_Panel {
 
 	constructor() {
 		super();
-		Utils.Add_Stylesheet(this.shadowRoot, "style/right-panel.css");
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_right_panel);
 		Utils.Get_Subnode(this.shadowRoot,".base-panel").classList.add("right");
 	}
 
