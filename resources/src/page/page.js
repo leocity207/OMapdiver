@@ -1,5 +1,6 @@
 import Displayable from "../utils/displayable.js";
 import Utils from "../utils/utils.js";
+import CSS_fold_plus_minus from '../../style/fold-plus-minus.css';
 
 /**
  * Page are displayable element generaly found inside an App, they are gracefull container

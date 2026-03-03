@@ -1,6 +1,7 @@
 import Observable from "../utils/Observable.js";
 import MixHTMLElementWith from "../utils/MixHTMLElement.js";
 import Utils from "../utils/utils.js"
+import CSS_search_bar from '../../style/search-bar.css';
 
 /**
  * Search bar can be used to display research help
@@ -38,7 +39,7 @@ class Search_Bar extends MixHTMLElementWith(Observable) {
 	constructor() {
 		super();
 		this.attachShadow({ mode: "open" });
-		Utils.Add_Stylesheet(this.shadowRoot, "style/search-bar.css");
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_search_bar);
 		Utils.Clone_Node_Into(this.shadowRoot, Search_Bar.template);
 	}
 

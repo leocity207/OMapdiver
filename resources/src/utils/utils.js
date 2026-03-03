@@ -105,10 +105,15 @@ class Utils {
 	 * @param {String} href the hyper-ref relative to server root of the CSS file
 	 */
 	static Add_Stylesheet = function(node, href) {
-		const style = document.createElement("link");
-		style.rel = "stylesheet";
-		style.href = href;
-		node.appendChild(style);
+		if (window.CSSStyleSheet && 'replaceSync' in CSSStyleSheet.prototype && node.adoptedStyleSheets !== undefined) {
+			const sheet = new CSSStyleSheet();
+			sheet.replaceSync(href);
+			node.adoptedStyleSheets = [...node.adoptedStyleSheets, sheet];
+		} else {
+			const style = document.createElement('style');
+			style.textContent = href;
+			node.appendChild(style);
+		}
 	}
 
 	/**

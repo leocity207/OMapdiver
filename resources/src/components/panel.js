@@ -1,4 +1,5 @@
 import Utils from "../utils/utils.js";
+import CSS_base_panel from '../../style/base-panel.css';
 
 /**
  * The **Base Panel** is a user interface element that remains fixed on the base side of the screen.
@@ -31,7 +32,7 @@ class Base_Panel extends HTMLElement {
 	constructor() {
 		super();
 		this.attachShadow({ mode: "open" });
-		Utils.Add_Stylesheet(this.shadowRoot, "style/base-panel.css");
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_base_panel);
 		Utils.Clone_Node_Into(this.shadowRoot, Base_Panel.template);
 	}
 

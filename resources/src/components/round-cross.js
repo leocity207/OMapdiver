@@ -1,6 +1,7 @@
 import Observable from "../utils/Observable.js";
 import MixHTMLElementWith from "../utils/MixHTMLElement.js";
 import Utils from "../utils/utils.js"
+import CSS_round_cross from '../../style/round-cross.css';
 
 /**
  * Round_Cross emits an event when clicked.
@@ -38,7 +39,7 @@ class Round_Cross extends MixHTMLElementWith(Observable) {
 	constructor() {
 		super();
 		this.attachShadow({ mode: "open" });
-		Utils.Add_Stylesheet(this.shadowRoot, "style/round-cross.css");
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_round_cross);
 		Utils.Clone_Node_Into(this.shadowRoot, Round_Cross.template);
 	}
 

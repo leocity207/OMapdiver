@@ -3,6 +3,7 @@ import Observable  from "../utils/observable.js";
 import Utils from "../utils/utils.js";
 import Hamburger from "../components/hamburger.js"
 import Search_Bar from "../components/search_bar.js"
+import CSS_sticky_header from '../../style/sticky-header.css';
 
 /**
  * The **Sticky Header** is a user interface element that remains fixed at the top of the page, ensuring important navigation components are always accessible, even as the user scrolls.
@@ -56,7 +57,7 @@ class Sticky_Header extends MixHTMLElementWith(Observable) {
 	constructor() {
 		super();
 		this.attachShadow({ mode: "open" });
-		Utils.Add_Stylesheet(this.shadowRoot, "style/sticky-header.css");
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_sticky_header);
 		Utils.Clone_Node_Into(this.shadowRoot, Sticky_Header.template);
 	}
 

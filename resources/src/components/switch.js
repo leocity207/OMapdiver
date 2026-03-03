@@ -2,6 +2,7 @@ import Observable from "../utils/observable.js";
 import Toggleable from "../utils/toggleable.js";
 import MixHTMLElementWith from "../utils/MixHTMLElement.js";
 import Utils from "../utils/utils.js"
+import CSS_switch from '../../style/switch.css';
 
 /**
  * The **Switch_Event** is a UI component that can hold two states and triggers an event when toggled by the user.
@@ -58,7 +59,7 @@ class Switch_Event extends MixHTMLElementWith(Observable, Toggleable) {
 
 		this.m_text = "";
 		this.attachShadow({ mode: "open" });
-		Utils.Add_Stylesheet(this.shadowRoot, 'style/switch.css')
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_switch)
 		Utils.Clone_Node_Into(this.shadowRoot,Switch_Event.template);
 		this._Handle_Click = this._Handle_Click.bind(this);
 	}

@@ -1,6 +1,7 @@
 import Line_Schedule from './line-schedule.js';
 import Round_Cross from '../components/round-cross.js';
 import Utils from '../utils/utils.js';
+import CSS_station_info from '../../style/station-info.css';
 
 /**
  * The **Station_Info** is an object used to display station schedule information.
@@ -74,7 +75,7 @@ class Station_Info extends HTMLElement {
 		super()
 		this.attachShadow({ mode: 'open' });
 		Utils.Clone_Node_Into(this.shadowRoot, Station_Info.template_base);
-		Utils.Add_Stylesheet(this.shadowRoot, 'style/station-info.css');
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_station_info);
 	}
 
 	/**

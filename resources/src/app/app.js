@@ -2,6 +2,7 @@ import Loader from '../loader/loader.js';
 import Page from '../page/page.js';
 import Displayable from '../utils/displayable.js';
 import Utils from '../utils/utils.js';
+import CSS_app from '../../style/app.css';
 
 
 /**
@@ -92,7 +93,7 @@ class App extends Displayable
 	Render() {
 		Utils.Empty_Node(this.shadowRoot);
 
-		Utils.Add_Stylesheet(this.shadowRoot,"style/app.css")
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_app)
 		this.shadowRoot.appendChild(this.loader);
 		this.shadowRoot.appendChild(this.main_page);
 	}

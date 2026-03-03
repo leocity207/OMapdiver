@@ -2,6 +2,7 @@ import Base_Panel from "./panel.js";
 import Switch_Event from "./switch.js";
 import Hamburger from "./hamburger.js";
 import Utils from "../utils/utils.js";
+import CSS_left_panel from '../../style/left-panel.css';
 
 
 /**
@@ -50,7 +51,7 @@ class Left_Panel extends Base_Panel {
 
 	constructor() {
 		super();
-		Utils.Add_Stylesheet(this.shadowRoot, "style/left-panel.css");
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_left_panel);
 		const base_panel = Utils.Get_Subnode(this.shadowRoot,".base-panel");
 		base_panel.classList.add("left");
 		Utils.Clone_Node_Into(base_panel, Left_Panel.template);
