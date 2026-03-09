@@ -29,7 +29,7 @@ class Full_Departure_Boards extends Page {
 	}
 
 	Initialize_Departure_Boards = async () => {
-
+		this.network_data = await Utils.Fetch_Resource("dyn/network_data");
 	}
 
 	Load_Data()
