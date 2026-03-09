@@ -1,22 +1,31 @@
 import Page from "./page.js";
-import Sticky_Header from "../components/sticky_header.js"
-import LeftPanel from "../components/left_panel.js"
+import Network_Line_Selector_Panel from "../time_table/network_line_selector_panel.js"
 import Utils from "../utils/utils.js";
-
+import TimeTable from "../time_table/time_table.js";
 /**
  * Time_Tables_Page define the page to show different timetable
  */
 class Timetables_Page extends Page {
 
 	/**
+	 * node pointing to the line selector panel
+	 */
+	network_line_selector_panel = null;
+
+	/**
+	 * node pointing to the actual timetable
+	 */
+	time_table = null;
+
+	/**
 	 * Base template strucutre
 	 */
 	static template_base =(() =>{
 		const template = document.createElement('template');
-		const sticky_header = Sticky_Header.Create();
-		const left_panel = LeftPanel.Create();
+		const network_line_selector_panel = Network_Line_Selector_Panel.Create();
+		const time_table = TimeTable.Create();
 
-		template.content.append(sticky_header, left_panel);
+		template.content.append(network_line_selector_panel, time_table);
 
 		return template;
 	})();
@@ -24,15 +33,13 @@ class Timetables_Page extends Page {
 	constructor() {
 		super();
 		Utils.Clone_Node_Into(this.shadowRoot, Timetables_Page.template_base);
+		this.network_line_selector_panel = Utils.Get_Subnode(this.shadowRoot, "network-line-selector-panel");
+		this.time_table = Utils.Get_Subnode(this.shadowRoot, "timetable-table");
 	}
 
 	Initialize_Timetables = async () => {
-		
-	}
-
-	Load_Data()
-	{
-		Utils.Get_Subnode(this.shadowRoot,"sticky-header").Show_Left_Panel();
+		this.network_data = await Utils.Fetch_Resource("dyn/network_data");
+		this.network_line_selector_panel.Initialize(this.network_data);
 	}
 
 	/**

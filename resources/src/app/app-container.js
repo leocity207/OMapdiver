@@ -1,6 +1,6 @@
 import App from './app.js';
 import Utils from '../utils/utils.js';
-import CSS_fold_plus_minus from '../../style/fold-plus-minus.css';
+import CSS_app_container from '../../style/app-container.css';
 
 
 /**
@@ -66,7 +66,7 @@ class App_Container extends HTMLElement
 	constructor() {
 		super();
 		this.attachShadow({ mode: "open" });
-		Utils.Add_Stylesheet(this.shadowRoot, CSS_fold_plus_minus);
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_app_container);
 		Utils.Clone_Node_Into(this.shadowRoot,App_Container.template_base);
 
 		this._On_Tab_Key_Down = this._On_Tab_Key_Down.bind(this);
