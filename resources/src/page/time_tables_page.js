@@ -1,8 +1,7 @@
 import Page from "./page.js";
-import Sticky_Header from "../components/sticky_header.js"
-import LeftPanel from "../components/left_panel.js"
+import Top_Panel from "../components/top_panel.js"
 import Utils from "../utils/utils.js";
-
+import TimeTable from "../time_table/time_table.js";
 /**
  * Time_Tables_Page define the page to show different timetable
  */
@@ -13,10 +12,10 @@ class Timetables_Page extends Page {
 	 */
 	static template_base =(() =>{
 		const template = document.createElement('template');
-		const sticky_header = Sticky_Header.Create();
-		const left_panel = LeftPanel.Create();
+		const top_panel = Top_Panel.Create();
+		const time_table = TimeTable.Create();
 
-		template.content.append(sticky_header, left_panel);
+		template.content.append(top_panel, time_table);
 
 		return template;
 	})();
@@ -27,6 +26,10 @@ class Timetables_Page extends Page {
 	}
 
 	Initialize_Timetables = async () => {
+		this.network_data = await Utils.Fetch_Resource("dyn/network_data");
+	}
+
+	On_Line_Selected() {
 		
 	}
 
