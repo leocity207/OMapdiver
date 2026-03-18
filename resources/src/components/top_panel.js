@@ -42,19 +42,16 @@ class Top_Panel extends Base_Panel {
 			</svg>`;
 	})();
 
-	static template = (() => {
+	static template_arrow_button = (() => {
 		let template = document.createElement('template');
-		let panel = Utils.Create_Element_With_Class('div', 'base-panel');
-		template.content.append(panel);
-		let content_wrapper = Utils.Create_Element_With_Class('div', 'top-panel-content');
 		let toggle = document.createElement('button');
 		toggle.type = 'button';
 		toggle.className = 'size-toggle';
 		toggle.setAttribute('aria-expanded', 'true');
 		toggle.setAttribute('title', 'Toggle panel size (compact/full)');
-		toggle.innerHTML = Top_Panel.Double_Arrow_SVG; 
+		toggle.innerHTML = Top_Panel.double_arrow_SVG; 
 		
-		panel.append(content_wrapper, toggle);
+		template.content.append(toggle);
 		return template;
 	})();
 
@@ -63,9 +60,9 @@ class Top_Panel extends Base_Panel {
 
 		// attach stylesheet to this shadow root
 		Utils.Add_Stylesheet(this.shadowRoot, "style/top-panel.css");
-		this.base_panel = Utils.Clone_Node_Into(this.shadowRoot, Top_Panel.template);
-		this.content_wrapper = Utils.Get_Subnode(this.shadowRoot,".base-panel");
-		this.toggle = Utils.Get_Subnode(this.shadowRoot,".size-toggle");
+		this.content_wrapper = Utils.Create_Element_With_Class('div', 'top-panel-content');
+		this.base_panel.append(this.content_wrapper);
+		this.toggle = Utils.Clone_Node_Into(this.base_panel, Top_Panel.template_arrow_button);
 
 		// event handlers
 		this.toggle.addEventListener('click', (e) => {

@@ -20,6 +20,11 @@ class Base_Panel extends HTMLElement {
 	panel_visible = false;
 
 	/**
+	 * point to the panel node
+	 */
+	base_panel = null;
+
+	/**
 	 * Base template strucutre
 	 */
 	static template = (() => {
@@ -34,6 +39,7 @@ class Base_Panel extends HTMLElement {
 		this.attachShadow({ mode: "open" });
 		Utils.Add_Stylesheet(this.shadowRoot, CSS_base_panel);
 		Utils.Clone_Node_Into(this.shadowRoot, Base_Panel.template);
+		this.base_panel = Utils.Get_Subnode(this.shadowRoot, ".base-panel")
 	}
 
 	/**
