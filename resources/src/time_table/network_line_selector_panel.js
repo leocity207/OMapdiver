@@ -47,7 +47,12 @@ class Network_Line_Selector_Panel extends Top_Panel
 		this.network_data = network_data;
 		for(let [line_ID, data] of Object.entries(this.network_data.lines)) {
 			let icon = Utils.Clone_Node_Into(this.line_container, Network_Line_Selector_Panel.icon_template);
-			icon.innerHTML = data.icon
+			icon.innerHTML = data.icon;
+			const rect = icon.querySelector('rect');
+			if (rect)
+				rect.setAttribute('fill', data.color.default);
+			else
+				console.warn('No <rect> element found in SVG.');
 			icon.addEventListener('click', (e) => {
 				this.subject.next({ line: line_ID, network: this.network_data})
 			});

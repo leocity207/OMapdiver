@@ -158,8 +158,9 @@ class Utils {
 	 */
 	static Clone_Node_Into(target, template) {
 		const clone = document.importNode(template.content, true);
+		const copy = clone.firstElementChild;
 		target.appendChild(clone);
-		return clone;
+		return copy;
 	};
 
 	/**
