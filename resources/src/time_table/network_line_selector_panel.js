@@ -15,7 +15,7 @@ class Network_Line_Selector_Panel extends Top_Panel
 	/**
 	 * data about the current network
 	 */
-	network_data = null
+	network_data = null;
 
 	static template = (() => {
 		const template = document.createElement('template');
@@ -53,6 +53,7 @@ class Network_Line_Selector_Panel extends Top_Panel
 				rect.setAttribute('fill', data.color.default);
 			else
 				console.warn('No <rect> element found in SVG.');
+
 			icon.addEventListener('click', (e) => {
 				this.subject.next({ line: line_ID, network: this.network_data})
 			});

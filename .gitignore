@@ -71,3 +71,4 @@ resources/bundle.js
 resources/bundle.js.map
 
 node/cache/network_data_cache.json
+out/*
