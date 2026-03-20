@@ -93,10 +93,16 @@ class Top_Panel extends Base_Panel {
 	 */
 	Toggle_Size()
 	{
-		if(this.content_wrapper.getAttribute("display") == "block")
-			this.content_wrapper.setAttribute("display", "none");
+		if(window.getComputedStyle(this.content_wrapper).getPropertyValue("display") == "block")
+		{
+			this.toggle.style.setProperty("transform","scaleY(1)" );
+			this.content_wrapper.style.setProperty("display", "none");
+		}
 		else
-			this.content_wrapper.setAttribute("display", "block");
+		{
+			this.toggle.style.setProperty("transform","scaleY(-1)" );
+			this.content_wrapper.style.setProperty("display", "block");
+		}
 	}
 }
 
