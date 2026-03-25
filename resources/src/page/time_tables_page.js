@@ -40,6 +40,7 @@ class Timetables_Page extends Page {
 	Initialize_Timetables = async () => {
 		this.network_data = await Utils.Fetch_Resource("dyn/network_data");
 		this.network_line_selector_panel.Initialize(this.network_data);
+		this.network_line_selector_panel.Get_Observable().subscribe((data) => this.time_table.Set_TimeTable_Content(data.line, data.network));
 	}
 
 	/**

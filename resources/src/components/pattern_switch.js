@@ -2,38 +2,7 @@ import Observable from "../utils/observable.js";
 import Toggleable from "../utils/toggleable.js";
 import MixHTMLElementWith from "../utils/MixHTMLElement.js";
 import Utils from "../utils/utils.js";
-import CSS_switch_Pattern from "../../style/switch_pattern.css";
-
-/**
- * Normalize a choice input into a predictable object.
- * Accepted forms:
- *  - "foo"
- *  - { label: "Foo", value: "foo" }
- *  - { name: "Foo", value: "foo" }
- */
-function Normalize_Choice(choice, index) {
-	if (typeof choice === "string") {
-		return {
-			label: choice,
-			value: choice,
-		};
-	}
-
-	if (choice !== null && typeof choice === "object") {
-		const value = choice.value ?? choice.name ?? choice.label ?? String(index);
-		const label = choice.label ?? choice.name ?? value;
-
-		return {
-			label: String(label),
-			value: String(value),
-		};
-	}
-
-	return {
-		label: String(choice),
-		value: String(choice),
-	};
-}
+import CSS_Pattern_Switch from "../../style/pattern_switch.css";
 
 /**
  * A smooth segmented switch with:
@@ -42,7 +11,7 @@ function Normalize_Choice(choice, index) {
  *
  * Each choice is one state.
  */
-class Switch_Pattern extends MixHTMLElementWith(Observable, Toggleable) {
+class Pattern_Switch extends MixHTMLElementWith(Observable, Toggleable) {
 
 	/**
 	 * List of normal choices shown as left buttons.
@@ -58,15 +27,6 @@ class Switch_Pattern extends MixHTMLElementWith(Observable, Toggleable) {
 	 * True when the dropdown menu is opened.
 	 */
 	m_dropdown_open = false;
-
-	/**
-	 * Bound event handlers.
-	 */
-	_Handle_Normal_Click = null;
-	_Handle_Special_Toggle = null;
-	_Handle_Special_Choice_Click = null;
-	_Handle_Outside_Click = null;
-	_Handle_Resize = null;
 
 	/**
 	 * Base template for the switch.
@@ -93,8 +53,8 @@ class Switch_Pattern extends MixHTMLElementWith(Observable, Toggleable) {
 		super();
 
 		this.attachShadow({ mode: "open" });
-		Utils.Add_Stylesheet(this.shadowRoot, CSS_switch_Pattern);
-		Utils.Clone_Node_Into(this.shadowRoot, Switch_Pattern.template);
+		Utils.Add_Stylesheet(this.shadowRoot, CSS_Pattern_Switch);
+		Utils.Clone_Node_Into(this.shadowRoot, Pattern_Switch.template);
 
 		this._Handle_Normal_Click = this._Handle_Normal_Click.bind(this);
 		this._Handle_Special_Toggle = this._Handle_Special_Toggle.bind(this);
@@ -110,29 +70,36 @@ class Switch_Pattern extends MixHTMLElementWith(Observable, Toggleable) {
 	 * @param {Array<string|Object>} usual_choices - Left-side choices.
 	 * @param {Array<string|Object>} special_choices - Right-side dropdown choices.
 	 * @param {string|null} initial_state - Optional initial state value.
-	 * @returns {Switch_Pattern} A configured instance.
+	 * @returns {Pattern_Switch} A configured instance.
 	 */
-	static Create(name, usual_choices = [], special_choices = [], initial_state = null) {
+	static Create(name) {
 		const elt = document.createElement("switch-choice");
 
-		const normalized_choices = usual_choices.map((choice, idx) => Normalize_Choice(choice, idx));
-		const normalized_special_choices = special_choices.map((choice, idx) => Normalize_Choice(choice, idx));
-
-		const all_states = [
-			...normalized_choices.map(choice => choice.value),
-			...normalized_special_choices.map(choice => choice.value),
-		];
-
 		elt.Observable_Init(name);
-		elt.Toggleable_Init(all_states, initial_state ?? (all_states.length > 0 ? all_states[0] : null));
-
-		elt.m_choices = normalized_choices;
-		elt.m_special_choices = normalized_special_choices;
-
-		elt.setAttribute("choices", JSON.stringify(normalized_choices));
-		elt.setAttribute("special-choices", JSON.stringify(normalized_special_choices));
 
 		return elt;
+	}
+
+	Update(choices) {
+		const all_states = Object.entries(choices).map(([key, value]) => value.id)
+
+
+		this.Toggleable_Init(all_states, all_states[0] );
+
+		const [special, normal] = Object.entries(choices).reduce(
+			([accTrue, accFalse], [key, value]) => {
+				if (value.is_exceptional) 
+					accTrue[key] = value; 
+				else
+					accFalse[key] = value; 
+				return [accTrue, accFalse];
+			},
+			[{}, {}]
+		);
+		
+		this.m_choices = normal;
+		this.m_special_choices = special;
+		this.Render();
 	}
 
 	/**
@@ -141,8 +108,6 @@ class Switch_Pattern extends MixHTMLElementWith(Observable, Toggleable) {
 	connectedCallback() {
 		this.Observable_connectedCallback();
 		this.Toggleable_connectedCallback();
-
-		this._Load_Lists_From_Attributes();
 		this.Render();
 
 		document.addEventListener("click", this._Handle_Outside_Click);
@@ -155,35 +120,6 @@ class Switch_Pattern extends MixHTMLElementWith(Observable, Toggleable) {
 	disconnectedCallback() {
 		document.removeEventListener("click", this._Handle_Outside_Click);
 		window.removeEventListener("resize", this._Handle_Resize);
-	}
-
-	/**
-	 * Reload choices from attributes if the element was restored from DOM.
-	 */
-	_Load_Lists_From_Attributes() {
-		if (!this.m_choices || this.m_choices.length === 0) {
-			const raw = this.getAttribute("choices");
-			if (raw) {
-				try {
-					const parsed = JSON.parse(raw);
-					if (Array.isArray(parsed)) this.m_choices = parsed.map((choice, idx) => Normalize_Choice(choice, idx));
-				} catch (e) {
-					console.error("Failed to parse choices:", e);
-				}
-			}
-		}
-
-		if (!this.m_special_choices || this.m_special_choices.length === 0) {
-			const raw = this.getAttribute("special-choices");
-			if (raw) {
-				try {
-					const parsed = JSON.parse(raw);
-					if (Array.isArray(parsed)) this.m_special_choices = parsed.map((choice, idx) => Normalize_Choice(choice, idx));
-				} catch (e) {
-					console.error("Failed to parse special-choices:", e);
-				}
-			}
-		}
 	}
 
 	/**
@@ -202,19 +138,19 @@ class Switch_Pattern extends MixHTMLElementWith(Observable, Toggleable) {
 		this.m_indicator = this.shadowRoot.querySelector(".switch-indicator");
 
 		// Normal choices on the left
-		for (const choice of this.m_choices) {
+		for (const [key, value] of Object.entries(this.m_choices)) {
 			const button = document.createElement("button");
 			button.type = "button";
 			button.className = "switch-option switch-normal-option";
-			button.textContent = choice.label;
-			button.dataset.value = choice.value;
+			button.textContent = value.label;
+			button.dataset.value = value.id;
 			button.addEventListener("click", this._Handle_Normal_Click);
 			left_group.appendChild(button);
 			this.m_left_buttons.push(button);
 		}
 
 		// Special dropdown on the right, only if provided
-		if (this.m_special_choices.length > 0) {
+		if (Object.entries(this.m_special_choices).length > 0) {
 			const wrapper = Utils.Create_Element_With_Class("div", "switch-special-wrapper");
 
 			const toggle = document.createElement("button");
@@ -233,12 +169,12 @@ class Switch_Pattern extends MixHTMLElementWith(Observable, Toggleable) {
 
 			const menu = Utils.Create_Element_With_Class("div", "switch-special-menu");
 
-			for (const choice of this.m_special_choices) {
+			for (const [key, value] of Object.entries(this.m_special_choices)) {
 				const item = document.createElement("button");
 				item.type = "button";
 				item.className = "switch-special-item";
-				item.textContent = choice.label;
-				item.dataset.value = choice.value;
+				item.textContent = value.label;
+				item.dataset.value = value.id;
 				item.addEventListener("click", this._Handle_Special_Choice_Click);
 				menu.appendChild(item);
 			}
@@ -306,7 +242,7 @@ class Switch_Pattern extends MixHTMLElementWith(Observable, Toggleable) {
 			}
 		}
 
-		if (!selected_button && this.m_special_toggle && this.m_special_choices.some(choice => choice.value === state)) {
+		if (!selected_button && this.m_special_toggle && Object.entries(this.m_special_choices).some(([key, choice]) => choice.value === state)) {
 			selected_button = this.m_special_toggle;
 		}
 
@@ -369,7 +305,7 @@ class Switch_Pattern extends MixHTMLElementWith(Observable, Toggleable) {
 	 * Handle click on a normal choice.
 	 * @param {MouseEvent} event
 	 */
-	_Handle_Normal_Click(event) {
+	_Handle_Normal_Click = function(event) {
 		event.stopPropagation();
 
 		const value = event.currentTarget?.dataset?.value;
@@ -384,7 +320,7 @@ class Switch_Pattern extends MixHTMLElementWith(Observable, Toggleable) {
 	 * Handle click on the special dropdown toggle.
 	 * @param {MouseEvent} event
 	 */
-	_Handle_Special_Toggle(event) {
+	_Handle_Special_Toggle = function(event) {
 		event.stopPropagation();
 
 		if (!this.m_special_choices || this.m_special_choices.length === 0) return;
@@ -395,7 +331,7 @@ class Switch_Pattern extends MixHTMLElementWith(Observable, Toggleable) {
 	 * Handle click on a special menu item.
 	 * @param {MouseEvent} event
 	 */
-	_Handle_Special_Choice_Click(event) {
+	_Handle_Special_Choice_Click = function(event) {
 		event.stopPropagation();
 
 		const value = event.currentTarget?.dataset?.value;
@@ -410,7 +346,7 @@ class Switch_Pattern extends MixHTMLElementWith(Observable, Toggleable) {
 	 * Close dropdown when clicking outside.
 	 * @param {MouseEvent} event
 	 */
-	_Handle_Outside_Click(event) {
+	_Handle_Outside_Click = function(event) {
 		if (!this.shadowRoot.contains(event.target)) {
 			this._Set_Dropdown_Open(false);
 		}
@@ -419,11 +355,11 @@ class Switch_Pattern extends MixHTMLElementWith(Observable, Toggleable) {
 	/**
 	 * Refresh indicator on resize.
 	 */
-	_Handle_Resize() {
+	_Handle_Resize = function() {
 		this._Update_Indicator();
 	}
 }
 
-customElements.define("switch-choice", Switch_Pattern);
+customElements.define("switch-choice", Pattern_Switch);
 
-export default Switch_Pattern;
+export default Pattern_Switch;

@@ -1,7 +1,6 @@
 import Utils from "../utils/utils.js";
 
-import Calendar_Pattern_Selector from "./calendar_pattern_selector.js"
-import Stop_Pattern_Selector from "./stop_pattern_selector.js"
+import Switch_Pattern from "../components/pattern_switch.js"
 import CSS_timetable from '../../style/timetable.css';
 import TimeTable_Service_Mission from "./time_table_service_mission.js"
 
@@ -12,11 +11,19 @@ class TimeTable extends HTMLElement {
 	 */
 	network_data = null;
 
+	calendar_pattern_selector = null;
+
+	stop_pattern_selector = null;
+
+	timetable_service_mission = null;
+
 	static template =(() =>{
 		const template = document.createElement('template');
 		const top_container = Utils.Create_Element_With_Class('div', 'line-info');
-		const calendar_pattern_selector = Calendar_Pattern_Selector.Create();
-		const stop_pattern_selector = Stop_Pattern_Selector.Create();
+		const calendar_pattern_selector = Switch_Pattern.Create("calendar_pattern");
+		calendar_pattern_selector.id = "calendar-pattern";
+		const stop_pattern_selector = Switch_Pattern.Create("stop_pattern");
+		stop_pattern_selector.id = "stop-pattern";
 		top_container.append(calendar_pattern_selector, stop_pattern_selector);
 
 		const time_table = TimeTable_Service_Mission.Create();
@@ -31,6 +38,10 @@ class TimeTable extends HTMLElement {
 		this.attachShadow({ mode: "open" });
 		Utils.Add_Stylesheet(this.shadowRoot, CSS_timetable);
 		Utils.Clone_Node_Into(this.shadowRoot, TimeTable.template);
+		let line_info = Utils.Get_Subnode(this.shadowRoot, ".line-info");
+		this.calendar_pattern_selector = Utils.Get_Subnode(line_info, "#calendar-pattern");
+		this.stop_pattern_selector = Utils.Get_Subnode(line_info, "#stop-pattern");
+		this.timetable_service_mission = Utils.Get_Subnode(this.shadowRoot, "timetable-services-missions");
 	}
 	
 	static Create()
@@ -39,16 +50,18 @@ class TimeTable extends HTMLElement {
 		return elt;
 	}
 
-	On_Calendar_Pattern(slected_pattern) {
+	On_Calendar_Pattern(selected_pattern) {
 
 	}
 
-	On_Stop_Pattern(slected_pattern) {
+	On_Stop_Pattern(selected_pattern) {
 
 	}
 
 	Set_TimeTable_Content(line_ID, network_data) {
-
+		this.calendar_pattern_selector.Update(network_data.calendar_patterns);
+		this.stop_pattern_selector.Update(network_data.stop_patterns);
+		this.timetable_service_mission.Update(network_data.lines[line_ID], network_data.stations);
 	}
 
 }
