@@ -1,21 +1,15 @@
 # docker/Dockerfile.dev
+FROM ubuntu:24.04
 
-FROM ubuntu:22.04
-
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
     git \
+    pkg-config \
     libssl-dev \
-    nodejs \
-    npm \
+    entr \
     && rm -rf /var/lib/apt/lists/*
-
-# install pnpm
-RUN npm install -g pnpm
 
 WORKDIR /app
 
-# We DON'T copy code here → mounted as volume
-
-CMD ["bash"]
+EXPOSE 8000
