@@ -1,15 +1,25 @@
-
-# docker-compose.dev.yml
-version: "3.9"
-
 services:
-  dev:
+  backend:
     build:
       context: .
       dockerfile: docker/Dockerfile.dev
-    volumes:
-      - .:/app
     ports:
-      - "8080:8000"
-    stdin_open: true
-    tty: true
+      - "8000:8000"
+    command: >
+      bash -lc "
+      cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug &&
+      cmake --build build -j$(nproc) &&
+      find src include -type f \( -name '*.cpp' -o -name '*.hpp' \) |
+      entr -r sh -c 'cmake --build build -j$(nproc) && ./build/Mapdiver-exe'
+      "
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+        - action: sync
+          path: ./CMakeLists.txt
+          target: /app/CMakeLists.txt
+        - action: sync
+          path: ./resource
+          target: /app/resource
