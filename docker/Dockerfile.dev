@@ -12,4 +12,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
+COPY src/ /app/src/
+COPY CMakeLists.txt /app
+COPY resources/ /app/resources/
+COPY externals/ /app/externals/
+COPY dev.sh /app/dev.sh
+
+RUN chmod +x /app/dev.sh
+
 EXPOSE 8000
