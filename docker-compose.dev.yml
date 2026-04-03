@@ -5,21 +5,14 @@ services:
       dockerfile: docker/Dockerfile.dev
     ports:
       - "8000:8000"
-    command: >
-      bash -lc "
-      cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug &&
-      cmake --build build -j$(nproc) &&
-      find src include -type f \( -name '*.cpp' -o -name '*.hpp' \) |
-      entr -r sh -c 'cmake --build build -j$(nproc) && ./build/Mapdiver-exe'
-      "
+    command: /app/dev.sh
+    stdin_open: true
+    tty: true
     develop:
       watch:
-        - action: sync
-          path: ./src
-          target: /app/src
         - action: sync
           path: ./CMakeLists.txt
           target: /app/CMakeLists.txt
         - action: sync
-          path: ./resource
-          target: /app/resource
+          path: ./src
+          target: /app/src
