@@ -34,6 +34,15 @@ fi
 echo "Performing initial build..."
 cmake --build build -j$(nproc)
 
+
+# ----------------------------------------------------------------------
+# 6. Start pnpm in watch mode in the background
+# ----------------------------------------------------------------------
+echo "Starting pnpm in watch mode..."
+pnpm run dev &
+PNPM_PID=$!
+echo "pnpm watch mode running (PID: $PNPM_PID)"
+
 # ----------------------------------------------------------------------
 # 4. Watch for file changes and trigger rebuild + run
 # ----------------------------------------------------------------------

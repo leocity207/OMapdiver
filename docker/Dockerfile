@@ -1,5 +1,5 @@
 # ---------- BUILD STAGE ----------
-FROM ubuntu:22.04 AS builder
+FROM ubuntu:24.04 AS builder
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -33,7 +33,7 @@ RUN pnpm install --frozen-lockfile
 RUN pnpm run build
 
 # ---------- RUNTIME STAGE ----------
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 RUN apt-get update && apt-get install -y \
     libstdc++6 \
