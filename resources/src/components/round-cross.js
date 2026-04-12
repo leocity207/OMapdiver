@@ -1,4 +1,4 @@
-import Observable from "../utils/Observable.js";
+import Observable from "../utils/observable.js";
 import MixHTMLElementWith from "../utils/MixHTMLElement.js";
 import Utils from "../utils/utils.js"
 import CSS_round_cross from '../../style/round-cross.css';
