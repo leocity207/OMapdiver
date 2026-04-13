@@ -1,0 +1,21 @@
+services:
+  server_dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    ports:
+      - "8000:8000"
+    command: /app/dev.sh
+    stdin_open: true
+    tty: true
+    develop:
+      watch:
+        - action: sync
+          path: ./CMakeLists.txt
+          target: /app/CMakeLists.txt
+        - action: sync
+          path: ./src
+          target: /app/src
+        - action: sync
+          path: ./resources
+          target: /app/resources

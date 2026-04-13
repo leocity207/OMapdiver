@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 
+#-------------------------
+# Enable building tests (default ON)
+option(BUILD_TESTS "Build test executables" ON)
 
 #-------------------------
 # add resources by default if they don't exist
@@ -109,28 +112,35 @@ add_dependencies(${project_name}-exe ${project_name}-lib)
 
 #--------------------
 # add test executabme
-FILE(GLOB TEST_APP_H test/app/*.h*)
-FILE(GLOB TEST_H test/*.h*)
-FILE(GLOB TEST_SRC test/*.cpp)
+if(BUILD_TESTS)
+    FILE(GLOB TEST_APP_H test/app/*.h*)
+    FILE(GLOB TEST_H test/*.h*)
+    FILE(GLOB TEST_SRC test/*.cpp)
 
-add_executable(${project_name}-test
-	${TEST_APP_H}
-	${TEST_APP_H}
-	${TEST_SRC}
-)
+    add_executable(${project_name}-test
+        ${TEST_APP_H}
+        ${TEST_SRC}
+    )
 
-target_link_libraries(${project_name}-test ${project_name}-lib)
-add_dependencies(${project_name}-test ${project_name}-lib)
+    target_link_libraries(${project_name}-test ${project_name}-lib)
+    add_dependencies(${project_name}-test ${project_name}-lib)
 
-set_target_properties(${project_name}-lib ${project_name}-exe ${project_name}-test PROPERTIES
+    enable_testing()
+    add_test(project-tests ${project_name}-test)
+
+	set_target_properties(${project_name}-test PROPERTIES
+		CXX_STANDARD 20
+		CXX_EXTENSIONS OFF
+		CXX_STANDARD_REQUIRED ON
+	)
+
+endif()
+
+set_target_properties(${project_name}-lib ${project_name}-exe PROPERTIES
 	CXX_STANDARD 20
 	CXX_EXTENSIONS OFF
 	CXX_STANDARD_REQUIRED ON
 )
-
-enable_testing()
-add_test(project-tests ${project_name}-test)
-
 
 #-------------------
 # Install

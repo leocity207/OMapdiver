@@ -1,0 +1,37 @@
+# docker/Dockerfile.dev
+FROM ubuntu:24.04
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git \
+    pkg-config \
+    libssl-dev \
+    entr \
+    curl \
+    ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && corepack enable
+
+WORKDIR /app
+
+COPY src/ ./src/
+COPY CMakeLists.txt .
+COPY resources/ ./resources/
+COPY externals/ ./externals/
+COPY dev.sh ./dev.sh
+COPY package.json .
+copy pnpm-lock.yaml .
+COPY pnpm-workspace.yaml .
+COPY rollup.config.js .
+
+RUN chmod +x /app/dev.sh
+
+RUN pnpm install --frozen-lockfile
+
+
+EXPOSE 8000
