@@ -4,13 +4,14 @@ import terser from '@rollup/plugin-terser';
 import postcss from 'rollup-plugin-postcss';
 import autoprefixer from 'autoprefixer';
 import cssnano from 'cssnano';
+import typescript from '@rollup/plugin-typescript';
 
 const isDev = process.env.NODE_ENV === 'dev';
 
 export default {
-	input: 'resources/src/initializer.js',
+	input: 'resources/src/initializer.js', // can stay .js for now
 	output: {
-		file: 'resources/bundle.js',
+		file: 'resources/tsbuild/bundle.js',
 		format: 'iife',
 		name: 'AppBundle',
 		sourcemap: isDev,
@@ -18,6 +19,9 @@ export default {
 	},
 	plugins: [
 		resolve(),
+		typescript({
+			tsconfig: './tsconfig.rollup.json',
+		}),
 		commonjs(),
 		postcss({
 			extensions: ['.css'],
@@ -30,13 +34,15 @@ export default {
 				!isDev && cssnano()
 			].filter(Boolean)
 		}),
-		!isDev && terser({compress: {
-						passes: 5,
-						drop_console: true,
-						drop_debugger: true,
-					},
-					format: {
-						comments: false,
-					}})
+		!isDev && terser({
+			compress: {
+				passes: 5,
+				drop_console: true,
+				drop_debugger: true
+			},
+			format: {
+				comments: false
+			}
+		})
 	]
 };
