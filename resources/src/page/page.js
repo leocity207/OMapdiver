@@ -1,5 +1,5 @@
-import Displayable from "../utils/displayable.js";
-import Utils from "../utils/utils.js";
+import Displayable from "../utils/displayable.ts";
+import Utils from "../utils/utils.ts";
 import CSS_fold_plus_minus from '../../style/fold-plus-minus.css';
 
 /**

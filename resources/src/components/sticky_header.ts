@@ -1,0 +1,76 @@
+import Observable  from "../utils/observable.ts";
+import Utils from "../utils/utils.ts";
+import Hamburger from "./hamburger.ts"
+import Search_Bar from "./search_bar.ts"
+import CSS_sticky_header from '../../style/sticky-header.css';
+
+/**
+ * The **Sticky Header** is a user interface element that remains fixed at the top of the page, ensuring important navigation components are always accessible, even as the user scrolls.
+ *
+ * Structure
+ * ---------
+ *
+ * The Sticky Header consists of three key components:
+ *
+ * - **Left Section:** A **hamburger menu** that triggers a click event when selected.
+ * - **Center Section:** A **search bar** that accepts a list of searchable elements and emits an event when an item is selected.
+ * - **Right Section:** A **logo** that can be displayed for branding purposes.
+ *
+ * .. code-block:: html
+ *
+ * 	<header class="sticky-header">
+ * 		<Hamburger>
+ * 		<Search_Bar>
+ * 		<img>
+ * 	</header>
+*/
+class Sticky_Header extends Observable(HTMLElement) {
+
+	/**
+	 * Base template strucutre
+	 */
+	static template = (() => {
+		const template = document.createElement('template');
+
+		const header = Utils.Create_Element_With_Class('header','sticky-header');
+
+		const hamburger = Hamburger.Create("left-panel-hamburger");
+
+		const search_bar = Search_Bar.Create("main-search-bar");
+		const logo = document.createElement("img");
+		logo.setAttribute("src", "resources-config/image/logo.svg");
+
+		header.append(hamburger, search_bar, logo);
+		template.content.append(header);
+		return template;
+	})();
+
+	/**
+	 * Factory cronstructor of Sticky_Header
+	 * @returns Sticky_Header instance
+	 */
+	static Create() {
+		return document.createElement("sticky-header");
+	}
+
+	constructor() {
+		super();
+		this.attachShadow({ mode: "open" });
+		Utils.Add_Stylesheet(this.shadowRoot!, CSS_sticky_header);
+		Utils.Clone_Node_Into(this.shadowRoot!, Sticky_Header.template);
+	}
+
+	/**
+	 * Initializes autocomplete functionality with a list of suggestions.
+	 * @param {Array<string>} match_list - List of suggestions.
+	 */
+	Set_Autocomplete_List(match_list: Array<string>) {
+		(Utils.Get_Subnode(this.shadowRoot!,"search-bar") as Search_Bar).Set_Autocomplete_List(match_list);
+		return Search_Bar.Get_Observable("main-search-bar");
+	}
+}
+
+// Define the custom element
+customElements.define("sticky-header", Sticky_Header);
+
+export default Sticky_Header;

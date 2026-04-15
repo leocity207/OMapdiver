@@ -1,6 +1,6 @@
 import Network_Map from "../map/network_map.js";
 import Map_Page from "./svg-map-page.js";
-import Utils from "../utils/utils.js";
+import Utils from "../utils/utils.ts";
 import { Config, Network_Config} from "../../resources-config/config.js"
 import Switch_Event from "../components/switch.js";
 import Round_Cross from "../components/round-cross.js";

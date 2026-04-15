@@ -1,7 +1,7 @@
 import Page from "./page.js";
 import Sticky_Header from "../components/sticky_header.js"
 import LeftPanel from "../components/left_panel.js"
-import Utils from "../utils/utils.js";
+import Utils from "../utils/utils.ts";
 
 /**
  * Time_Tables_Page define the page to show different timetable

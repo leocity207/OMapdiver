@@ -4,7 +4,7 @@ import {Config} from "../../resources-config/config.js"
 import Sticky_Header from "../components/sticky_header.js"
 import LeftPanel from "../components/left_panel.js"
 import Right_Panel from "../right-panel/right-panel.js";
-import Utils from "../utils/utils.js";
+import Utils from "../utils/utils.ts";
 
 /**
  * Map_App are object that define a node containing a SVG_Map for manipulation and display
