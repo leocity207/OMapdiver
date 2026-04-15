@@ -1,6 +1,6 @@
-import Displayable from "../utils/displayable.ts";
-import Utils from "../utils/utils.ts";
-import CSS_fold_plus_minus from '../../style/fold-plus-minus.css';
+import Displayable from "../utils/displayable";
+import Utils from "../utils/utils";
+import CSS_App from '../../style/app.css';
 
 /**
  * Page are displayable element generaly found inside an App, they are gracefull container
@@ -12,7 +12,7 @@ class Page extends Displayable
 	constructor() {
 		super();
 		this.attachShadow({ mode: "open" });
-		Utils.Add_Stylesheet(this.shadowRoot, 'style/app.css')
+		Utils.Add_Stylesheet(this.shadowRoot!, CSS_App)
 	}
 
 	/**

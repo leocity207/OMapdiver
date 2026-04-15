@@ -1,7 +1,7 @@
-import Loader from '../loader/loader.ts';
-import Page from '../page/page.ts';
-import Displayable from '../utils/displayable.ts';
-import Utils from '../utils/utils.ts';
+import Loader from '../loader/loader';
+import Page from '../page/page';
+import Displayable from '../utils/displayable';
+import Utils from '../utils/utils';
 import CSS_app from '../../style/app.css';
 
 

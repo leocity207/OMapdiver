@@ -1,7 +1,7 @@
-import Page from "./page.js";
-import Network_Line_Selector_Panel from "../time_table/network_line_selector_panel.js"
-import Utils from "../utils/utils.ts";
-import TimeTable from "../time_table/time_table.js";
+import Page from "./page";
+import Network_Line_Selector_Panel from "../time_table/network_line_selector_panel"
+import Utils from "../utils/utils";
+import TimeTable from "../time_table/time_table";
 /**
  * Time_Tables_Page define the page to show different timetable
  */

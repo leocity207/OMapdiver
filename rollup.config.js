@@ -9,7 +9,7 @@ import typescript from '@rollup/plugin-typescript';
 const isDev = process.env.NODE_ENV === 'dev';
 
 export default {
-	input: 'resources/src/initializer.js', // can stay .js for now
+	input: 'resources/src/initializer.ts', // can stay .js for now
 	output: {
 		file: 'resources/tsbuild/bundle.js',
 		format: 'iife',

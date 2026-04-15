@@ -1,9 +1,11 @@
-import Line_Station from './line-station.ts';
-import Utils from "../utils/utils.ts"
-import Fold_Plus_Minus from '../components/fold-plus-minus.ts';
+import Line_Station from './line-station';
+import Utils from "../utils/utils"
+import Fold_Plus_Minus from '../components/fold-plus-minus';
+import { Line, Network, Pattern } from '../utils/networktype';
+import { Line_Station_Data } from './line-station'
+
 import CSS_line_schedule from '../../style/line-schedule.css';
-import { Line, Network, Pattern } from '../utils/networktype.ts';
-import { Line_Station_Data } from './line-station.ts'
+
 
 /**
  * The **Ligne schedule** is an object used to display schedule information about a line.

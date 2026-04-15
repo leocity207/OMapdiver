@@ -1,9 +1,9 @@
-import Utils from "../utils/utils.ts";
-
-import Switch_Pattern from "../components/pattern_switch.ts"
+import Utils from "../utils/utils";
+import Switch_Pattern from "../components/pattern_switch"
+import TimeTable_Service_Mission from "./time_table_service_mission"
+import { Network } from "../utils/networktype";
 import CSS_timetable from '../../style/timetable.css';
-import TimeTable_Service_Mission from "./time_table_service_mission.ts"
-import { Network } from "../utils/networktype.ts";
+
 
 class TimeTable extends HTMLElement {
 

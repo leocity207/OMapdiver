@@ -1,5 +1,5 @@
-import Loader from './loader.ts';
-import Utils from '../utils/utils.ts';
+import Loader from './loader';
+import Utils from '../utils/utils';
 
 /**
  * A simple Train Animation that implement a Loader

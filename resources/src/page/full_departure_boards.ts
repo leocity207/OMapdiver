@@ -1,7 +1,8 @@
-import Page from "./page.js";
-import Sticky_Header from "../components/sticky_header.js"
-import LeftPanel from "../components/left_panel.js"
-import Utils from "../utils/utils.ts";
+import Page from "./page";
+import Sticky_Header from "../components/sticky_header"
+import LeftPanel from "../components/left_panel"
+import Utils from "../utils/utils";
+import { Network } from "../utils/networktype";
 
 /**
  * Time_Tables_Page define the page to show different timetable
@@ -21,20 +22,20 @@ class Full_Departure_Boards extends Page {
 		return template;
 	})();
 
-	static icon = ""
+	network_data: Network | null = null;
 
 	constructor() {
 		super();
-		Utils.Clone_Node_Into(this.shadowRoot, Full_Departure_Boards.template_base);
+		Utils.Clone_Node_Into(this.shadowRoot!, Full_Departure_Boards.template_base);
 	}
 
 	Initialize_Departure_Boards = async () => {
-		this.network_data = await Utils.Fetch_Resource("dyn/network_data");
+		this.network_data = await Utils.Fetch_Resource("dyn/network_data") as Network;
 	}
 
 	Load_Data()
 	{
-		Utils.Get_Subnode(this.shadowRoot,"sticky-header").Show_Left_Panel();
+		(Utils.Get_Subnode(this.shadowRoot!,"sticky-header") as Sticky_Header).Show_Left_Panel();
 	}
 
 	/**

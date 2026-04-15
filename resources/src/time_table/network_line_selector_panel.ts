@@ -1,5 +1,5 @@
-import Utils from "../utils/utils.ts";
-import Top_Panel from "../components/top_panel.ts"
+import Utils from "../utils/utils";
+import Top_Panel from "../components/top_panel"
 import CSS_network_line_selector_panel from '../../style/network_line_selector_panel.css';
 import { Subject } from "rxjs";
 

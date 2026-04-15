@@ -1,7 +1,7 @@
-import Observable  from "../utils/observable.ts";
-import Utils from "../utils/utils.ts";
-import Hamburger from "./hamburger.ts"
-import Search_Bar from "./search_bar.ts"
+import Observable  from "../utils/observable";
+import Utils from "../utils/utils";
+import Hamburger from "./hamburger"
+import Search_Bar from "./search_bar"
 import CSS_sticky_header from '../../style/sticky-header.css';
 
 /**

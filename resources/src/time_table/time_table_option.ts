@@ -1,4 +1,4 @@
-import Utils from "../utils/utils.ts";
+import Utils from "../utils/utils";
 import CSS_timetable_options from '../../style/timetable_options.css';
 
 

@@ -1,8 +1,7 @@
-import SVG_Map from './svg_map.ts';
-import Utils from '../utils/utils.ts';
+import SVG_Map from './svg_map';
+import Utils from '../utils/utils';
+import { Config_Type, Network_Config_Type } from '../utils/configtype';
 import { Color, FabricObject, TEvent, util } from 'fabric';
-import { Config_Type, Network_Config_Type } from '../utils/configtype.ts';
-
 
 /**
  * Network_Map inherit from SVG_Map and declare map with lines, tracks and station, to zoom to and get information off

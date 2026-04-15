@@ -1,8 +1,9 @@
-import Line_Schedule from './line-schedule.ts';
-import Round_Cross from '../components/round-cross.ts';
-import Utils from "../utils/utils.ts"
+import Line_Schedule from './line-schedule';
+import Round_Cross from '../components/round-cross';
+import Utils from "../utils/utils"
+import { Line, Network } from '../utils/networktype';
 import CSS_line_info from '../../style/line-info.css';
-import { Line, Network } from '../utils/networktype.ts';
+
 
 /**
  * The **Ligne info** is an object used to display line information.

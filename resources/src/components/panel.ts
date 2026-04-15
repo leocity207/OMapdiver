@@ -1,4 +1,4 @@
-import Utils from "../utils/utils.ts";
+import Utils from "../utils/utils";
 import CSS_base_panel from '../../style/base-panel.css';
 
 /**

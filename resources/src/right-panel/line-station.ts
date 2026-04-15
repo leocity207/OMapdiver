@@ -1,6 +1,8 @@
-import Utils from '../utils/utils.ts'
+import Utils from '../utils/utils'
+import { InfoMessage, Network, Pattern, Station } from '../utils/networktype';
+
 import CSS_line_station from '../../style/line-station.css';
-import { InfoMessage, Network, Pattern, Station } from '../utils/networktype.ts';
+
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 

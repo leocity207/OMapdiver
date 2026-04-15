@@ -1,5 +1,5 @@
-import Base_Panel from "./panel.ts";
-import Utils from "../utils/utils.ts";
+import Base_Panel from "./panel";
+import Utils from "../utils/utils";
 
 /**
  * Top_Panel

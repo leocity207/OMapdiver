@@ -1,4 +1,4 @@
-import Displayable from "../utils/displayable.ts";
+import Displayable from "../utils/displayable";
 
 /**
  * Loader are displayable element that containe a simple animation used for stand by.

@@ -1,8 +1,9 @@
-import Line_Schedule from './line-schedule.ts';
-import Round_Cross from '../components/round-cross.ts';
-import Utils from '../utils/utils.ts';
+import Line_Schedule from './line-schedule';
+import Round_Cross from '../components/round-cross';
+import Utils from '../utils/utils';
+import { Network, Pattern, Station } from '../utils/networktype';
+
 import CSS_station_info from '../../style/station-info.css';
-import { Network, Pattern, Station } from '../utils/networktype.ts';
 
 /**
  * The **Station_Info** is an object used to display station schedule information.

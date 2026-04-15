@@ -1,6 +1,6 @@
-import Observable from "../utils/observable.ts";
-import Toggleable from "../utils/toggleable.ts";
-import Utils from "../utils/utils.ts"
+import Observable from "../utils/observable";
+import Toggleable from "../utils/toggleable";
+import Utils from "../utils/utils"
 import CSS_switch from '../../style/switch.css';
 
 /**

@@ -1,5 +1,5 @@
-import Observable from "../utils/observable.ts";
-import Utils from "../utils/utils.ts"
+import Observable from "../utils/observable";
+import Utils from "../utils/utils"
 import CSS_search_bar from '../../style/search-bar.css';
 
 /**
@@ -86,7 +86,7 @@ class Search_Bar extends Observable(HTMLElement) {
 		this._autocomplete_container = null;
 		this._current_focus = -1;
 
-		const search_input = Utils.Get_Subnode(this.shadowRoot!, "input");
+		const search_input = Utils.Get_Subnode(this.shadowRoot!, "input") as HTMLInputElement;
 
 		search_input.addEventListener("input", () => this._On_Input(search_input));
 		search_input.addEventListener("keydown", (e) => this._On_Key_Down(e, search_input));
@@ -212,7 +212,8 @@ class Search_Bar extends Observable(HTMLElement) {
 	* @param {HTMLElement} input
 	*/
 	_On_Document_Click(e: MouseEvent, input: HTMLInputElement) {
-		if (!this.contains(e.target) && !this.shadowRoot!.contains(e.target)) {
+		const target = e.target as HTMLElement | null;
+		if (!this.contains(target) && !this.shadowRoot!.contains(target)) {
 			this._Close_Autocomplete_List();
 		}
 	}

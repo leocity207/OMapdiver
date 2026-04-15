@@ -1,5 +1,5 @@
-import Toggleable from "../utils/toggleable.ts";
-import Utils from "../utils/utils.ts"
+import Toggleable from "../utils/toggleable";
+import Utils from "../utils/utils"
 import CSS_fold_plus_minus from '../../style/fold-plus-minus.css';
 
 /**

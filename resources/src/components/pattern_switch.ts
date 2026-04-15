@@ -1,8 +1,9 @@
-import Observable from "../utils/observable.ts";
-import Toggleable from "../utils/toggleable.ts";
-import Utils from "../utils/utils.ts";
+import Observable from "../utils/observable";
+import Toggleable from "../utils/toggleable";
+import Utils from "../utils/utils";
+import { Pattern_Schemes } from "../utils/networktype";
 import CSS_Pattern_Switch from "../../style/pattern_switch.css";
-import { Pattern_Schemes } from "../utils/networktype.ts";
+
 
 
 /**
@@ -17,12 +18,12 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 	/**
 	 * List of normal choices shown as left buttons.
 	 */
-	m_choices: Array<Object> = [];
+	m_choices: {[index: string]: Pattern_Schemes} = {};
 
 	/**
 	 * List of special choices shown inside the right dropdown.
 	 */
-	m_special_choices: Array<Object> = [];
+	m_special_choices: {[index: string]: Pattern_Schemes} = {};
 
 	/**
 	 * True when the dropdown menu is opened.
@@ -30,7 +31,7 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 	m_dropdown_open: boolean = false;
 
 
-	m_left_buttons: Array<any> = [];
+	m_left_buttons: HTMLButtonElement[] = [];
 	m_special_menu: HTMLElement | null = null;
 	m_special_toggle: HTMLElement | null = null;
 	m_special_label: HTMLElement | null = null;
@@ -44,11 +45,11 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 
 		const master = Utils.Create_Element_With_Class("div", "switch-container");
 
-		const track = Utils.Create_Element_With_Class("div", "switch-track");
+		const track = Utils.Create_Element_With_Class("div", "switch-track")  as HTMLElement;
 		const indicator = Utils.Create_Element_With_Class("span", "switch-indicator");
 
-		const left_group = Utils.Create_Element_With_Class("div", "switch-left-group");
-		const special_group = Utils.Create_Element_With_Class("div", "switch-special-group");
+		const left_group = Utils.Create_Element_With_Class("div", "switch-left-group") as HTMLElement;
+		const special_group = Utils.Create_Element_With_Class("div", "switch-special-group")  as HTMLElement;
 
 		track.append(indicator, left_group, special_group);
 		master.append(track);
@@ -80,7 +81,7 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 	 * @param {string|null} initial_state - Optional initial state value.
 	 * @returns {Pattern_Switch} A configured instance.
 	 */
-	static Create(name: string) {
+	static Create(name: string): Pattern_Switch {
 		const elt = document.createElement("switch-choice") as Pattern_Switch;
 
 		elt.Observable_Init(name);
@@ -88,7 +89,7 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 		return elt;
 	}
 
-	Update(choices: {[index: string]: Pattern_Schemes}) {
+	Update(choices: {[index: string]: Pattern_Schemes}): void {
 		const all_states = Object.entries(choices).map(([key, value]) => value.id)
 
 
@@ -96,13 +97,17 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 
 		const [special, normal] = Object.entries(choices).reduce(
 			([accTrue, accFalse], [key, value]) => {
-				if (value.is_exceptional) 
-					accTrue[key] = value; 
+				if (value.is_exceptional)
+					accTrue[key] = value;
 				else
-					accFalse[key] = value; 
+					accFalse[key] = value;
+
 				return [accTrue, accFalse];
 			},
-			[{}, {}]
+			[
+				{} as {[index: string]: Pattern_Schemes},
+				{} as {[index: string]: Pattern_Schemes}
+			]
 		);
 		
 		this.m_choices = normal;
@@ -213,9 +218,9 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 		}
 
 		// Mark special selection + update toggle label
-		if (this.m_special_toggle && this.m_special_choices.length > 0) {
-			const is_special = this.m_special_choices.some(choice => choice.value === state);
-			const selected_special = this.m_special_choices.find(choice => choice.value === state);
+		if (this.m_special_toggle && Object.values(this.m_special_choices).length > 0) {
+			const is_special = Object.values(this.m_special_choices).some(choice => choice.id === state);
+			const selected_special = Object.values(this.m_special_choices).find(choice => choice.id === state);
 
 			this.m_special_toggle.classList.toggle("is-selected", is_special);
 			this.m_special_toggle.setAttribute("aria-pressed", is_special ? "true" : "false");
@@ -225,7 +230,8 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 			}
 
 			for (const item of this.m_special_menu!.querySelectorAll(".switch-special-item")) {
-				const selected = item.dataset.value === state;
+				const el = item as HTMLElement;
+				const selected = el.dataset.value === state;
 				item.classList.toggle("is-selected", selected);
 				item.setAttribute("aria-pressed", selected ? "true" : "false");
 			}
@@ -242,7 +248,7 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 
 		const state = this.Get_State();
 
-		let selected_button = null;
+		let selected_button: HTMLElement | null = null;
 
 		for (const button of (this.m_left_buttons ?? [])) {
 			if (button.dataset.value === state) {
@@ -251,7 +257,7 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 			}
 		}
 
-		if (!selected_button && this.m_special_toggle && Object.entries(this.m_special_choices).some(([key, choice]) => choice.value === state)) {
+		if (!selected_button && this.m_special_toggle && Object.entries(this.m_special_choices).some(([key, choice]) => choice.id === state)) {
 			selected_button = this.m_special_toggle;
 		}
 
@@ -314,11 +320,14 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 	 * Handle click on a normal choice.
 	 * @param {MouseEvent} event
 	 */
-	_Handle_Normal_Click = function(event : Event) {
+	_Handle_Normal_Click = (event : MouseEvent) => {
 		event.stopPropagation();
 
-		const value = event.currentTarget?.dataset?.value;
-		if (value == null) return;
+		const target = event.currentTarget as HTMLElement | null;
+		if (!target) return;
+
+		const value = target.dataset.value;
+		if (!value) return;
 
 		this.Set_State(value);
 		this.Emit(this.Get_State());
@@ -329,10 +338,10 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 	 * Handle click on the special dropdown toggle.
 	 * @param {MouseEvent} event
 	 */
-	_Handle_Special_Toggle = function(event: Event) {
+	_Handle_Special_Toggle = (event: MouseEvent) => {
 		event.stopPropagation();
 
-		if (!this.m_special_choices || this.m_special_choices.length === 0) return;
+		if (!this.m_special_choices || Object.entries(this.m_special_choices).length === 0) return;
 		this._Set_Dropdown_Open(!this.m_dropdown_open);
 	}
 
@@ -340,11 +349,14 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 	 * Handle click on a special menu item.
 	 * @param {MouseEvent} event
 	 */
-	_Handle_Special_Choice_Click = function(event: Event) {
+	_Handle_Special_Choice_Click = (event: MouseEvent) => {
 		event.stopPropagation();
 
-		const value = event.currentTarget?.dataset?.value;
-		if (value == null) return;
+		const target = event.currentTarget as HTMLElement | null;
+		if (!target) return;
+
+		const value = target.dataset.value;
+		if (!value) return;
 
 		this.Set_State(value);
 		this.Emit(this.Get_State());
@@ -355,8 +367,10 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 	 * Close dropdown when clicking outside.
 	 * @param {MouseEvent} event
 	 */
-	_Handle_Outside_Click = function(event: Event) {
-		if (!this.shadowRoot.contains(event.target)) {
+	_Handle_Outside_Click = (event: MouseEvent) => {
+		const path = event.composedPath();
+
+		if (!path.includes(this)) {
 			this._Set_Dropdown_Open(false);
 		}
 	}
@@ -364,7 +378,7 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 	/**
 	 * Refresh indicator on resize.
 	 */
-	_Handle_Resize = function() {
+	_Handle_Resize = () => {
 		this._Update_Indicator();
 	}
 }

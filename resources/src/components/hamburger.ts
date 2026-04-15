@@ -1,5 +1,5 @@
-import Observable from "../utils/observable.ts";
-import Utils from "../utils/utils.ts"
+import Observable from "../utils/observable";
+import Utils from "../utils/utils"
 import CSS_hamburger from '../../style/hamburger.css';
 
 /**

@@ -1,10 +1,10 @@
-import App_Container from './app/app-container.js';
-import App from './app/app.js';
-import Network_Map_Page from './page/network-map-page.js';
-import Train_Animation from './loader/Train_Animation.js';
-import { App_Config} from "../resources-config/config.js";
-import Timetables_Page from './page/time_tables_page.js';
-import Full_Departure_Boards from './page/full_departure_boards.js';
+import App_Container from './app/app-container';
+import App from './app/app';
+import Network_Map_Page from './page/network-map-page';
+import Train_Animation from './loader/Train_Animation';
+import { App_Config} from '../resources-config/config';
+import Timetables_Page from './page/time_tables_page';
+import Full_Departure_Boards from './page/full_departure_boards';
 
 
 async function Initialize() {

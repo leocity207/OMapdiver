@@ -1,9 +1,11 @@
-import Base_Panel from "../components/panel.ts";
-import Line_Info from "./line_info.ts"
-import Station_Info from "./station-info.ts";
-import Utils from "../utils/utils.ts";
+import Base_Panel from "../components/panel";
+import Line_Info from "./line_info"
+import Station_Info from "./station-info";
+import Utils from "../utils/utils";
+import { Line, Network, Station } from "../utils/networktype";
+
 import CSS_right_panel from '../../style/right-panel.css';
-import { Line, Network, Station } from "../utils/networktype.ts";
+
 
 /**
  * The **Right Panel** is a user interface element that remains fixed on the right side of the screen.

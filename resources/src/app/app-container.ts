@@ -1,5 +1,5 @@
-import App from './app.ts';
-import Utils from '../utils/utils.ts';
+import App from './app';
+import Utils from '../utils/utils';
 import CSS_app_container from '../../style/app-container.css';
 
 
@@ -26,12 +26,12 @@ class App_Container extends HTMLElement
 	/**
 	 * The list of app inside the container
 	 */
-	app_list = [];
+	app_list: App[] = [];
 
 	/**
 	 * list of tabs inside the tab container
 	 */
-	tab_list = [];
+	tab_list: HTMLButtonElement[] = [];
 
 	/**
 	 * The current `App` being displayed
@@ -41,12 +41,12 @@ class App_Container extends HTMLElement
 	/**
 	 * the panel node displaying selectable app
 	 */
-	app_selector = undefined;
+	app_selector: HTMLElement | null = null;
 
 	/**
 	 * the main canva for the `App`
 	 */
-	app_window = undefined;
+	app_window: HTMLElement | null = null;
 
 	/**
 	 * Base template for panel and main app
@@ -66,12 +66,12 @@ class App_Container extends HTMLElement
 	constructor() {
 		super();
 		this.attachShadow({ mode: "open" });
-		Utils.Add_Stylesheet(this.shadowRoot, CSS_app_container);
-		Utils.Clone_Node_Into(this.shadowRoot,App_Container.template_base);
+		Utils.Add_Stylesheet(this.shadowRoot!, CSS_app_container);
+		Utils.Clone_Node_Into(this.shadowRoot!,App_Container.template_base);
 
 		this._On_Tab_Key_Down = this._On_Tab_Key_Down.bind(this);
-		this.app_selector = Utils.Get_Subnode(this.shadowRoot, '.app-selector');
-		this.app_window = Utils.Get_Subnode(this.shadowRoot, '.app-window');
+		this.app_selector = Utils.Get_Subnode(this.shadowRoot!, '.app-selector');
+		this.app_window = Utils.Get_Subnode(this.shadowRoot!, '.app-window');
 	}
 
 	/**
@@ -94,9 +94,7 @@ class App_Container extends HTMLElement
 	* add a new app to the container
 	* @param {App} new_app the App that should  be added to the container
 	*/
-	Add_App(new_app) {
-		if(!new_app instanceof App)
-			throw Error("new_app parameter should be an App object");
+	Add_App(new_app: App) {
 		this.app_list.push(new_app);
 		this.Render();
 
@@ -114,17 +112,15 @@ class App_Container extends HTMLElement
 	 */
 	Render()
 	{
-
-
 		// nettoie le contenu pour éviter les doublons lors de multiple Render()
-		this.app_selector.innerHTML = '';
-		this.app_window.innerHTML = '';
+		this.app_selector!.innerHTML = '';
+		this.app_window!.innerHTML = '';
 
 		// si >1 app on montre la barre de sélection, sinon on la cache
 		if (this.app_list.length > 1)
-			this.app_selector.style.display = 'flex';
+			this.app_selector!.style.display = 'flex';
 		else
-			this.app_selector.style.display = 'none';
+			this.app_selector!.style.display = 'none';
 
 		// crée les tabs et injecte les apps (une seule visible à la fois)
 		this.tab_list = [];
@@ -134,15 +130,15 @@ class App_Container extends HTMLElement
 
 			// add app in the window
 			entry.style.display = 'none';
-			this.app_window.appendChild(entry);
+			this.app_window!.appendChild(entry);
 
 			// add button
 			const tab = document.createElement('button');
-			tab.class_name = 'app-tab';
+			tab.className = 'app-tab';
 			tab.setAttribute('role', 'tab');
 			tab.setAttribute('aria-selected', 'false');
 			tab.dataset.index = String(i);
-			tab.title = entry.getAttribute('title');
+			tab.title = entry.getAttribute('title')!;
 
 
 			tab.innerHTML = `<div class="icon">${entry.icon}</div>`;
@@ -153,22 +149,22 @@ class App_Container extends HTMLElement
 			});
 
 			// keyboard navigation
-			tab.addEventListener('keydown', this._On_Tab_Key_Down);
+			tab.addEventListener('keydown',  (e) => this._On_Tab_Key_Down(e, i));
 
-			this.app_selector.appendChild(tab);
+			this.app_selector!.appendChild(tab);
 			this.tab_list.push(tab);
 		}
 
 		// default select app on add or delete
-		if (this.current_index >= 0 && this.current_index < this.app_list.length) {
-			this._Apply_Selection_Visual(this.current_index);
-			this._Show_App(this.current_index);
+		if (this.current_app_index >= 0 && this.current_app_index < this.app_list.length) {
+			this._Apply_Selection_Visual(this.current_app_index);
+			this._Show_App(this.current_app_index);
 		} else if (this.app_list.length > 0) {
 			this._Select_App(0);
 		}
 	}
 
-	_Select_App(index) {
+	_Select_App(index: number) {
 		if (index < 0 || index >= this.app_list.length) return;
 
 		// deselect previous app
@@ -186,7 +182,7 @@ class App_Container extends HTMLElement
 		this._Show_App(index);
 	}
 
-	_Apply_Selection_Visual(index) {
+	_Apply_Selection_Visual(index: number) {
 		for (let i = 0; i < this.tab_list.length; i++) {
 			const tab = this.tab_list[i];
 			if (i === index) {
@@ -199,27 +195,25 @@ class App_Container extends HTMLElement
 		}
 	}
 
-	_Show_App(index) {
+	_Show_App(index: number) {
 		for (let i = 0; i < this.app_list.length; i++)
 			this.app_list[i].style.display = (i === index) ? '' : 'none';
 	}
 
 
-	_On_Tab_Key_Down(e) {
+	_On_Tab_Key_Down(e: KeyboardEvent, current: number) {
 		const key = e.key;
-		const current = Number(e.currentTarget.dataset.index);
 		if (Number.isNaN(current)) return;
 
 		let next = null;
-		if (key === 'ArrowDown' || key === 'ArrowRight') {
+		if (key === 'ArrowDown' || key === 'ArrowRight')
 			next = (current + 1) % this.tab_list.length;
-		} else if (key === 'ArrowUp' || key === 'ArrowLeft') {
+		else if (key === 'ArrowUp' || key === 'ArrowLeft')
 			next = (current - 1 + this.tab_list.length) % this.tab_list.length;
-		} else if (key === 'Home') {
+		else if (key === 'Home')
 			next = 0;
-		} else if (key === 'End') {
+		else if (key === 'End')
 			next = this.tab_list.length - 1;
-		}
 
 		if (next !== null) {
 			e.preventDefault();

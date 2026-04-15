@@ -1,8 +1,9 @@
-import Base_Panel from "./panel.ts";
-import Switch_Event from "./switch.ts";
-import Hamburger from "./hamburger.ts";
-import Utils from "../utils/utils.ts";
+import Base_Panel from "./panel";
+import Switch_Event from "./switch";
+import Hamburger from "./hamburger";
+import Utils from "../utils/utils";
 import CSS_left_panel from '../../style/left-panel.css';
+import { Subscription } from "rxjs";
 
 
 /**
@@ -28,6 +29,8 @@ import CSS_left_panel from '../../style/left-panel.css';
  */
 class Left_Panel extends Base_Panel {
 
+	hamberger_subscribe: null | Subscription = null;
+
 	/**
 	 * Base template strucutre
 	 */
@@ -48,6 +51,7 @@ class Left_Panel extends Base_Panel {
 		template.content.append(title, subtitle, title_option, color_switch);
 		return template;
 	})();
+	
 
 	constructor() {
 		super();
@@ -69,14 +73,15 @@ class Left_Panel extends Base_Panel {
 	 * Called when node is connected to the DOM
 	 */
 	connectedCallback() {
-		Hamburger.Get_Observable("left-panel-hamburger").subscribe(() => this.Toggle_Panel());
+		this.hamberger_subscribe = Hamburger.Get_Observable("left-panel-hamburger").subscribe(() => this.Toggle_Panel());
 	}
 
 	/**
 	 * Called when node is disconnected to the DOM
 	 */
 	disconnectedCallback() {
-		Hamburger.Get_Observable("left-panel-hamburger").unsubscribe();
+		if(this.hamberger_subscribe)
+			this.hamberger_subscribe.unsubscribe();
 	}
 }
 

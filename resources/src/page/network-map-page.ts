@@ -1,9 +1,9 @@
-import Network_Map from "../map/network_map.js";
-import Map_Page from "./svg-map-page.js";
-import Utils from "../utils/utils.ts";
-import { Config, Network_Config} from "../../resources-config/config.js"
-import Switch_Event from "../components/switch.js";
-import Round_Cross from "../components/round-cross.js";
+import Network_Map from "../map/network_map";
+import Map_Page from "./svg-map-page";
+import Utils from "../utils/utils";
+import { Config, Network_Config} from "../../resources-config/config"
+import Switch_Event from "../components/switch";
+import Round_Cross from "../components/round-cross";
 
 /**
  * Network_Map_Station define a node that contain a Network_Map object
@@ -34,7 +34,7 @@ class Network_Map_Page extends Map_Page {
 	 */
 	On_Station_CLicked(event) {
 		this.map.Highlight_All_Lines_At_Station(event.detail);
-		Utils.Get_Subnode(this.shadowRoot, 'right-panel').Open_Station_Info(event.detail, this.network_data);
+		Utils.Get_Subnode(this.shadowRoot!, 'right-panel').Open_Station_Info(event.detail, this.network_data);
 		this.map.Zoom_Highlighted_Stations(event.detail);
 		this.prev_event = {type: "station", detail: event.detail};
 	}
@@ -46,7 +46,7 @@ class Network_Map_Page extends Map_Page {
 	 */
 	On_Line_CLicked(event) {
 		this.map.Highlight_Lines([event.detail]);
-		Utils.Get_Subnode(this.shadowRoot, 'right-panel').Open_Line_Info(event.detail, this.network_data);
+		Utils.Get_Subnode(this.shadowRoot!, 'right-panel').Open_Line_Info(event.detail, this.network_data);
 		this.map.Zoom_Highlighted_Line(event.detail);
 		this.prev_event = {type: "line", detail: event.detail};
 	}
@@ -63,7 +63,7 @@ class Network_Map_Page extends Map_Page {
 			return this.On_Station_CLicked({detail: event.state.station})
 		}
 		else {
-			Utils.Get_Subnode(this.shadowRoot, 'right-panel').Close();
+			Utils.Get_Subnode(this.shadowRoot!, 'right-panel').Close();
 			if(!this.prev_event.type)
 				this.map.Initial_Zoom_Move();
 			if(this.prev_event.type === 'station')
