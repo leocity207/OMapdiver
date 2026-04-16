@@ -236,7 +236,7 @@ class Network_Map extends SVG_Map {
 	* @param from_station_code starting station
 	* @param to_station_code end station
 	*/
-	Zoom_Highlighted_Stations = (from_station_code: string, to_station_code: string) => {
+	Zoom_Highlighted_Stations = (from_station_code: string, to_station_code: string | null = null) => {
 		const all_highlights = this._Find_Map_Objs_By_Id('highlight_'); // get all, do a find on them here
 		const highlight_pos_from_obj = all_highlights.find(x => x.id === `highlight_pos_${from_station_code}`)
 		const highlight_pos_to_obj = all_highlights.find(x => x.id === `highlight_pos_${to_station_code}`)

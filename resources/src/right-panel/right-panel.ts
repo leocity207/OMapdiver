@@ -42,7 +42,7 @@ class Right_Panel extends Base_Panel {
 	 * 		- stations: list of all station on the map
 	 * 		- line: line that is being displayed
 	 */
-	Open_Line_Info = async (line_data: Line, network_data: Network): Promise<void> => {
+	Open_Line_Info = async (line_data: string, network_data: Network): Promise<void> => {
 		this.Open();
 		let base_panel = Utils.Get_Subnode(this.shadowRoot!,".base-panel")
 		while (base_panel.firstChild)

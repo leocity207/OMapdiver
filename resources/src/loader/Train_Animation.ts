@@ -34,8 +34,8 @@ class Train_Animation extends Loader {
 	 * Create a Train animation Object ready to be added to the Dom or used inside an App
 	 * @returns {Train_Animation} A ready to be used Train animation.
 	 */
-	static Create() {
-		return document.createElement("train-animation");
+	static Create(): Train_Animation  {
+		return document.createElement("train-animation") as Train_Animation;
 	}
 }
 

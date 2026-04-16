@@ -134,7 +134,7 @@ class SVG_Map {
 	* @param {String} language language of the map
 	* @param {String} id id to create the canva to
 	*/
-	Setup = async (language: string, id: string) => {
+	Setup = async (language: string, id: string | HTMLCanvasElement) => {
 		this.language = language
 
 		this.fabric_canvas = new Canvas(id, {

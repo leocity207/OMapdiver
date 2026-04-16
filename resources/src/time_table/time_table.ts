@@ -1,7 +1,7 @@
 import Utils from "../utils/utils";
 import Switch_Pattern from "../components/pattern_switch"
 import TimeTable_Service_Mission from "./time_table_service_mission"
-import { Network } from "../utils/networktype";
+import { Network, Pattern_Schemes } from "../utils/networktype";
 import CSS_timetable from '../../style/timetable.css';
 
 
@@ -51,11 +51,11 @@ class TimeTable extends HTMLElement {
 		return elt;
 	}
 
-	On_Calendar_Pattern(selected_pattern) {
+	On_Calendar_Pattern(selected_pattern: string) {
 
 	}
 
-	On_Stop_Pattern(selected_pattern) {
+	On_Stop_Pattern(selected_pattern: string) {
 
 	}
 

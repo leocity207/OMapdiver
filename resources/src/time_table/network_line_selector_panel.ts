@@ -1,21 +1,28 @@
 import Utils from "../utils/utils";
 import Top_Panel from "../components/top_panel"
-import CSS_network_line_selector_panel from '../../style/network_line_selector_panel.css';
 import { Subject } from "rxjs";
+import { Network } from "../utils/networktype";
+import CSS_network_line_selector_panel from '../../style/network_line_selector_panel.css';
 
 
+type LineSelectorEvent = {
+	line: string;
+	network: Network;
+};
 class Network_Line_Selector_Panel extends Top_Panel
 {
 
 	/**
 	 * Observable subject
 	 */
-	subject = null;
+	private subject: Subject<LineSelectorEvent>;
 
 	/**
 	 * data about the current network
 	 */
-	network_data = null;
+	private network_data: Network| null  = null;
+
+	private line_container: HTMLElement;
 
 	static template = (() => {
 		const template = document.createElement('template');
@@ -33,17 +40,17 @@ class Network_Line_Selector_Panel extends Top_Panel
 
 	constructor() {
 		super();
-		this.subject = new Subject();
-		Utils.Add_Stylesheet(this.shadowRoot, CSS_network_line_selector_panel);
-		Utils.Clone_Node_Into(this.content_wrapper, Network_Line_Selector_Panel.template);
-		this.line_container = Utils.Get_Subnode(this.shadowRoot, ".line-container");
+		this.subject = new Subject<LineSelectorEvent>();
+		Utils.Add_Stylesheet(this.shadowRoot!, CSS_network_line_selector_panel);
+		Utils.Clone_Node_Into(this.content_wrapper!, Network_Line_Selector_Panel.template);
+		this.line_container = Utils.Get_Subnode(this.shadowRoot!, ".line-container");
 	}
 
 	Get_Observable() {
 		return this.subject;
 	}
 
-	Initialize(network_data) {
+	Initialize(network_data: Network) {
 		this.network_data = network_data;
 		for(let [line_ID, data] of Object.entries(this.network_data.lines)) {
 			let icon = Utils.Clone_Node_Into(this.line_container, Network_Line_Selector_Panel.icon_template);
@@ -55,6 +62,7 @@ class Network_Line_Selector_Panel extends Top_Panel
 				console.warn('No <rect> element found in SVG.');
 
 			icon.addEventListener('click', (e) => {
+				if (!this.network_data) throw Error(" network data should not be null");
 				this.subject.next({ line: line_ID, network: this.network_data})
 			});
 		}

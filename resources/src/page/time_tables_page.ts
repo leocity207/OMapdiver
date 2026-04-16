@@ -2,6 +2,7 @@ import Page from "./page";
 import Network_Line_Selector_Panel from "../time_table/network_line_selector_panel"
 import Utils from "../utils/utils";
 import TimeTable from "../time_table/time_table";
+import { Network } from "../utils/networktype";
 /**
  * Time_Tables_Page define the page to show different timetable
  */
@@ -10,12 +11,15 @@ class Timetables_Page extends Page {
 	/**
 	 * node pointing to the line selector panel
 	 */
-	network_line_selector_panel = null;
+	network_line_selector_panel: Network_Line_Selector_Panel;
 
 	/**
 	 * node pointing to the actual timetable
 	 */
-	time_table = null;
+	time_table: TimeTable;
+
+
+	network_data: Network | null = null;
 
 	/**
 	 * Base template strucutre
@@ -29,16 +33,19 @@ class Timetables_Page extends Page {
 
 		return template;
 	})();
+	
+	
 
 	constructor() {
 		super();
+		if(!this.shadowRoot) throw Error("shadowroot is null");
 		Utils.Clone_Node_Into(this.shadowRoot, Timetables_Page.template_base);
-		this.network_line_selector_panel = Utils.Get_Subnode(this.shadowRoot, "network-line-selector-panel");
-		this.time_table = Utils.Get_Subnode(this.shadowRoot, "timetable-table");
+		this.network_line_selector_panel = Utils.Get_Subnode(this.shadowRoot, "network-line-selector-panel") as Network_Line_Selector_Panel;
+		this.time_table = Utils.Get_Subnode(this.shadowRoot, "timetable-table") as TimeTable;
 	}
 
 	Initialize_Timetables = async () => {
-		this.network_data = await Utils.Fetch_Resource("dyn/network_data");
+		this.network_data = await Utils.Fetch_Resource("dyn/network_data") as Network;
 		this.network_line_selector_panel.Initialize(this.network_data);
 		this.network_line_selector_panel.Get_Observable().subscribe((data) => this.time_table.Set_TimeTable_Content(data.line, data.network));
 	}
@@ -48,8 +55,8 @@ class Timetables_Page extends Page {
 	 *
 	 * @returns {Map_Page} a Page Object
 	 */
-	static Create() {
-		return document.createElement('timetables-page');
+	static Create(): Timetables_Page {
+		return document.createElement('timetables-page') as Timetables_Page;
 	}
 
 	static icon = '<?xml version="1.0" encoding="UTF-8"?>\

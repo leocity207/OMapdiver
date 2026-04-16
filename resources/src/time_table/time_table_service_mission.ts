@@ -2,30 +2,37 @@ import Utils from "../utils/utils";
 import CSS_timetable_service_mission from '../../style/timetable_service_mission.css';
 import { Line, Station, Timetable } from "../utils/networktype";
 
-function Normalize_Class_Token(value) {
+function Normalize_Class_Token(value: any) {
 	return String(value)
 		.trim()
 		.toLowerCase()
 		.replace(/[^a-z0-9_-]+/g, "-");
 }
 
-function To_Array(value) {
+function To_Array(value: any[] | null | number): any[] {
 	if (Array.isArray(value)) return value;
 	if (value == null) return [];
 	return [value];
 }
 
-function Pattern_List_To_Tokens(list) {
+function Pattern_List_To_Tokens(list: any) {
 	return To_Array(list).map(Normalize_Class_Token);
 }
 
-function Has_Any_Intersection(list_a, list_b) {
+function Has_Any_Intersection(list_a: any[], list_b: any[]) {
 	if (!list_a || list_a.length === 0) return true; // no filter => visible
 	const set_b = new Set(list_b);
 	for (const item of list_a) {
 		if (set_b.has(item)) return true;
 	}
 	return false;
+}
+
+interface Display_State { 
+	calendar_patterns: string[];
+	stop_patterns: string[];
+	display_hidden_stations: boolean;
+	show_arrival_minutes: boolean; 
 }
 
 class TimeTable_Services_Missions extends HTMLElement {
@@ -59,7 +66,7 @@ class TimeTable_Services_Missions extends HTMLElement {
 	})();
 
 	m_data: Line | null;
-	m_display_state: { calendar_patterns: never[]; stop_patterns: never[]; display_hidden_stations: boolean; show_arrival_minutes: boolean; };
+	m_display_state: Display_State;
 	m_stations: {[index: string]: Station} | null;
 
 	constructor() {
@@ -112,7 +119,7 @@ class TimeTable_Services_Missions extends HTMLElement {
 	 * Update only the display state without rebuilding the whole timetable.
 	 * @param {Object} display_state
 	 */
-	Update_Display_State(display_state = {}) {
+	Update_Display_State(display_state: Display_State) {
 		if (display_state.calendar_patterns !== undefined) {
 			this.m_display_state.calendar_patterns = Pattern_List_To_Tokens(display_state.calendar_patterns);
 		}
@@ -139,11 +146,11 @@ class TimeTable_Services_Missions extends HTMLElement {
 	 * Build the complete table.
 	 */
 	Render() {
-		const thead = this.shadowRoot!.querySelector("thead");
-		const tbody = this.shadowRoot!.querySelector("tbody");
-		const line_badge = this.shadowRoot!.querySelector(".timetable-line-badge");
-		const line_title = this.shadowRoot!.querySelector(".timetable-line-title");
-		const line_subtitle = this.shadowRoot!.querySelector(".timetable-line-subtitle");
+		const thead = this.shadowRoot!.querySelector("thead") as HTMLElement;
+		const tbody = this.shadowRoot!.querySelector("tbody") as HTMLElement;
+		const line_badge = this.shadowRoot!.querySelector(".timetable-line-badge") as HTMLElement;
+		const line_title = this.shadowRoot!.querySelector(".timetable-line-title") as HTMLElement;
+		const line_subtitle = this.shadowRoot!.querySelector(".timetable-line-subtitle") as HTMLElement;
 
 		thead!.replaceChildren();
 		tbody!.replaceChildren();
@@ -198,6 +205,7 @@ class TimeTable_Services_Missions extends HTMLElement {
 		const timetables = line.timetables ?? [];
 
 		for (let station_index = 0; station_index < stations.length; station_index++) {
+			if(this.m_stations == null) throw Error("m_station should not be null")
 			const station_id = stations[station_index];
 
 			const tr = document.createElement("tr");
@@ -226,8 +234,8 @@ class TimeTable_Services_Missions extends HTMLElement {
 				const arrival = timetable.arrival_minutes?.[station_index] ?? null;
 				const departure = timetable.departure_minutes?.[station_index] ?? null;
 
-				const has_arrival = arrival !== null && arrival !== undefined && arrival !== "";
-				const has_departure = departure !== null && departure !== undefined && departure !== "";
+				const has_arrival = arrival !== null && arrival !== undefined;
+				const has_departure = departure !== null && departure !== undefined;
 
 				if (!has_arrival && !has_departure) {
 					td.classList.add("is-empty");
@@ -276,15 +284,15 @@ class TimeTable_Services_Missions extends HTMLElement {
 	_Refresh_Visibility() {
 		if (!this.m_data) return;
 
-		const root = this.shadowRoot!.querySelector(".timetable-root")!;
-		const thead = this.shadowRoot!.querySelector("thead")!;
-		const tbody = this.shadowRoot!.querySelector("tbody")!;
+		const root = this.shadowRoot!.querySelector(".timetable-root") as HTMLElement;
+		const thead = this.shadowRoot!.querySelector("thead") as HTMLElement;
+		const tbody = this.shadowRoot!.querySelector("tbody") as HTMLElement;
 
 		const active_calendar = this.m_display_state.calendar_patterns;
 		const active_stop = this.m_display_state.stop_patterns;
 
 		// 1) Column visibility: header + all cells in the same timetable column.
-		const header_cells = thead.querySelectorAll("th.timetable-header-cell");
+		const header_cells = thead.querySelectorAll("th.timetable-header-cell") as NodeListOf<HTMLElement>;
 		header_cells.forEach((th, column_index) => {
 			const cal_tokens = JSON.parse(th.dataset.calendarPatterns || "[]");
 			const stop_tokens = JSON.parse(th.dataset.stopPatterns || "[]");
@@ -298,7 +306,7 @@ class TimeTable_Services_Missions extends HTMLElement {
 
 			const body_rows = tbody.querySelectorAll("tr.station-row");
 			for (const row of body_rows) {
-				const cells = row.querySelectorAll("td.timetable-cell");
+				const cells = row.querySelectorAll("td.timetable-cell") as NodeListOf<HTMLElement>;
 				const cell = cells[column_index];
 				if (!cell) continue;
 
@@ -311,7 +319,7 @@ class TimeTable_Services_Missions extends HTMLElement {
 		// Hide rows by default if none of their visible timetable cells contain content.
 		const rows = tbody.querySelectorAll("tr.station-row");
 		rows.forEach((row) => {
-			const cells = row.querySelectorAll("td.timetable-cell");
+			const cells = row.querySelectorAll("td.timetable-cell") as NodeListOf<HTMLElement>;
 			let has_visible_content = false;
 
 			for (const cell of cells) {

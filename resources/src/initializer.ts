@@ -9,7 +9,7 @@ import Full_Departure_Boards from './page/full_departure_boards';
 
 async function Initialize() {
 	let expanding_list = App_Container.Create();
-	document.getElementById('root').appendChild(expanding_list);
+	document.getElementById('root')!.appendChild(expanding_list);
 
 	let loader = Train_Animation.Create();
 	if(App_Config.HAVE_NETWORK_MAP)
@@ -18,9 +18,9 @@ async function Initialize() {
 		let app = App.Create(loader, map_page, Network_Map_Page.icon, "Map");
 		expanding_list.Add_App(app);
 		app.Loading();
-		app.Page.Initialize_Map().then(async () => {
+		map_page.Initialize_Map().then(async () => {
 			app.Loaded();
-			await app.Page.Initial_Zoom_Move();
+			await map_page.Initial_Zoom_Move();
 		});
 
 	}

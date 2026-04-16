@@ -11,17 +11,17 @@ import Utils from "../utils/utils";
  *
  * Map_App define a custom element named "svg-map-app"
  */
-class Map_Page extends Page {
+class Map_Page<T extends SVG_Map> extends Page {
 
 	/**
 	 * the map object
 	 */
-	map = null;
+	map: T | null = null;
 
 	/**
 	 * the resizer observer on the map container
 	 */
-	resize_observer = null;
+	resize_observer: ResizeObserver | null = null;
 
 	/**
 	 * Base template strucutre
@@ -43,6 +43,7 @@ class Map_Page extends Page {
 
 	constructor() {
 		super();
+		if(!this.shadowRoot) throw Error("shadowroot is null");
 		Utils.Clone_Node_Into(this.shadowRoot, Map_Page.template_base);
 	}
 
@@ -50,6 +51,7 @@ class Map_Page extends Page {
 	 * Asynchronous function that initialize the map. the function resolve when the SVG is loaded and displayed inside the current node
 	 */
 	Initialize_Map = async () => {
+		if(!this.shadowRoot) throw Error("shadowroot is null");
 		this.map = new SVG_Map("Desktop", "image/map.svg", Config);
 		await this.map.Setup("Fr", Utils.Get_Subnode(this.shadowRoot, '.map-canvas'));
 		this.map.Setup_Mouse_Handlers();
@@ -57,10 +59,10 @@ class Map_Page extends Page {
 		this.resize_observer = new ResizeObserver(entries => {
 			for (let entry of entries) {
 				const { width, height } = entry.contentRect;
-				this.map.Zoom_Check_Map_Resize(width, height);
+				this.map!.Zoom_Check_Map_Resize(width, height);
 			}
 		});
-		this.resize_observer.observe(this.map_container);
+		this.resize_observer.observe(Utils.Create_Element_With_Class('div','map-container'));
 	}
 
 	/**

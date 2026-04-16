@@ -79,8 +79,8 @@ class App_Container extends HTMLElement
 	*
 	* @return a new instance App_Container ready to be added to the DOM
 	*/
-	static Create() {
-		return document.createElement("app-container");
+	static Create(): App_Container {
+		return document.createElement("app-container") as App_Container;
 	}
 
 	/**

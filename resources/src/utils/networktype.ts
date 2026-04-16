@@ -14,6 +14,7 @@ export interface Stop_Patterns {
 	label : string,
 	level: number,
 	variant: string[],
+	is_exceptional : boolean,
 	color : string,
 	icon : string
 }

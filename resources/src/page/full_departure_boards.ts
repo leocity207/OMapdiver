@@ -35,7 +35,7 @@ class Full_Departure_Boards extends Page {
 
 	Load_Data()
 	{
-		(Utils.Get_Subnode(this.shadowRoot!,"sticky-header") as Sticky_Header).Show_Left_Panel();
+	
 	}
 
 	/**
@@ -43,8 +43,8 @@ class Full_Departure_Boards extends Page {
 	 *
 	 * @returns {Map_Page} a Page Object
 	 */
-	static Create() {
-		return document.createElement('full-departure-boards-page');
+	static Create(): Full_Departure_Boards {
+		return document.createElement('full-departure-boards-page') as Full_Departure_Boards;
 	}
 
 	static icon = '<?xml version="1.0" encoding="UTF-8"?>\

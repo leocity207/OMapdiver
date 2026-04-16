@@ -4,18 +4,20 @@ import Utils from "../utils/utils";
 import { Config, Network_Config} from "../../resources-config/config"
 import Switch_Event from "../components/switch";
 import Round_Cross from "../components/round-cross";
+import SVG_Map from "../map/svg_map";
+import Right_Panel from "../right-panel/right-panel";
 
 /**
  * Network_Map_Station define a node that contain a Network_Map object
  *
  * Map_Page define a custom element named "svg-map-app"
  */
-class Network_Map_Page extends Map_Page {
+class Network_Map_Page extends Map_Page<Network_Map> {
 
 	/**
 	 * last event that happend in the form  {type: string, detail: Any};
 	 */
-	prev_event = null;
+	prev_event: {type: string, detail: string} | null = null;
 
 	/**
 	 * tells wether the panel is open (should be unused)
@@ -32,9 +34,12 @@ class Network_Map_Page extends Map_Page {
 	 *
 	 * @param {Object} event
 	 */
-	On_Station_CLicked(event) {
+	On_Station_CLicked(event: CustomEvent) {
+		if(this.map == null) throw("Map should not be null");
 		this.map.Highlight_All_Lines_At_Station(event.detail);
-		Utils.Get_Subnode(this.shadowRoot!, 'right-panel').Open_Station_Info(event.detail, this.network_data);
+		const right_panel = Utils.Get_Subnode(this.shadowRoot!, 'right-panel') as Right_Panel;
+		if(this.network_data)
+			right_panel.Open_Station_Info(event.detail, this.network_data);
 		this.map.Zoom_Highlighted_Stations(event.detail);
 		this.prev_event = {type: "station", detail: event.detail};
 	}
@@ -44,9 +49,12 @@ class Network_Map_Page extends Map_Page {
 	 *
 	 * @param {Object} event
 	 */
-	On_Line_CLicked(event) {
+	On_Line_CLicked(event: CustomEvent) {
+		if(this.map == null) throw("Map should not be null");
 		this.map.Highlight_Lines([event.detail]);
-		Utils.Get_Subnode(this.shadowRoot!, 'right-panel').Open_Line_Info(event.detail, this.network_data);
+		const right_panel = Utils.Get_Subnode(this.shadowRoot!, 'right-panel') as Right_Panel;
+		if(this.network_data)
+			right_panel.Open_Line_Info(event.detail, this.network_data);
 		this.map.Zoom_Highlighted_Line(event.detail);
 		this.prev_event = {type: "line", detail: event.detail};
 	}
@@ -56,11 +64,11 @@ class Network_Map_Page extends Map_Page {
 	 *
 	 * @param {Object} event
 	 */
-	On_Pop_State(event) {
+	On_Pop_State(event: PopStateEvent) {
 		if(event.state) {
 			if(event.state.line)
-				return this.On_Line_CLicked({detail: event.state.line})
-			return this.On_Station_CLicked({detail: event.state.station})
+				return this.On_Line_CLicked({detail: event.state.line} as CustomEvent)
+			return this.On_Station_CLicked({detail: event.state.station} as CustomEvent)
 		}
 		else {
 			Utils.Get_Subnode(this.shadowRoot!, 'right-panel').Close();
@@ -97,7 +105,7 @@ class Network_Map_Page extends Map_Page {
 	 */
 	Initialize_Map = async () => {
 		// Set variable
-		this.prev_event = {type: undefined, detail: undefined};
+		this.prev_event = { type: undefined, detail: undefined };
 		this.panel_detail_is_open = false;
 
 		// Bind calback to this
@@ -112,15 +120,16 @@ class Network_Map_Page extends Map_Page {
 		// Initialize map
 		this.map = new Network_Map("Desktop", "resources-config/image/map.svg", Config, Network_Config);
 		await this.map.Setup("Fr", Utils.Get_Subnode(this.shadowRoot, '.map-canvas'));
-		this.network_data = await Utils.Fetch_Resource("dyn/network_data")
+		this.network_data = await Utils.Fetch_Resource("dyn/network_data");
 		this.map.Setup_Mouse_Handlers(this.network_data.lines, this.network_data.stations);
 
 		const labels = Object.values(this.network_data.lines).map(line => line.label).concat(Object.values(this.network_data.stations).map(station => station.label));
 
 		Utils.Get_Subnode(this.shadowRoot, 'sticky-header').Set_Autocomplete_List(labels).subscribe(event => this.On_Selected_By_Label(event.data));
 		Switch_Event.Get_Observable("color").subscribe((event) => {
-			if(event.data)
+			if (event.data)
 				this.map.Change_Color("easy");
+
 			else
 				this.map.Change_Color("default");
 		});
@@ -141,15 +150,15 @@ class Network_Map_Page extends Map_Page {
 			}, 25); //Debounce time
 		});
 		this.resize_observer.observe(Utils.Get_Subnode(this.shadowRoot, '.map-container'));
-	}
+	};
 
 	/**
 	 * Create a Map_App object and initialize it.
 	 *
 	 * @returns {Map_App} an Page Object
 	 */
-	static Create() {
-		return document.createElement("network-map-page");
+	static Create(): Network_Map_Page {
+		return document.createElement("network-map-page") as Network_Map_Page;
 	}
 }
 
