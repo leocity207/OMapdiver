@@ -2,8 +2,10 @@ import Base_Panel from "./panel";
 import Switch_Event from "./switch";
 import Hamburger from "./hamburger";
 import Utils from "../utils/utils";
-import CSS_left_panel from '../../style/left-panel.css';
 import { Subscription } from "rxjs";
+
+//@ts-ignore for css import
+import CSS_left_panel from '../../style/left-panel.css';
 
 
 /**

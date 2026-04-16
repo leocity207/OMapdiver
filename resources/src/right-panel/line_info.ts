@@ -2,6 +2,8 @@ import Line_Schedule from './line-schedule';
 import Round_Cross from '../components/round-cross';
 import Utils from "../utils/utils"
 import { Line, Network } from '../utils/networktype';
+
+//@ts-ignore for css import
 import CSS_line_info from '../../style/line-info.css';
 
 

@@ -2,6 +2,8 @@ import Loader from '../loader/loader';
 import Page from '../page/page';
 import Displayable from '../utils/displayable';
 import Utils from '../utils/utils';
+
+//@ts-ignore for css import
 import CSS_app from '../../style/app.css';
 
 

@@ -6,6 +6,9 @@ import Switch_Event from "../components/switch";
 import Round_Cross from "../components/round-cross";
 import SVG_Map from "../map/svg_map";
 import Right_Panel from "../right-panel/right-panel";
+import { Network } from "../utils/networktype";
+import Sticky_Header from "../components/sticky_header";
+import { ObservableEvent } from "../utils/observable";
 
 /**
  * Network_Map_Station define a node that contain a Network_Map object
@@ -17,7 +20,7 @@ class Network_Map_Page extends Map_Page<Network_Map> {
 	/**
 	 * last event that happend in the form  {type: string, detail: Any};
 	 */
-	prev_event: {type: string, detail: string} | null = null;
+	prev_event: {type: string | null, detail: string | null} | null = null;
 
 	/**
 	 * tells wether the panel is open (should be unused)
@@ -27,7 +30,7 @@ class Network_Map_Page extends Map_Page<Network_Map> {
 	/**
 	 * data bout the network that is being displayed {Stations: json_data, detail: json_data}
 	 */
-	network_data = null;
+	network_data: Network | null = null;
 
 	/**
 	 * When the user click on a staion
@@ -71,14 +74,16 @@ class Network_Map_Page extends Map_Page<Network_Map> {
 			return this.On_Station_CLicked({detail: event.state.station} as CustomEvent)
 		}
 		else {
-			Utils.Get_Subnode(this.shadowRoot!, 'right-panel').Close();
+			if(this.prev_event == null || this.map == null) throw Error("prev_event was null")
+			const right_panel = Utils.Get_Subnode(this.shadowRoot!, 'right-panel') as Right_Panel;
+			right_panel.Close();
 			if(!this.prev_event.type)
 				this.map.Initial_Zoom_Move();
 			if(this.prev_event.type === 'station')
 				this.map.Reset_Line_Highlight();
 			else if(this.prev_event.type === 'line')
 				this.map.Reset_Line_Highlight();
-			this.prev_event = {type: "back"};
+			this.prev_event = {type: "back", detail: null};
 		}
 	}
 
@@ -86,16 +91,17 @@ class Network_Map_Page extends Map_Page<Network_Map> {
 	 * when the user select a label on the map
 	 * @param {Object} label
 	 */
-	On_Selected_By_Label(label) {
-		let solutionKey = Object.keys(this.network_data.stations).find(key => this.network_data.stations[key].label === label);
+	On_Selected_By_Label(label: string) {
+		if(this.network_data == null) throw("Map should not be null");
+		let solutionKey = Object.keys(this.network_data.stations).find(key => this.network_data!.stations[key].label === label);
 		if(solutionKey) {
 			history.pushState({ station: solutionKey }, "", solutionKey);
-			return this.On_Station_CLicked({type: 'station', detail: solutionKey});
+			return this.On_Station_CLicked({type: 'station', detail: solutionKey} as CustomEvent);
 		}
-		solutionKey = Object.keys(this.network_data.lines).find(key => this.network_data.lines[key].label === label);
+		solutionKey = Object.keys(this.network_data.lines).find(key => this.network_data!.lines[key].label === label);
 		if(solutionKey) {
 			history.pushState({ line: solutionKey }, "", solutionKey);
-			return this.On_Line_CLicked({type: 'line', detail: solutionKey})
+			return this.On_Line_CLicked({type: 'line', detail: solutionKey} as CustomEvent)
 		}
 		if(!solutionKey)
 			return console.error("No solution found for label " + label);
@@ -104,8 +110,9 @@ class Network_Map_Page extends Map_Page<Network_Map> {
 	 * Asynchronous function that initialize the map. the function resolve when the SVG is loaded and displayed inside the current node
 	 */
 	Initialize_Map = async () => {
+		if(!this.shadowRoot) throw Error("Shadow root should be initialized");
 		// Set variable
-		this.prev_event = { type: undefined, detail: undefined };
+		this.prev_event = { type: null, detail: null };
 		this.panel_detail_is_open = false;
 
 		// Bind calback to this
@@ -119,14 +126,17 @@ class Network_Map_Page extends Map_Page<Network_Map> {
 		document.addEventListener("line-click", this.On_Line_CLicked);
 		// Initialize map
 		this.map = new Network_Map("Desktop", "resources-config/image/map.svg", Config, Network_Config);
-		await this.map.Setup("Fr", Utils.Get_Subnode(this.shadowRoot, '.map-canvas'));
+		await this.map.Setup("Fr", Utils.Get_Subnode(this.shadowRoot, '.map-canvas') as HTMLCanvasElement);
 		this.network_data = await Utils.Fetch_Resource("dyn/network_data");
-		this.map.Setup_Mouse_Handlers(this.network_data.lines, this.network_data.stations);
+		if(!this.network_data) throw Error("Network data should be initialized");
+		this.map.Setup_Mouse_Handlers_With_Data(this.network_data.lines, this.network_data.stations);
 
 		const labels = Object.values(this.network_data.lines).map(line => line.label).concat(Object.values(this.network_data.stations).map(station => station.label));
 
-		Utils.Get_Subnode(this.shadowRoot, 'sticky-header').Set_Autocomplete_List(labels).subscribe(event => this.On_Selected_By_Label(event.data));
-		Switch_Event.Get_Observable("color").subscribe((event) => {
+		const sticky_header = Utils.Get_Subnode(this.shadowRoot, 'sticky-header') as Sticky_Header;
+		sticky_header.Set_Autocomplete_List(labels).subscribe((event: ObservableEvent<string>) => this.On_Selected_By_Label(event.data));
+		Switch_Event.Get_Observable<boolean>("color").subscribe((event: ObservableEvent<boolean>) => {
+			if(!this.map) throw Error("Map is null");
 			if (event.data)
 				this.map.Change_Color("easy");
 
@@ -136,15 +146,16 @@ class Network_Map_Page extends Map_Page<Network_Map> {
 
 		Round_Cross.Get_Observable("right-panel-cross").subscribe((event) => {
 			history.pushState(null, "", "/");
-			this.On_Pop_State({});
+			this.On_Pop_State({} as PopStateEvent);
 		});
 
-		let resizeTimeout;
+		let resizeTimeout = 0;
 		this.resize_observer = new ResizeObserver(entries => {
 			clearTimeout(resizeTimeout);
 			resizeTimeout = setTimeout(() => {
 				for (let entry of entries) {
 					const { width, height } = entry.contentRect;
+					if(!this.map) throw Error("Map is null")
 					this.map.Zoom_Check_Map_Resize(width, height);
 				}
 			}, 25); //Debounce time

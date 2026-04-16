@@ -10,6 +10,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"rootDir": "./resources",
 		"outDir": "./resources/tsbuild",
+		"compilerOptions": "es2022"
 
 	},
 	"include": ["resources/src/**/*"],

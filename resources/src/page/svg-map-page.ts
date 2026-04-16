@@ -52,7 +52,7 @@ class Map_Page<T extends SVG_Map> extends Page {
 	 */
 	Initialize_Map = async () => {
 		if(!this.shadowRoot) throw Error("shadowroot is null");
-		this.map = new SVG_Map("Desktop", "image/map.svg", Config);
+		this.map = new SVG_Map("Desktop", "image/map.svg", Config) as T;
 		await this.map.Setup("Fr", Utils.Get_Subnode(this.shadowRoot, '.map-canvas'));
 		this.map.Setup_Mouse_Handlers();
 

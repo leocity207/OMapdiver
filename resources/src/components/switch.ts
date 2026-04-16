@@ -1,6 +1,8 @@
 import Observable from "../utils/observable";
 import Toggleable from "../utils/toggleable";
 import Utils from "../utils/utils"
+
+//@ts-ignore for css import
 import CSS_switch from '../../style/switch.css';
 
 /**

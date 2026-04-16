@@ -2,6 +2,8 @@ import Observable from "../utils/observable";
 import Toggleable from "../utils/toggleable";
 import Utils from "../utils/utils";
 import { Pattern_Schemes } from "../utils/networktype";
+
+//@ts-ignore for css import
 import CSS_Pattern_Switch from "../../style/pattern_switch.css";
 
 

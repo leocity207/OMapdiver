@@ -2,6 +2,8 @@ import Utils from "../utils/utils";
 import Top_Panel from "../components/top_panel"
 import { Subject } from "rxjs";
 import { Network } from "../utils/networktype";
+
+//@ts-ignore for CSS import
 import CSS_network_line_selector_panel from '../../style/network_line_selector_panel.css';
 
 

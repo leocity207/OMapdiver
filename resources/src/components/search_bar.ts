@@ -1,5 +1,7 @@
 import Observable from "../utils/observable";
 import Utils from "../utils/utils"
+
+//@ts-ignore for css import
 import CSS_search_bar from '../../style/search-bar.css';
 
 /**

@@ -1,5 +1,7 @@
 import Observable from "../utils/observable";
 import Utils from "../utils/utils"
+
+//@ts-ignore for css import
 import CSS_hamburger from '../../style/hamburger.css';
 
 /**

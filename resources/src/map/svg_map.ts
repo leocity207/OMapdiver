@@ -649,7 +649,7 @@ class SVG_Map {
 	* @param {Event} event is the hammer event when we are moving around
 	* @private
 	*/
-	_Handle_User_Map_Move_Touch = (event: fabric.BasicTransformEvent<TouchEvent>): void => {
+	_Handle_User_Map_Move_Touch = (event: fabric.BasicTransformEvent<fabric.TPointerEvent>): void => {
 		if(this.fabric_canvas === null) throw Error(" fabric is null");;
 		// if we have a pinch gesture going on, return and let hammerjs handle it in _Handle_User_Gesture_Zoom
 		if (event.e.touches && event.e.touches.length === 2 || this.map_animation_run) return;
@@ -825,7 +825,7 @@ class SVG_Map {
 	if(this.fabric_canvas === null ) return ;
 	
 	const dim: fabric.TSize = {width: map_container_width, height: map_container_height};
-	const option: fabric.TCanvasSizeOptions = { cssOnly: false,backstoreOnly: false};
+	const option: fabric.TCanvasSizeOptions = { cssOnly: false, backstoreOnly: true};
 	this.fabric_canvas.setDimensions(dim, option);
 
 	// recalcul des offsets (DOM)

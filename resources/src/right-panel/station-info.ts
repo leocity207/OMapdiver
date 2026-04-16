@@ -3,6 +3,7 @@ import Round_Cross from '../components/round-cross';
 import Utils from '../utils/utils';
 import { Network, Pattern, Station } from '../utils/networktype';
 
+//@ts-ignore for css import
 import CSS_station_info from '../../style/station-info.css';
 
 /**

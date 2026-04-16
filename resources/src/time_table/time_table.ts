@@ -2,6 +2,8 @@ import Utils from "../utils/utils";
 import Switch_Pattern from "../components/pattern_switch"
 import TimeTable_Service_Mission from "./time_table_service_mission"
 import { Network, Pattern_Schemes } from "../utils/networktype";
+
+// @ts-ignore for CSS import
 import CSS_timetable from '../../style/timetable.css';
 
 

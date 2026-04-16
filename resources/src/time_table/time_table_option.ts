@@ -1,4 +1,6 @@
 import Utils from "../utils/utils";
+
+// @ts-ignore for CSS import
 import CSS_timetable_options from '../../style/timetable_options.css';
 
 

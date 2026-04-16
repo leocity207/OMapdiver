@@ -1,5 +1,7 @@
 import App from './app';
 import Utils from '../utils/utils';
+
+//@ts-ignore for css import
 import CSS_app_container from '../../style/app-container.css';
 
 

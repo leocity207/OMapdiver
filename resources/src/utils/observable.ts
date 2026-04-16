@@ -2,7 +2,7 @@ import { Subject, filter, Observable as RxObservable } from "rxjs";
 
 type Constructor<T = {}> = new (...args: any[]) => T;
 
-type ObservableEvent<T = unknown> = {
+export type ObservableEvent<T = unknown> = {
 	name: string;
 	data: T;
 };

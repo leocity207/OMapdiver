@@ -1,5 +1,7 @@
 import Toggleable from "../utils/toggleable";
 import Utils from "../utils/utils"
+
+//@ts-ignore for css import
 import CSS_fold_plus_minus from '../../style/fold-plus-minus.css';
 
 /**

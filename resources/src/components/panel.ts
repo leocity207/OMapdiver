@@ -1,4 +1,6 @@
 import Utils from "../utils/utils";
+
+//@ts-ignore for css import
 import CSS_base_panel from '../../style/base-panel.css';
 
 /**

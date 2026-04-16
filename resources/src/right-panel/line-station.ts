@@ -1,6 +1,7 @@
 import Utils from '../utils/utils'
 import { InfoMessage, Network, Pattern, Station } from '../utils/networktype';
 
+//@ts-ignore for css import
 import CSS_line_station from '../../style/line-station.css';
 
 

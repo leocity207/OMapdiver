@@ -4,6 +4,7 @@ import Fold_Plus_Minus from '../components/fold-plus-minus';
 import { Line, Network, Pattern } from '../utils/networktype';
 import { Line_Station_Data } from './line-station'
 
+//@ts-ignore for css import
 import CSS_line_schedule from '../../style/line-schedule.css';
 
 

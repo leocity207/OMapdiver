@@ -1,6 +1,9 @@
 import Utils from "../utils/utils";
-import CSS_timetable_service_mission from '../../style/timetable_service_mission.css';
 import { Line, Station, Timetable } from "../utils/networktype";
+
+//@ts-ignore css import
+import CSS_timetable_service_mission from '../../style/timetable_service_mission.css';
+
 
 function Normalize_Class_Token(value: any) {
 	return String(value)

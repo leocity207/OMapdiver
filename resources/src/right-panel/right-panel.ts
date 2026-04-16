@@ -4,6 +4,7 @@ import Station_Info from "./station-info";
 import Utils from "../utils/utils";
 import { Line, Network, Station } from "../utils/networktype";
 
+//@ts-ignore for css import
 import CSS_right_panel from '../../style/right-panel.css';
 
 

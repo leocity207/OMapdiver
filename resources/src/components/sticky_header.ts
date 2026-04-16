@@ -2,6 +2,8 @@ import Observable  from "../utils/observable";
 import Utils from "../utils/utils";
 import Hamburger from "./hamburger"
 import Search_Bar from "./search_bar"
+
+//@ts-ignore for css import
 import CSS_sticky_header from '../../style/sticky-header.css';
 
 /**
@@ -66,7 +68,7 @@ class Sticky_Header extends Observable(HTMLElement) {
 	 */
 	Set_Autocomplete_List(match_list: Array<string>) {
 		(Utils.Get_Subnode(this.shadowRoot!,"search-bar") as Search_Bar).Set_Autocomplete_List(match_list);
-		return Search_Bar.Get_Observable("main-search-bar");
+		return Search_Bar.Get_Observable<string>("main-search-bar");
 	}
 }
 

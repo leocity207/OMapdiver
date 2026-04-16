@@ -1,5 +1,7 @@
 import Displayable from "../utils/displayable";
 import Utils from "../utils/utils";
+
+//@ts-ignore for css import
 import CSS_App from '../../style/app.css';
 
 /**

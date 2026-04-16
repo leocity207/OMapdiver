@@ -52,7 +52,7 @@ class Network_Map extends SVG_Map {
 	* @param Lines, list of Line Object
 	* @param Station, list of Station Objects
 	*/
-	Setup_Mouse_Handlers(lines: Object, stations: Object) {
+	Setup_Mouse_Handlers_With_Data(lines: Object, stations: Object) {
 		super.Setup_Mouse_Handlers();
 		this.lines = lines;
 		this.highlighted_line_codes = Object.keys(lines);
