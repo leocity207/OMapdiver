@@ -20,8 +20,8 @@ namespace O::DTO
 		DTO_FIELD(String, stop_pattern, "stop_pattern");
 		DTO_FIELD(String, calendar_pattern, "calendar_pattern");
 		DTO_FIELD(List<Object<Info_Message>>, info_messages, "info_messages");
-		DTO_FIELD(Vector<Int16>, departure_times, "departure_times");
-		DTO_FIELD(Vector<Int16>, arrival_times, "arrival_times");
+		DTO_FIELD(Vector<oatpp::Int64>, departure_times, "departure_minutes");
+		DTO_FIELD(Vector<oatpp::Int64>, arrival_times, "arrival_minutes");
 
 		// Optional Fields
 		DTO_FIELD(Int16, afluence, "afluence");

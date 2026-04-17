@@ -14,3 +14,55 @@ app-app {
 	position: relative;
 	display: block;
 }
+
+.app-selector {
+	position : sticky;
+	top : 0;
+	z-Index : 1000;
+	background-color : #F5F5F5;
+	padding-left : 2vh;
+	display : flex;
+	align-items : center;
+}
+
+button {
+    width: 4rem;
+    height: 4rem;
+    padding: 0.5rem;
+    border: none;
+    background: transparent;
+    border-radius: 0 0 10px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 120ms ease;
+}
+
+button .icon {
+    width: 4rem;
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button .icon svg {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+button.selected {
+    background-color: #e0e0e0;
+}
+
+button:hover {
+    background-color: #ededed;
+}
+
+button .icon svg {
+    fill: #9b9b9b;
+    stroke: #9b9b9b;
+}
