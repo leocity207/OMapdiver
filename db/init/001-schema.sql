@@ -126,7 +126,6 @@ CREATE TABLE IF NOT EXISTS pattern_info_messages (
 	PRIMARY KEY (pattern_id, position)
 );
 
-
 CREATE TABLE IF NOT EXISTS pattern_times (
 	pattern_id        text    NOT NULL REFERENCES patterns(id) ON DELETE CASCADE,
 	position          integer NOT NULL,
@@ -172,7 +171,6 @@ CREATE TABLE IF NOT EXISTS line_info_messages (
 	PRIMARY KEY (line_id, position)
 );
 
--- Helpful indexes for foreign keys and lookups
 CREATE INDEX IF NOT EXISTS idx_stations_parent_station_id ON stations(parent_station_id);
 CREATE INDEX IF NOT EXISTS idx_station_directions_station_id ON station_directions(station_id);
 CREATE INDEX IF NOT EXISTS idx_line_stations_station_id ON line_stations(station_id);
