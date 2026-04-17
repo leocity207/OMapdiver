@@ -5,7 +5,17 @@ import Hammer from 'hammerjs';
 import normalizeWheel from 'normalize-wheel';
 import Utils from '../utils/utils';
 import { Config_Type } from '../utils/configtype';
+import { String_Error } from '../utils/constant';
 
+
+export type Fabric_With_Props = FabricObject & {
+	[key: string]: unknown;
+};
+
+export interface Map_Fabric_Object extends FabricObject {
+	id?: string;
+	class?: string;
+}
 
 interface Zoom_Box {
 	center_left: number;
@@ -183,7 +193,7 @@ class SVG_Map {
 				right: obj.left, bottom: obj.top
 			};
 		} catch (err) {
-			throw Error('Failed to load SVG:', err as Error);
+			throw Error('Failed to load SVG:');
 		}
 	}
 
@@ -235,7 +245,7 @@ class SVG_Map {
 	*/
 	Animated_Pan_Zoom = async (zoom_box: Zoom_Box): Promise<void> => {
 
-		if(!this.fabric_canvas) throw Error(" fabric is null");
+		if(!this.fabric_canvas) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		// if an animation is running, interrupt it
 		utils.remove(this.move_zoom_animation_obj)
 		// reset animation state
@@ -258,7 +268,7 @@ class SVG_Map {
 		const point_diff_distance = move_x > move_y ? move_x : move_y
 		// find the zoom difference
 		const zoom_diff_distance = zoom_box.zoom_level > orig_zoom ? zoom_box.zoom_level - orig_zoom : orig_zoom - zoom_box.zoom_level
-		const animation_time = this.Calc_Map_Animation_Timing(point_diff_distance, zoom_diff_distance)
+		const animation_time =0 // this.Calc_Map_Animation_Timing(point_diff_distance, zoom_diff_distance)
 		
 		await animate(this.move_zoom_animation_obj, {
 			zoom: { to: zoom_box.zoom_level , modifier: utils.round(3)},
@@ -267,7 +277,7 @@ class SVG_Map {
 			ease: this.config.DEFAULT_ANIMATION_EASING,
 			duration: animation_time,
 			onUpdate: () => {
-				if(!this.fabric_canvas) throw Error(" fabric is null");
+				if(!this.fabric_canvas) throw Error(String_Error.NULL_FABRIC_CANVAS);
 				this.fabric_canvas.setZoom(1); // critical reset
 				this.fabric_canvas.absolutePan(new fabric.Point(
 					this.move_zoom_animation_obj.x,
@@ -287,7 +297,7 @@ class SVG_Map {
 	* This function is synchronous and wait for the end of the animation
 	*/
 	async Initial_Zoom_Move() {
-		if(this.fabric_canvas === null) throw Error(" fabric is null");
+		if(this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		const background_object = this._Find_Map_Objs_By_Id(this.config.INITIAL_CENTERING_OBJECT_ID, true, 'path')[0];
 		if (!background_object) return;
 
@@ -395,7 +405,7 @@ class SVG_Map {
 	* @protected
 	*/
 	_Handle_Mouse_Over_Obj = () => {
-		if(this.fabric_canvas === null) throw Error(" fabric is null");
+		if(this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		this.fabric_canvas.hoverCursor = "pointer";
 	}
 
@@ -404,7 +414,7 @@ class SVG_Map {
 	* @protected
 	*/
 	_Handle_Mouse_Out_Obj = () => {
-		if(this.fabric_canvas === null) throw Error(" fabric is null");
+		if(this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		this.fabric_canvas.hoverCursor = "move";
 	}
 
@@ -416,12 +426,12 @@ class SVG_Map {
 	* @returns {fabric.Object[]}  The list of objects that match the conditions
 	* @protected
 	*/
-	_Find_Map_Objs_By_Id(id: string, exact_Match: boolean = false, obj_type: string | null = null): Array<FabricObject> {
-		if(!this.fabric_canvas) throw Error(" fabric is null");
-		let result_list: Array<FabricObject> = [];
+	_Find_Map_Objs_By_Id(id: string, exact_Match: boolean = false, obj_type: string | null = null): Map_Fabric_Object[] {
+		if(!this.fabric_canvas) throw Error(String_Error.NULL_FABRIC_CANVAS);
+		let result_list: Map_Fabric_Object[] = [];
 		this._Traverse_All_Canvas_Objects(this.fabric_canvas.getObjects(), 'id', id, result_list, exact_Match);
 		if (obj_type !== null) {
-			let typed_result_list: Array<FabricObject> = [];
+			let typed_result_list: Map_Fabric_Object[] = [];
 			this._Traverse_All_Canvas_Objects(result_list, 'type', obj_type, typed_result_list, exact_Match);
 			return typed_result_list;
 		}
@@ -444,7 +454,7 @@ class SVG_Map {
 	*/
 	_Optimize_Zoom_Box_For_Viewport(bounds: Bound, extra_space: boolean): Bound {
 
-		if(this.fabric_canvas === null) throw Error("fabric canvas is missing");
+		if(this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		// Compute the center of the box
 		bounds.center_left = bounds.left + (bounds.width / 2) + (this.fabric_canvas._offset.left / 2);
 
@@ -498,7 +508,7 @@ class SVG_Map {
 	* @param {Boolean} run state of the animation true if it's runing or false if not
 	*/
 	_Handle_Animation_State = (run: boolean) => {
-		if(this.svg_main_group === null) throw Error(" fabric is null");
+		if(this.svg_main_group === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		this.map_animation_run = run;
 		// lock/unlock the mouse moving
 		this.svg_main_group.lockMovementX = run ? true : false;
@@ -555,7 +565,7 @@ class SVG_Map {
 	* @private
 	*/
 	_Handle_Pinch_Start = (event: HammerInput): void => {
-		if(this.svg_main_group === null) throw Error(" fabric is null");
+		if(this.svg_main_group === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		this.svg_main_group.lockMovementX = true;
 		this.svg_main_group.lockMovementY = true;
 		this.pinch_start_scale = event.scale
@@ -568,7 +578,7 @@ class SVG_Map {
 	* @private
 	*/
 	_Handle_Pinch_End = (event: HammerInput): void => {
-		if(this.svg_main_group === null) throw Error(" fabric is null");
+		if(this.svg_main_group === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		this.last_scale = event.scale
 		this.svg_main_group.lockMovementX = false;
 		this.svg_main_group.lockMovementY = false;
@@ -580,7 +590,7 @@ class SVG_Map {
 	* @private
 	*/
 	_Handle_User_Gesture_Zoom = (event: HammerInput): void => {
-		if(this.fabric_canvas === null) throw Error(" fabric is null");
+		if(this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		// uses pinch event from hammerjs
 		if (!this.map_animation_run) {
 			if (this.last_scale !== event.scale) {
@@ -595,7 +605,7 @@ class SVG_Map {
 				// check if the map still would cover the canvas
 				if (this.svg_main_group !== null) { // but be safe, else do nothing
 					this.fabric_canvas.zoomToPoint(new fabric.Point(event.center.x, event.center.y), zoom);
-					const calc_bounds = this.svg_main_group.getBoundingRect(false, true);
+					const calc_bounds = this.svg_main_group.getBoundingRect();
 					if ((calc_bounds.left + calc_bounds.width) < this.fabric_canvas.getWidth() || calc_bounds.left > 0)
 						this.fabric_canvas.setViewportTransform(current_viewport_transform);
 					if ((calc_bounds.top + calc_bounds.height) < this.fabric_canvas.getHeight() || calc_bounds.top > 0)
@@ -612,8 +622,8 @@ class SVG_Map {
 	* @todo If zoomed in a corner and near the edge, no zoom out is possible; we should actually pan and zoom.
 	* @private
 	*/
-	_Handle_User_Mousewheel_Zoom = (event: fabric.TPointerEventInfo): void => {
-		if(this.fabric_canvas === null) throw Error(" fabric is null");;
+	_Handle_User_Mousewheel_Zoom = (event: fabric.CanvasEvents["mouse:wheel"]): void => {
+		if(this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);;
 		// Return early if a map animation is running
 		if (this.map_animation_run) return;
 
@@ -630,7 +640,7 @@ class SVG_Map {
 		// If the main SVG group exists, apply zoom to the point
 		if (this.svg_main_group !== null) {
 			this.fabric_canvas.zoomToPoint(new fabric.Point(event.e.offsetX, event.e.offsetY), zoomLevel);
-			const bounding_rect = this.svg_main_group.getBoundingRect(false, true);
+			const bounding_rect = this.svg_main_group.getBoundingRect();
 
 			// Check if the zoom would expose the background and revert if necessary
 			if ((bounding_rect.left + bounding_rect.width) < this.fabric_canvas.getWidth() || bounding_rect.left > 0)
@@ -649,13 +659,13 @@ class SVG_Map {
 	* @param {Event} event is the hammer event when we are moving around
 	* @private
 	*/
-	_Handle_User_Map_Move_Touch = (event: fabric.BasicTransformEvent<fabric.TPointerEvent>): void => {
-		if(this.fabric_canvas === null) throw Error(" fabric is null");;
+	_Handle_User_Map_Move_Touch = (event: fabric.CanvasEvents["object:moving"]): void => {
+		if(this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		// if we have a pinch gesture going on, return and let hammerjs handle it in _Handle_User_Gesture_Zoom
-		if (event.e.touches && event.e.touches.length === 2 || this.map_animation_run) return;
+		//if (event.e.touches && event.e.touches.length === 2 || this.map_animation_run) return;
 
 		const object = event.target;
-		const bounding_rect = object.getBoundingRect(false, true);
+		const bounding_rect = object.getBoundingRect();
 		const object_left = object.left;
 		const object_top = object.top;
 
@@ -775,17 +785,21 @@ class SVG_Map {
 	 * @param {Array<FabricObject>} result          The result list that will contain all the objects that match the attributeValue for this attributeName
 	 * @param {boolean}  fullMatch       If true, the attributeValue should be exactly equal to the object's attribute value. If false, the attributeValue should be a substring of the object's attribute value
 	*/
-	_Traverse_All_Canvas_Objects = (objects: Array<FabricObject>, attributeName: string, attributeValue: string | null , result: Array<FabricObject>, fullMatch: boolean = true) : void => {
+	_Traverse_All_Canvas_Objects = (objects: FabricObject[], attributeName: string, attributeValue: string | null , result: FabricObject[], fullMatch: boolean = true) : void => {
 		for (const obj of objects) {
-			if (obj.type.includes('group'))
-				this._Traverse_All_Canvas_Objects(obj.getObjects(), attributeName, attributeValue, result, fullMatch);
+			if (obj.type.includes('group')) {
+				const group = obj as fabric.Group;
+				this._Traverse_All_Canvas_Objects(group.getObjects(), attributeName, attributeValue, result, fullMatch);
+			}
 			else {
+				const value = (obj as Fabric_With_Props)[attributeName];
+				if (typeof value !== "string") continue;
 				if (fullMatch) {
-					if (obj[attributeName] === attributeValue)
+					if (value === attributeValue)
 						result.push(obj);
 				}
 				else {
-					if (obj[attributeName].includes(attributeValue))
+					if (attributeValue && value.includes(attributeValue))
 						result.push(obj);
 				}
 			}
@@ -825,7 +839,10 @@ class SVG_Map {
 	if(this.fabric_canvas === null ) return ;
 	
 	const dim: fabric.TSize = {width: map_container_width, height: map_container_height};
-	const option: fabric.TCanvasSizeOptions = { cssOnly: false, backstoreOnly: true};
+
+	//@ts-ignore
+	const option: fabric.TCanvasSizeOptions = { cssOnly: false, backstoreOnly: false};
+	//@ts-ignore
 	this.fabric_canvas.setDimensions(dim, option);
 
 	// recalcul des offsets (DOM)

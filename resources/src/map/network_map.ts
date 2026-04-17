@@ -1,7 +1,14 @@
-import SVG_Map from './svg_map';
+import SVG_Map, { Map_Fabric_Object } from './svg_map';
 import Utils from '../utils/utils';
 import { Config_Type, Network_Config_Type } from '../utils/configtype';
-import { Color, FabricObject, TEvent, util } from 'fabric';
+import { Color, FabricObject, ObjectEvents, TEvent, TPointerEvent, util } from 'fabric';
+import { String_Error } from '../utils/constant';
+import {Fabric_With_Props} from './svg_map'
+import { Line, Station } from '../utils/networktype';
+
+interface Custom_Click_event extends CustomEventInit {
+	type: string
+}
 
 /**
  * Network_Map inherit from SVG_Map and declare map with lines, tracks and station, to zoom to and get information off
@@ -11,17 +18,17 @@ class Network_Map extends SVG_Map {
 	/**
 	 * The configuration for the Network map
 	 */
-	network_config;
+	network_config: Network_Config_Type | null = null;
 
 	/**
 	 * Object descibing the lines inside the network map
 	 */
-	lines = {};
+	lines: {[index: string]: Line}   = {};
 
 	/**
 	 * Object descibing the stations inside the network map
 	 */
-	stations = {};
+	stations: {[index: string]: Station} = {};
 
 	/**
 	 * Selected color patern for the lines
@@ -52,7 +59,8 @@ class Network_Map extends SVG_Map {
 	* @param Lines, list of Line Object
 	* @param Station, list of Station Objects
 	*/
-	Setup_Mouse_Handlers_With_Data(lines: Object, stations: Object) {
+	Setup_Mouse_Handlers_With_Data(lines: {[index: string]: Line}, stations: {[index: string]: Station}) {
+		if(!this.network_config) throw Error(String_Error.NULL_NETWORK_DATA);
 		super.Setup_Mouse_Handlers();
 		this.lines = lines;
 		this.highlighted_line_codes = Object.keys(lines);
@@ -106,13 +114,15 @@ class Network_Map extends SVG_Map {
 	* @param color the color in hexadecimal like _FFFFFF
 	* @param target the target property of the object you want to change its color (can be 'strock' or 'fill')
 	*/
-	_Change_Obj_Color = (obj: FabricObject, color: string, target = 'stroke') => {
-		if(this.fabric_canvas === null) throw Error(" fabric canva is null");
+	_Change_Obj_Color = (obj: Fabric_With_Props, color: string, target = 'stroke') => {
+		if(!this.fabric_canvas) throw Error(String_Error.NULL_FABRIC_CANVAS);
+		if(!this.network_config) throw Error(String_Error.NULL_NETWORK_DATA);
+
 		if (this.config.HARD_ANIMATION_TRANSITION) {
 			obj.set(target, color);
 			this.fabric_canvas.requestRenderAll();
 		} else {
-			const fromColor = new Color(obj[target] || '#000');
+			const fromColor = new Color(obj[target] as string || '#000');
 			const toColor = new Color(color);
 
 			let animationProgress = { t: 0 };
@@ -121,7 +131,7 @@ class Network_Map extends SVG_Map {
 			endValue: 1,
 			duration: this.network_config.COLOR_ANIMATION_TIME,
 			onChange: (t) => {
-				if(this.fabric_canvas === null) throw Error(" fabric canva is null");
+				if(this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 				animationProgress.t = t;
 				const currentColor = this._Interpolate_Color(fromColor, toColor, t).toRgba();
 				obj.set(target, currentColor);
@@ -134,9 +144,12 @@ class Network_Map extends SVG_Map {
 	_Interpolate_Color = (from: Color, to: Color ,t: number) => {
 		const from_array = from.getSource();
 		const to_array = to.getSource();
-		let final_array = new Array(4)
-		for(let i of [0, 1, 2, 3])
-			final_array[i] = from_array[i]*(1-t) + to_array[i]*t
+		const final_array: [number, number, number, number] = [
+			from_array[0] * (1 - t) + to_array[0] * t,
+			from_array[1] * (1 - t) + to_array[1] * t,
+			from_array[2] * (1 - t) + to_array[2] * t,
+			from_array[3] * (1 - t) + to_array[3] * t
+		];
 		return new Color(final_array);
 	}
 
@@ -146,6 +159,7 @@ class Network_Map extends SVG_Map {
 	 * @param {String} color the name of the type of color scheme to display ("default/simple...")
 	 */
 	Change_Color = (color: string) => {
+		if(!this.highlighted_line_codes) throw Error(String_Error.NULL_HIGHLIGHTED_LINE_CODES);
 		this.selected_color = color;
 		this.Highlight_Lines(this.highlighted_line_codes);
 	}
@@ -155,21 +169,22 @@ class Network_Map extends SVG_Map {
 	* @param line_codes List of line Codes for exmple [LER_BRE01,LGV_BRE03]
 	*/
 	Highlight_Lines = (line_codes: string[]) => {
-		if(this.fabric_canvas === null) throw Error(" fabric canva is null");
+		if(!this.network_config) throw Error(String_Error.NULL_NETWORK_DATA);
+		if(!this.fabric_canvas) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		this.highlighted_line_codes = line_codes;
 		if (this.config.DEBUG) console.log('Highlight_Lines called');
 
 		// Prepare sets for objects that need to be highlighted
-		const Tracks_to_higlight = new Set(line_codes.map(code => `${this.network_config.TRACK_PREFIX_ID}${code}`));
-		const labels_to_higlight = new Set(line_codes.map(code => `${this.network_config.LINE_LABEL_PREFIX_ID}${code}`));
+		const Tracks_to_higlight = new Set(line_codes.map(code => `${this.network_config!.TRACK_PREFIX_ID}${code}`));
+		const labels_to_higlight = new Set(line_codes.map(code => `${this.network_config!.LINE_LABEL_PREFIX_ID}${code}`));
 
 		// Precompute colors for each line code
-		const line_colors = {};
+		const line_colors: Record<string, string> = {};
 		line_codes.forEach(code => {
 			const line_data = this._Find_Line_Data_By_Id(code);
 			if (line_data) {
-				line_colors[`${this.network_config.TRACK_PREFIX_ID}${code}`] = line_data.color[this.selected_color];
-				line_colors[`${this.network_config.LINE_LABEL_PREFIX_ID}${code}`] = line_data.color[this.selected_color];
+				line_colors[`${this.network_config!.TRACK_PREFIX_ID}${code}`] = line_data.color[this.selected_color];
+				line_colors[`${this.network_config!.LINE_LABEL_PREFIX_ID}${code}`] = line_data.color[this.selected_color];
 			}
 			else
 				throw Error(`Code was not found inside the list: ${code}`);
@@ -181,20 +196,22 @@ class Network_Map extends SVG_Map {
 
 		// Process tracks
 		tracks.forEach(track => {
+			if(!track.id) return;
 			const track_id_first_part = Utils.Get_First_Part(track.id)
 			if (Tracks_to_higlight.has(track_id_first_part))
-				this._Change_Obj_Color(track, line_colors[track_id_first_part]);
+				this._Change_Obj_Color(track as Fabric_With_Props, line_colors[track_id_first_part]);
 			else
-				this._Change_Obj_Color(track, this.network_config.DISABLE_ELEMENT_COLOR);
+				this._Change_Obj_Color(track as Fabric_With_Props, this.network_config!.DISABLE_ELEMENT_COLOR);
 		});
 
 		// Process labels
 		labels.forEach(label => {
+			if(!label.id) return;
 			const label_id_first_part = Utils.Get_First_Part(label.id);
 			if (labels_to_higlight.has(label_id_first_part))
-				this._Change_Obj_Color(label, line_colors[label_id_first_part], 'fill');
+				this._Change_Obj_Color(label as Fabric_With_Props, line_colors[label_id_first_part], 'fill');
 			else
-				this._Change_Obj_Color(label, this.network_config.DISABLE_ELEMENT_COLOR, 'fill');
+				this._Change_Obj_Color(label as Fabric_With_Props, this.network_config!.DISABLE_ELEMENT_COLOR, 'fill');
 		});
 
 		this.fabric_canvas.requestRenderAll();
@@ -225,9 +242,10 @@ class Network_Map extends SVG_Map {
 	 */
 	Zoom_Highlighted_Line = (line_code: string): void => {
 		const line_data = this._Find_Line_Data_By_Id(line_code)
-		if (line_data !== undefined && line_data.map_stations !== undefined) {
-			const station_codes = line_data.map_stations.split("-");
-			this.Zoom_Highlighted_Tracks(station_codes)
+		if (line_data !== undefined && line_data.stations !== undefined) {
+			const station_codes = line_data.stations;
+			// this need to be done
+			//this.Zoom_Highlighted_Tracks(station_codes)
 		}
 	}
 
@@ -317,7 +335,7 @@ class Network_Map extends SVG_Map {
 	* @param station_type if it's a from or to station
 	*/
 	Highlight_Station = (station_code: string, station_type: string) => {
-		if(this.fabric_canvas === null) throw Error(" fabric canva is null");
+		if(this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		const all_highlights = this._Find_Map_Objs_By_Id('highlight_'); // get all, do a find on them here
 		const highlight_pos_obj = all_highlights.find(x => x.id === `highlight_pos_${station_code}`);
 		let highlight_obj = undefined;
@@ -339,12 +357,14 @@ class Network_Map extends SVG_Map {
 	* Remove all highlights for all stations
 	*/
 	Reset_All_Highlight_Station = () => {
-		if(this.fabric_canvas === null) throw Error(" fabric canva is null");
+		if(this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		const all_highlights = this._Find_Map_Objs_By_Id('highlight_'); // get all, do a find on them here
 		const highlight_origin_obj = all_highlights.find(x => x.id === 'highlight_origin');
-		highlight_origin_obj.set('visible', false)
+		if(!highlight_origin_obj) throw Error(String_Error.NULL_OBJECT);
+		highlight_origin_obj.set('visible', false);
 		const highlight_destination_obj = all_highlights.find(x => x.id === 'highlight_destination');
-		highlight_destination_obj.set('visible', false)
+		if(!highlight_destination_obj) throw Error(String_Error.NULL_OBJECT);
+		highlight_destination_obj.set('visible', false);
 		this.fabric_canvas.requestRenderAll()
 	}
 
@@ -354,14 +374,14 @@ class Network_Map extends SVG_Map {
 	* @param {String} station_code string code of the station
 	*/
 	Check_Station_Visible = (station_code: string) => {
-		if(this.fabric_canvas === null) throw Error(" fabric canva is null");
+		if(this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		const all_highlights = this._Find_Map_Objs_By_Id('highlight_'); // get all, do a find on them here
 		const highlight_pos_obj = all_highlights.find(x => x.id === `highlight_pos_${station_code}`)
 		if (highlight_pos_obj !== undefined) {
 			let vpw = this.fabric_canvas.getWidth()
 			let vph = this.fabric_canvas.getHeight()
 			let m = highlight_pos_obj.calcTransformMatrix();
-			let obj_p = fabric.util.transformPoint({ x: m[4], y: m[5] }, this.fabric_canvas.viewportTransform, false);
+			let obj_p = util.transformPoint({ x: m[4], y: m[5] }, this.fabric_canvas.viewportTransform, false);
 			let is_visible = true
 			let additional_visible_space_margin = this.config.ADDITIONAL_VISIBLE_SPACE_MARGIN_DESKTOP
 			if (this.client_type === 'mobile')
@@ -394,44 +414,45 @@ class Network_Map extends SVG_Map {
 	* Handle the when the user click on the map with a track to get more information
 	* @param event comming from hammer
 	*/
-	_Handle_Mouse_Click_Track = (event: TEvent) => {
+	_Handle_Mouse_Click_Track = (event: ObjectEvents["mouseup"]) => {
 		if (!event.currentSubTargets.length)
 			throw new Error("Event target container has nothing inside.");
 		if (!this._Check_Pointer_In_Range(event.pointer))
 			return this.config.DEBUG ? console.log("mouse click pointer is not in range") : undefined;
-		const target_id = event.currentSubTargets[0].id
-		if (!target_id.length)
+		const target_id = (event.currentSubTargets[0] as Map_Fabric_Object).id
+		if (!target_id || !target_id.length)
 			throw new Error("The target id is empty.");
 		const track_code = this._Find_Track_Code_In_Id(target_id);
 		if (!track_code)
 			throw new Error("Track code not found.");
 		history.pushState({ line: track_code }, "", track_code);
-		document.dispatchEvent(new CustomEvent('line-click', { detail: track_code, type: "line"}));
+		document.dispatchEvent(new CustomEvent('line-click', { detail: track_code, type: "line"} as Custom_Click_event));
 	}
 
 	/**
 	* Handle when the user click on a station
 	* @param event pointing to the station
 	*/
-	_Handle_Mouse_Click_Station = (event: TEvent) => {
+	_Handle_Mouse_Click_Station = (event: ObjectEvents["mouseup"]) => {
 		if (!event.currentSubTargets.length)
 			throw new Error("Event target container has nothing inside.");
 		if (!this._Check_Pointer_In_Range(event.pointer))  // only if on same position
 			return this.config.DEBUG ? console.log("mouse click pointer is not in range") : undefined;
-		const target_id = event.currentSubTargets[0].id
-		if (!target_id.length)
+		const target_id = (event.currentSubTargets[0] as Map_Fabric_Object).id
+		if (!target_id || !target_id.length)
 			throw new Error("The target id is empty.");
 		const station_code = this._Find_Station_Code_In_Id(target_id);
 		if (!station_code)
 			throw new Error("Station code not found.");
 		history.pushState({ station: station_code }, "", station_code);
-		document.dispatchEvent(new CustomEvent('station-click', { detail: station_code, type: "station"}));
+		document.dispatchEvent(new CustomEvent('station-click', { detail: station_code, type: "station"} as Custom_Click_event ));
 	}
 
 	/**
 	* find line codes in label or line id
 	*/
 	_Find_Track_Code_In_Id = (id: string) => {
+		if(!this.network_config) throw Error(String_Error.NULL_NETWORK_DATA);
 		if (id.indexOf(this.network_config.TRACK_PREFIX_ID) <= -1 && id.indexOf(this.network_config.LINE_LABEL_PREFIX_ID) <= -1)
 			throw Error("Line not found");
 		let ID_parts  = id.split('-')
@@ -444,6 +465,7 @@ class Network_Map extends SVG_Map {
 	* find station code in station label or station icon
 	*/
 	_Find_Station_Code_In_Id(id: string) {
+		if(!this.network_config) throw Error(String_Error.NULL_NETWORK_DATA);
 		if (id.indexOf(this.network_config.STATION_LABEL_PREFIX_ID) <= -1 && id.indexOf(this.network_config.STATION_PREFIX_ID) <= -1)
 			throw Error("Station not found");
 		let ID_parts  = id.split('-')
@@ -463,7 +485,7 @@ class Network_Map extends SVG_Map {
 	 * find the station json object in all stations
 	 */
 	_Find_Station_Data_By_Id = (code: string) => {
-		return this.all_stations_json.find(x => x.code === code);
+		return this.stations[code];
 	}
 }
 

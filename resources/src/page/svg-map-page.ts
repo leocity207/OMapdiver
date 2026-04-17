@@ -5,6 +5,7 @@ import Sticky_Header from "../components/sticky_header"
 import LeftPanel from "../components/left_panel"
 import Right_Panel from "../right-panel/right-panel";
 import Utils from "../utils/utils";
+import { String_Error } from "../utils/constant";
 
 /**
  * Map_App are object that define a node containing a SVG_Map for manipulation and display
@@ -43,7 +44,7 @@ class Map_Page<T extends SVG_Map> extends Page {
 
 	constructor() {
 		super();
-		if(!this.shadowRoot) throw Error("shadowroot is null");
+		if(!this.shadowRoot) throw Error(String_Error.NULL_SHADOWROOT);
 		Utils.Clone_Node_Into(this.shadowRoot, Map_Page.template_base);
 	}
 
@@ -51,7 +52,7 @@ class Map_Page<T extends SVG_Map> extends Page {
 	 * Asynchronous function that initialize the map. the function resolve when the SVG is loaded and displayed inside the current node
 	 */
 	Initialize_Map = async () => {
-		if(!this.shadowRoot) throw Error("shadowroot is null");
+		if(!this.shadowRoot) throw Error(String_Error.NULL_SHADOWROOT);
 		this.map = new SVG_Map("Desktop", "image/map.svg", Config) as T;
 		await this.map.Setup("Fr", Utils.Get_Subnode(this.shadowRoot, '.map-canvas'));
 		this.map.Setup_Mouse_Handlers();

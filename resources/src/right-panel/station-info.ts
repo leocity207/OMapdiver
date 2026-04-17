@@ -154,7 +154,7 @@ class Station_Info extends HTMLElement {
 			const line = this.network_data!.lines[line_ID];
 
 			line.patterns.forEach((schedule: Pattern) => {
-				const last_stop = line.stations.at(-1)
+				const last_stop = line.stations[line.stations.length - 1]
 				if (last_stop === this.station_data!.id)
 					return;
 

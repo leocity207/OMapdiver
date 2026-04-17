@@ -3,6 +3,7 @@ import Network_Line_Selector_Panel from "../time_table/network_line_selector_pan
 import Utils from "../utils/utils";
 import TimeTable from "../time_table/time_table";
 import { Network } from "../utils/networktype";
+import { String_Error } from "../utils/constant";
 /**
  * Time_Tables_Page define the page to show different timetable
  */
@@ -38,7 +39,7 @@ class Timetables_Page extends Page {
 
 	constructor() {
 		super();
-		if(!this.shadowRoot) throw Error("shadowroot is null");
+		if(!this.shadowRoot) throw Error(String_Error.NULL_SHADOWROOT);
 		Utils.Clone_Node_Into(this.shadowRoot, Timetables_Page.template_base);
 		this.network_line_selector_panel = Utils.Get_Subnode(this.shadowRoot, "network-line-selector-panel") as Network_Line_Selector_Panel;
 		this.time_table = Utils.Get_Subnode(this.shadowRoot, "timetable-table") as TimeTable;

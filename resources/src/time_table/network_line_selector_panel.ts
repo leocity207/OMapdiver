@@ -5,6 +5,7 @@ import { Network } from "../utils/networktype";
 
 //@ts-ignore for CSS import
 import CSS_network_line_selector_panel from '../../style/network_line_selector_panel.css';
+import { String_Error } from "../utils/constant";
 
 
 type LineSelectorEvent = {
@@ -64,7 +65,7 @@ class Network_Line_Selector_Panel extends Top_Panel
 				console.warn('No <rect> element found in SVG.');
 
 			icon.addEventListener('click', (e) => {
-				if (!this.network_data) throw Error(" network data should not be null");
+				if (!this.network_data) throw Error(String_Error.NULL_NETWORK_DATA);
 				this.subject.next({ line: line_ID, network: this.network_data})
 			});
 		}

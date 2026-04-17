@@ -9,6 +9,7 @@ import Right_Panel from "../right-panel/right-panel";
 import { Network } from "../utils/networktype";
 import Sticky_Header from "../components/sticky_header";
 import { ObservableEvent } from "../utils/observable";
+import { String_Error } from "../utils/constant";
 
 /**
  * Network_Map_Station define a node that contain a Network_Map object
@@ -37,7 +38,7 @@ class Network_Map_Page extends Map_Page<Network_Map> {
 	 *
 	 * @param {Object} event
 	 */
-	On_Station_CLicked(event: CustomEvent) {
+	On_Station_CLicked = (event: CustomEvent<string>) => {
 		if(this.map == null) throw("Map should not be null");
 		this.map.Highlight_All_Lines_At_Station(event.detail);
 		const right_panel = Utils.Get_Subnode(this.shadowRoot!, 'right-panel') as Right_Panel;
@@ -52,7 +53,7 @@ class Network_Map_Page extends Map_Page<Network_Map> {
 	 *
 	 * @param {Object} event
 	 */
-	On_Line_CLicked(event: CustomEvent) {
+	On_Line_CLicked = (event: CustomEvent<string>) => {
 		if(this.map == null) throw("Map should not be null");
 		this.map.Highlight_Lines([event.detail]);
 		const right_panel = Utils.Get_Subnode(this.shadowRoot!, 'right-panel') as Right_Panel;
@@ -74,7 +75,7 @@ class Network_Map_Page extends Map_Page<Network_Map> {
 			return this.On_Station_CLicked({detail: event.state.station} as CustomEvent)
 		}
 		else {
-			if(this.prev_event == null || this.map == null) throw Error("prev_event was null")
+			if(this.prev_event == null || this.map == null) throw Error(String_Error.NULL_MAP)
 			const right_panel = Utils.Get_Subnode(this.shadowRoot!, 'right-panel') as Right_Panel;
 			right_panel.Close();
 			if(!this.prev_event.type)
@@ -110,7 +111,7 @@ class Network_Map_Page extends Map_Page<Network_Map> {
 	 * Asynchronous function that initialize the map. the function resolve when the SVG is loaded and displayed inside the current node
 	 */
 	Initialize_Map = async () => {
-		if(!this.shadowRoot) throw Error("Shadow root should be initialized");
+		if(!this.shadowRoot) throw Error(String_Error.NULL_SHADOWROOT);
 		// Set variable
 		this.prev_event = { type: null, detail: null };
 		this.panel_detail_is_open = false;
@@ -128,7 +129,7 @@ class Network_Map_Page extends Map_Page<Network_Map> {
 		this.map = new Network_Map("Desktop", "resources-config/image/map.svg", Config, Network_Config);
 		await this.map.Setup("Fr", Utils.Get_Subnode(this.shadowRoot, '.map-canvas') as HTMLCanvasElement);
 		this.network_data = await Utils.Fetch_Resource("dyn/network_data");
-		if(!this.network_data) throw Error("Network data should be initialized");
+		if(!this.network_data) throw Error(String_Error.NULL_NETWORK_DATA);
 		this.map.Setup_Mouse_Handlers_With_Data(this.network_data.lines, this.network_data.stations);
 
 		const labels = Object.values(this.network_data.lines).map(line => line.label).concat(Object.values(this.network_data.stations).map(station => station.label));
@@ -136,7 +137,7 @@ class Network_Map_Page extends Map_Page<Network_Map> {
 		const sticky_header = Utils.Get_Subnode(this.shadowRoot, 'sticky-header') as Sticky_Header;
 		sticky_header.Set_Autocomplete_List(labels).subscribe((event: ObservableEvent<string>) => this.On_Selected_By_Label(event.data));
 		Switch_Event.Get_Observable<boolean>("color").subscribe((event: ObservableEvent<boolean>) => {
-			if(!this.map) throw Error("Map is null");
+			if(!this.map) throw Error(String_Error.NULL_MAP);
 			if (event.data)
 				this.map.Change_Color("easy");
 
@@ -152,10 +153,10 @@ class Network_Map_Page extends Map_Page<Network_Map> {
 		let resizeTimeout = 0;
 		this.resize_observer = new ResizeObserver(entries => {
 			clearTimeout(resizeTimeout);
-			resizeTimeout = setTimeout(() => {
+			let	timeout = setTimeout(() => {
 				for (let entry of entries) {
 					const { width, height } = entry.contentRect;
-					if(!this.map) throw Error("Map is null")
+					if(!this.map) throw Error(String_Error.NULL_MAP)
 					this.map.Zoom_Check_Map_Resize(width, height);
 				}
 			}, 25); //Debounce time

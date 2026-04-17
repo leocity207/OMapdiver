@@ -3,6 +3,7 @@ import { Line, Station, Timetable } from "../utils/networktype";
 
 //@ts-ignore css import
 import CSS_timetable_service_mission from '../../style/timetable_service_mission.css';
+import { String_Error } from "../utils/constant";
 
 
 function Normalize_Class_Token(value: any) {
@@ -208,7 +209,7 @@ class TimeTable_Services_Missions extends HTMLElement {
 		const timetables = line.timetables ?? [];
 
 		for (let station_index = 0; station_index < stations.length; station_index++) {
-			if(this.m_stations == null) throw Error("m_station should not be null")
+			if(!this.m_stations) throw Error(String_Error.NULL_STATIONS)
 			const station_id = stations[station_index];
 
 			const tr = document.createElement("tr");
