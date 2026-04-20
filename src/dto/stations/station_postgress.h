@@ -1,5 +1,5 @@
-#ifndef STATION_DTO_H
-#define STATION_DTO_H
+#ifndef POSTGRESS_STATION_DTO_H
+#define POSTGRESS_STATION_DTO_H
 
 #include "src/dto/common/base.h"
 
@@ -11,16 +11,16 @@ namespace O::DTO
 	/**
 	* @brief DTO about stations
 	*/
-	class Station : public Base
+	class Postgres_Station : public Base
 	{
 
 	public:
-		DTO_INIT(Station, Base)
+		DTO_INIT(Postgres_Station, Base)
 
 		// Mandatory fields
 		DTO_FIELD(String, url, "url");
 		DTO_FIELD(List<String>, lines, "lines");
-		DTO_FIELD(Fields<String>, directions, "directions");
+		DTO_FIELD(String, directions, "directions");
 
 		// Optional fields
 		DTO_FIELD(Boolean, have_disabled_equipment, "have_disabled_equipment");
@@ -29,17 +29,9 @@ namespace O::DTO
 		DTO_FIELD(Boolean, have_car_sharing, "have_car_sharing");
 		DTO_FIELD(String, opening_hour, "opening_hour");
 		DTO_FIELD(String, closing_hour, "closing_hour");
-
-		// Optional field checker
-		bool Has_Have_Disabled_Equipment() const;
-		bool Has_Have_Bike_Parking() const;
-		bool Has_Have_Car_Parkingt() const;
-		bool Has_Have_Car_Sharing() const;
-		bool Has_Opening_Hour() const;
-		bool Has_Closing_Hour() const;
 	};
 }
 
 #include OATPP_CODEGEN_END(DTO)
 
-#endif /* STATION_DTO_H */
+#endif /* POSTGRESS_STATION_DTO_H */

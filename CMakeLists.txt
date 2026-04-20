@@ -7,6 +7,11 @@ option(BUILD_TESTS "Build test executables" ON)
 #-------------------------
 # add resources by default if they don't exist
 set(RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources/resources-config")
+set(DB_HOST "127.0.0.1" CACHE STRING "PostgreSQL host")
+set(DB_PORT "5432" CACHE STRING "PostgreSQL port")
+set(DB_NAME "appdb" CACHE STRING "PostgreSQL database name")
+set(DB_USER "appuser" CACHE STRING "PostgreSQL database user")
+set(DB_PASSWORD "app_password" CACHE STRING "PostgreSQL database password")
 file(GLOB RESOURCE_CONTENTS "${RESOURCES_DIR}/*")
 if(DOWNLOAD_RESOURCES AND NOT RESOURCE_CONTENTS)
 	error("Resources not found. Please install ressource inside the resources-config folder.")
@@ -87,17 +92,20 @@ add_library(${project_name}-lib
 # link server lib with dependancies
 
 add_subdirectory(externals/oatpp)
+add_subdirectory(externals/oatpp-postgresql)
 add_subdirectory(externals/cxxopts)
 
 target_link_libraries(${project_name}-lib
 	PRIVATE oatpp
 	PRIVATE oatpp-test
+	PRIVATE oatpp-postgresql
 	PRIVATE cxxopts
 )
 
 target_include_directories(${project_name}-lib 
 	PUBLIC src
 	PUBLIC externals/oatpp/src
+	PUBLIC externals/oatpp-postgresql/src
 	PUBLIC externals/cxxopts/include
 )
 
@@ -107,7 +115,10 @@ target_include_directories(${project_name}-lib
 add_executable(${project_name}-exe
 	${APP_SRC}
 )
-target_link_libraries(${project_name}-exe ${project_name}-lib)
+target_link_libraries(${project_name}-exe 
+	${project_name}-lib
+	oatpp-postgresql
+)
 add_dependencies(${project_name}-exe ${project_name}-lib)
 
 #--------------------

@@ -10,5 +10,11 @@ inline const char* GET_COMMIT_HASH() {return "${GIT_COMMIT_HASH}"; };
 inline const char* GET_VERSION() {return "${${project_name}_VERSION_MAJOR}.${${project_name}_VERSION_MINOR}"; };
 inline std::filesystem::path RESOURCE_PATH() {return g_argument_resource_path.empty() ? "${VAR_STATIC_CURRENT_DIR}/resources/" : g_argument_resource_path; };
 inline std::filesystem::path DOC_PATH() {return g_argument_doc_path.empty() ? "${VAR_STATIC_CURRENT_DIR}/documentation/build/html/" : g_argument_doc_path; };
+inline const char* DB_HOST() {return "${DB_HOST}";};
+inline const char* DB_PORT() {return "${DB_PORT}";};
+inline const char* DB_NAME() {return "${DB_NAME}";};
+inline const char* DB_USER() {return "${DB_USER}";};
+inline const char* DB_PASSWORD() {return "${DB_PASSWORD}";};
+
 
 #endif
