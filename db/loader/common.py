@@ -2,6 +2,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any, Mapping
+
+from psycopg2.extras import Json
 from psycopg2.extensions import cursor as PGCursor
 
 
@@ -36,23 +38,21 @@ def As_Int_Or_None(value: Any) -> int | None:
 	return int(value)
 
 
-def Extract_Parent_ID(value: Any) -> str | None:
-	"""
-	Best-effort helper for 'parent' fields.
-
-	Your current JSON does not fully define what parent contains, so this helper
-	tries a few common shapes and returns a string ID if it finds one.
-	"""
+def As_Text_List(value: Any) -> list[str] | None:
 	if value is None:
 		return None
+	if not isinstance(value, list):
+		raise ValueError("Expected a list of text values")
+	return [str(item) for item in value]
 
-	if isinstance(value, str):
-		return value
 
-	if isinstance(value, Mapping):
-		for key in ("id", "station", "station_id", "pattern", "pattern_id", "parent_id"):
-			candidate = value.get(key)
-			if candidate is not None:
-				return str(candidate)
+def As_Int_List(value: Any) -> list[int | None] | None:
+	if value is None:
+		return None
+	if not isinstance(value, list):
+		raise ValueError("Expected a list of integer values")
+	return [None if item is None else int(item) for item in value]
 
-	return None
+
+def As_JsonB(value: Any) -> Json:
+	return Json(value)

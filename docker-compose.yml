@@ -35,5 +35,23 @@ services:
     ports:
       - "5432:5432"
 
+  json_loader:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.loader
+    profiles: ["tools"]
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      python /app/loader/main.py
+      --host db
+      --port 5432
+      --dbname ${POSTGRES_DB:-appdb}
+      --user ${POSTGRES_USER:-appuser}
+      --password ${POSTGRES_PASSWORD:-app_password}
+      --data-root /app/data
+    restart: "no"
+
 volumes:
   db_data:

@@ -4,15 +4,15 @@ import argparse
 from pathlib import Path
 from psycopg2 import connect
 
-from json_loader.loaders import (
-	load_calendar_patterns,
-	load_landmarks,
-	load_lines,
-	load_operators,
-	load_organisers,
-	load_stations,
-	load_stop_patterns,
-	load_territories,
+from loaders import (
+	Load_Calendar_Patterns,
+	Load_Landmarks,
+	Load_Lines,
+	Load_Operators,
+	Load_Organisers,
+	Load_Stations,
+	Load_Stop_Patterns,
+	Load_Territories,
 )
 
 
@@ -41,14 +41,14 @@ def main() -> None:
 		with conn:
 			with conn.cursor() as cur:
 				# Load simple reference data first.
-				load_calendar_patterns(cur, args.data_root)
-				load_landmarks(cur, args.data_root)
-				load_operators(cur, args.data_root)
-				load_organisers(cur, args.data_root)
-				load_territories(cur, args.data_root)
-				load_stop_patterns(cur, args.data_root)
-				load_stations(cur, args.data_root)
-				load_lines(cur, args.data_root)
+				Load_Calendar_Patterns(cur, args.data_root)
+				Load_Landmarks(cur, args.data_root)
+				Load_Operators(cur, args.data_root)
+				Load_Organisers(cur, args.data_root)
+				Load_Territories(cur, args.data_root)
+				Load_Stop_Patterns(cur, args.data_root)
+				Load_Stations(cur, args.data_root)
+				Load_Lines(cur, args.data_root)
 
 		print("Import completed successfully.")
 	finally:

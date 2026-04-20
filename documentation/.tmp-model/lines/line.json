@@ -8,6 +8,7 @@
 	},
 	"info_messages": [
 		{
+			"id":"String M: message id",
 			"index": "Int/null M: station index or whole line information",
 			"level": "Int M: level of message (0,1,2 are accepted)",
 			"message": "String M: information message",
