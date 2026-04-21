@@ -29,8 +29,8 @@ export interface Station {
 	have_bike_parking: boolean | undefined,
 	have_car_parking: boolean | undefined,
 	have_car_sharing: boolean | undefined,
-	opening_hour: number | undefined,
-	closing_hour: number | undefined
+	opening_time: number | undefined,
+	closing_time: number | undefined
 	parent: any
 }
 
@@ -53,15 +53,15 @@ export interface InfoMessage {
 export interface Pattern {
 	id: string,
 	label: string,
-	interval_minutes: number,
-	departure_minute: number,
+	interval_time: number,
+	departure_time: number,
 	first_departure: string,
 	last_departure: string,
 	stop_pattern: string,
 	is_reversed : boolean,
 	info_messages: InfoMessage[],
-	arrival_minutes: (number | null)[],
-	departure_minutes: (number | null)[],
+	arrival_times: (number | null)[],
+	departure_times: (number | null)[],
 	parent: any
 }
 
@@ -71,8 +71,8 @@ export interface Timetable {
 		stop_pattern: string,
 		calendar_pattern: string,
 		info_messages: InfoMessage[],
-		arrival_minutes: (number | null)[],
-		departure_minutes: (number | null)[]
+		arrival_times: (number | null)[],
+		departure_times: (number | null)[]
 }
 
 export interface Line {

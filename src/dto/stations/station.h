@@ -28,16 +28,16 @@ namespace O::DTO
 		DTO_FIELD(Boolean, have_bike_parking, "have_bike_parking");
 		DTO_FIELD(Boolean, have_car_parking, "have_car_parking");
 		DTO_FIELD(Boolean, have_car_sharing, "have_car_sharing");
-		DTO_FIELD(String, opening_hour, "opening_hour");
-		DTO_FIELD(String, closing_hour, "closing_hour");
+		DTO_FIELD(UInt16, opening_time, "opening_time");
+		DTO_FIELD(UInt16, closing_time, "closing_time");
 
 		// Optional field checker
 		bool Has_Have_Disabled_Equipment() const;
 		bool Has_Have_Bike_Parking() const;
 		bool Has_Have_Car_Parkingt() const;
 		bool Has_Have_Car_Sharing() const;
-		bool Has_Opening_Hour() const;
-		bool Has_Closing_Hour() const;
+		bool Has_Opening_Time() const;
+		bool Has_Closing_Time() const;
 
 		// bridge
 		static oatpp::Object<Station> From_Postgres(const oatpp::Object<Postgres_Station>& src, const std::shared_ptr<oatpp::json::ObjectMapper>& jsonMapper);

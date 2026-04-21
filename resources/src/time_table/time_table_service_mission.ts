@@ -36,7 +36,7 @@ interface Display_State {
 	calendar_patterns: string[];
 	stop_patterns: string[];
 	display_hidden_stations: boolean;
-	show_arrival_minutes: boolean; 
+	show_arrival_times: boolean; 
 }
 
 class TimeTable_Services_Missions extends HTMLElement {
@@ -86,7 +86,7 @@ class TimeTable_Services_Missions extends HTMLElement {
 			calendar_patterns: [],
 			stop_patterns: [],
 			display_hidden_stations: false,
-			show_arrival_minutes: false,
+			show_arrival_times: false,
 		};
 	}
 
@@ -136,12 +136,12 @@ class TimeTable_Services_Missions extends HTMLElement {
 			this.m_display_state.display_hidden_stations = Boolean(display_state.display_hidden_stations);
 		}
 
-		if (display_state.show_arrival_minutes !== undefined) {
-			this.m_display_state.show_arrival_minutes = Boolean(display_state.show_arrival_minutes);
+		if (display_state.show_arrival_times !== undefined) {
+			this.m_display_state.show_arrival_times = Boolean(display_state.show_arrival_times);
 		}
 
 		this.classList.toggle("show-hidden-stations", this.m_display_state.display_hidden_stations);
-		this.classList.toggle("show-arrival-minutes", this.m_display_state.show_arrival_minutes);
+		this.classList.toggle("show-arrival-minutes", this.m_display_state.show_arrival_times);
 
 		this._Refresh_Visibility();
 	}
@@ -235,8 +235,8 @@ class TimeTable_Services_Missions extends HTMLElement {
 				td.dataset.calendarPatterns = JSON.stringify(cal_tokens);
 				td.dataset.stopPatterns = JSON.stringify(stop_tokens);
 
-				const arrival = timetable.arrival_minutes?.[station_index] ?? null;
-				const departure = timetable.departure_minutes?.[station_index] ?? null;
+				const arrival = timetable.arrival_times?.[station_index] ?? null;
+				const departure = timetable.departure_times?.[station_index] ?? null;
 
 				const has_arrival = arrival !== null && arrival !== undefined;
 				const has_departure = departure !== null && departure !== undefined;

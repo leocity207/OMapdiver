@@ -31,8 +31,8 @@ def Load_Stations(cur: PGCursor, data_root: Path) -> None:
 				have_bike_parking,
 				have_car_parking,
 				have_car_sharing,
-				opening_hour,
-				closing_hour,
+				opening_time,
+				closing_time,
 				lines,
 				directions
 			)
@@ -44,8 +44,8 @@ def Load_Stations(cur: PGCursor, data_root: Path) -> None:
 				have_bike_parking = EXCLUDED.have_bike_parking,
 				have_car_parking = EXCLUDED.have_car_parking,
 				have_car_sharing = EXCLUDED.have_car_sharing,
-				opening_hour = EXCLUDED.opening_hour,
-				closing_hour = EXCLUDED.closing_hour,
+				opening_time = EXCLUDED.opening_time,
+				closing_time = EXCLUDED.closing_time,
 				lines = EXCLUDED.lines,
 				directions = EXCLUDED.directions
 			""",
@@ -57,8 +57,8 @@ def Load_Stations(cur: PGCursor, data_root: Path) -> None:
 				As_Bool_Or_None(data.get("have_bike_parking")),
 				As_Bool_Or_None(data.get("have_car_parking")),
 				As_Bool_Or_None(data.get("have_car_sharing")),
-				As_Int_Or_None(data.get("opening_hour")),
-				As_Int_Or_None(data.get("closing_hour")),
+				As_Int_Or_None(data.get("opening_time")),
+				As_Int_Or_None(data.get("closing_time")),
 				As_Text_List(data.get("lines")),
 				As_JsonB(data.get("directions"))
 			),

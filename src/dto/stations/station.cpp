@@ -20,14 +20,14 @@ bool O::DTO::Station::Has_Have_Car_Sharing() const
 	return have_car_sharing.getPtr() != nullptr;
 }
 
-bool O::DTO::Station::Has_Opening_Hour() const
+bool O::DTO::Station::Has_Opening_Time() const
 {
-	return opening_hour.getPtr() != nullptr;
+	return opening_time.getPtr() != nullptr;
 }
 
-bool O::DTO::Station::Has_Closing_Hour() const
+bool O::DTO::Station::Has_Closing_Time() const
 {
-	return closing_hour.getPtr() != nullptr;
+	return closing_time.getPtr() != nullptr;
 }
 
 oatpp::Object<O::DTO::Station> O::DTO::Station::From_Postgres(const oatpp::Object<O::DTO::Postgres_Station>& src, const std::shared_ptr<oatpp::json::ObjectMapper>& jsonMapper)
@@ -46,8 +46,8 @@ oatpp::Object<O::DTO::Station> O::DTO::Station::From_Postgres(const oatpp::Objec
 	station->have_bike_parking = src->have_bike_parking;
 	station->have_car_parking = src->have_car_parking;
 	station->have_car_sharing = src->have_car_sharing;
-	station->opening_hour = src->opening_hour;
-	station->closing_hour = src->closing_hour;
+	station->opening_time = src->opening_time;
+	station->closing_time = src->closing_time;
 
 	station->directions = oatpp::Fields<oatpp::String>::createShared();
 

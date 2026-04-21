@@ -13,6 +13,6 @@
 	"have_bike_parking" : "Boolean O: tells if the stations has a parking for bikes",
 	"have_car_parking" : "Boolean O: tells if the stations has a car parking",
 	"have_car_sharing" : "Boolean O: tells if the stations has care sharing",
-	"opening_hour": "String O: opening hour of the stations",
-	"closing_hour" : "String O: closing hour of the stations"
+	"opening_time": "String O: opening hour of the stations",
+	"closing_time" : "String O: closing hour of the stations"
 }

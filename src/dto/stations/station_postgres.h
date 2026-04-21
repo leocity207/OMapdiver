@@ -27,8 +27,8 @@ namespace O::DTO
 		DTO_FIELD(Boolean, have_bike_parking, "have_bike_parking");
 		DTO_FIELD(Boolean, have_car_parking, "have_car_parking");
 		DTO_FIELD(Boolean, have_car_sharing, "have_car_sharing");
-		DTO_FIELD(String, opening_hour, "opening_hour");
-		DTO_FIELD(String, closing_hour, "closing_hour");
+		DTO_FIELD(UInt16, opening_time, "opening_time");
+		DTO_FIELD(UInt16, closing_time, "closing_time");
 	};
 }
 

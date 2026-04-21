@@ -92,6 +92,9 @@ add_library(${project_name}-lib
 # link server lib with dependancies
 
 add_subdirectory(externals/oatpp)
+set(OATPP_MODULES_LOCATION OATPP_MODULES_LOCATION_CUSTOM)
+set(OATPP_DIR_SRC ${CMAKE_CURRENT_SOURCE_DIR}/externals/oatpp/src)
+set(OATPP_DIR_LIB ${CMAKE_BINARY_DIR}/externals/oatpp)
 add_subdirectory(externals/oatpp-postgresql)
 add_subdirectory(externals/cxxopts)
 

@@ -29,14 +29,14 @@ function mapPattern(row, info_messages) {
 	return {
 		id: row.id,
 		label: row.label,
-		interval_minutes: row.interval_minutes,
-		departure_minute: row.departure_minute,
+		interval_time: row.interval_time,
+		departure_time: row.departure_time,
 		first_departure: row.first_departure,
 		last_departure: row.last_departure,
 		stop_pattern: row.stop_pattern_id,
 		is_reversed: row.is_reversed,
-		arrival_minutes: row.arrival_minutes,
-		departure_minutes: row.departure_minutes,
+		arrival_times: row.arrival_times,
+		departure_times: row.departure_times,
 		info_messages,
 	};
 }
@@ -47,8 +47,8 @@ function mapTimetable(row, info_messages) {
 		label: row.label,
 		stop_pattern: row.stop_pattern_id,
 		calendar_pattern: row.calendar_pattern_id,
-		arrival_minutes: row.arrival_minutes,
-		departure_minutes: row.departure_minutes,
+		arrival_times: row.arrival_times,
+		departure_times: row.departure_times,
 		info_messages,
 	};
 }
@@ -118,8 +118,8 @@ class DatabaseService {
 					have_bike_parking,
 					have_car_parking,
 					have_car_sharing,
-					opening_hour,
-					closing_hour,
+					opening_time,
+					closing_time,
 					parent
 				FROM stations
 				ORDER BY id
@@ -154,14 +154,14 @@ class DatabaseService {
 					id,
 					line_id,
 					label,
-					interval_minutes,
-					departure_minute,
+					interval_time,
+					departure_time,
 					first_departure,
 					last_departure,
 					stop_pattern_id,
 					is_reversed,
-					arrival_minutes,
-					departure_minutes
+					arrival_times,
+					departure_times
 				FROM patterns
 				ORDER BY line_id, id
 			`),
@@ -173,8 +173,8 @@ class DatabaseService {
 					label,
 					stop_pattern_id,
 					calendar_pattern_id,
-					arrival_minutes,
-					departure_minutes
+					arrival_times,
+					departure_times
 				FROM timetables
 				ORDER BY line_id, id
 			`),

@@ -53,11 +53,11 @@ CREATE TABLE IF NOT EXISTS stations (
 	have_bike_parking       boolean NULL,
 	have_car_parking        boolean NULL,
 	have_car_sharing        boolean NULL,
-	opening_hour          integer NULL,
-	closing_hour          integer NULL,
-	directions   jsonb NOT NULL,
-	CONSTRAINT stations_opening_hour_chk CHECK (opening_hour IS NULL OR opening_hour BETWEEN 0 AND 86400),
-	CONSTRAINT stations_closing_hour_chk CHECK (closing_hour IS NULL OR closing_hour BETWEEN 0 AND 86400)
+	opening_time            integer NULL,
+	closing_time            integer NULL,
+	directions              jsonb NOT NULL,
+	CONSTRAINT stations_opening_time_chk CHECK (opening_time IS NULL OR opening_time BETWEEN 0 AND 86400),
+	CONSTRAINT stations_closing_time_chk CHECK (closing_time IS NULL OR closing_time BETWEEN 0 AND 86400)
 	-- line_stations
 );
 
@@ -78,14 +78,14 @@ CREATE TABLE IF NOT EXISTS patterns (
 	id                  text PRIMARY KEY,
 	line_id             text NOT NULL REFERENCES lines(id) ON DELETE CASCADE,
 	label               text NOT NULL,
-	interval_minutes    integer NOT NULL,
-	departure_minute    integer NOT NULL,
+	interval_time    integer NOT NULL,
+	departure_time    integer NOT NULL,
 	first_departure     text NOT NULL,
 	last_departure      text NOT NULL,
 	stop_pattern_id     text NOT NULL REFERENCES stop_patterns(id) ON DELETE RESTRICT,
 	is_reversed         boolean NOT NULL DEFAULT false,
-	arrival_minutes     integer[],
-	departure_minutes   integer[]
+	arrival_times     integer[],
+	departure_times   integer[]
 	-- pattern_info_messages (list)
 );
 
@@ -95,8 +95,8 @@ CREATE TABLE IF NOT EXISTS timetables (
 	label               text NOT NULL,
 	stop_pattern_id     text NOT NULL REFERENCES stop_patterns(id) ON DELETE RESTRICT,
 	calendar_pattern_id text NOT NULL REFERENCES calendar_patterns(id) ON DELETE RESTRICT,
-	arrival_minutes     integer[],
-	departure_minutes   integer[]
+	arrival_times     integer[],
+	departure_times   integer[]
 	-- timetable info message (list)
 );
 

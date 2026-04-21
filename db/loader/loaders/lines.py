@@ -71,41 +71,41 @@ def _Load_Patterns(cur: PGCursor, data: dict) -> None:
 				id,
 				line_id,
 				label,
-				interval_minutes,
-				departure_minute,
+				interval_time,
+				departure_time,
 				first_departure,
 				last_departure,
 				stop_pattern_id,
 				is_reversed,
-				arrival_minutes,
-				departure_minutes
+				arrival_times,
+				departure_times
 
 			)
 			VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 			ON CONFLICT (id) DO UPDATE SET
 				line_id = EXCLUDED.line_id,
 				label = EXCLUDED.label,
-				interval_minutes = EXCLUDED.interval_minutes,
-				departure_minute = EXCLUDED.departure_minute,
+				interval_time = EXCLUDED.interval_time,
+				departure_time = EXCLUDED.departure_time,
 				first_departure = EXCLUDED.first_departure,
 				last_departure = EXCLUDED.last_departure,
 				stop_pattern_id = EXCLUDED.stop_pattern_id,
 				is_reversed = EXCLUDED.is_reversed,
-				arrival_minutes = EXCLUDED.arrival_minutes,
-				departure_minutes = EXCLUDED.departure_minutes
+				arrival_times = EXCLUDED.arrival_times,
+				departure_times = EXCLUDED.departure_times
 			""",
 			(
 				pattern_id,
 				line_id,
 				pattern["label"],
-				int(pattern["interval_minutes"]),
-				int(pattern["departure_minute"]),
+				int(pattern["interval_time"]),
+				int(pattern["departure_time"]),
 				pattern.get("first_departure", ""),
 				pattern.get("last_departure", ""),
 				pattern["stop_pattern"],
 				bool(pattern.get("is_reversed", False)),
-				As_Int_List(pattern["arrival_minutes"]),
-				As_Int_List(pattern["departure_minutes"])
+				As_Int_List(pattern["arrival_times"]),
+				As_Int_List(pattern["departure_times"])
 			),
 		)
 
@@ -130,8 +130,8 @@ def _Load_Timetables(cur: PGCursor, data: dict) -> None:
 				label,
 				stop_pattern_id,
 				calendar_pattern_id,
-				arrival_minutes,
-				departure_minutes
+				arrival_times,
+				departure_times
 			)
 			VALUES (%s, %s, %s, %s, %s, %s, %s)
 			ON CONFLICT (id) DO UPDATE SET
@@ -139,8 +139,8 @@ def _Load_Timetables(cur: PGCursor, data: dict) -> None:
 				label = EXCLUDED.label,
 				stop_pattern_id = EXCLUDED.stop_pattern_id,
 				calendar_pattern_id = EXCLUDED.calendar_pattern_id,
-				arrival_minutes = EXCLUDED.arrival_minutes,
-				departure_minutes = EXCLUDED.departure_minutes
+				arrival_times = EXCLUDED.arrival_times,
+				departure_times = EXCLUDED.departure_times
 			""",
 			(
 				timetable_id,
@@ -148,8 +148,8 @@ def _Load_Timetables(cur: PGCursor, data: dict) -> None:
 				timetable["label"],
 				timetable["stop_pattern"],
 				timetable["calendar_pattern"],
-				As_Int_List(timetable["arrival_minutes"]),
-				As_Int_List(timetable["departure_minutes"])
+				As_Int_List(timetable["arrival_times"]),
+				As_Int_List(timetable["departure_times"])
 			),
 		)
 
