@@ -15,6 +15,7 @@ namespace O::DTO
 	public:
 		DTO_INIT(Pattern, Base)
 
+		DTO_FIELD(String, line_id, "line_id");
 		DTO_FIELD(UInt16, interval_time, "interval_time");
 		DTO_FIELD(UInt16, departure_time, "departure_time");
 		DTO_FIELD(UInt16, first_departure, "first_departure");

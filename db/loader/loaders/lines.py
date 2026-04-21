@@ -75,7 +75,7 @@ def _Load_Patterns(cur: PGCursor, data: dict) -> None:
 				departure_time,
 				first_departure,
 				last_departure,
-				stop_pattern_id,
+				stop_pattern,
 				is_reversed,
 				arrival_times,
 				departure_times
@@ -89,7 +89,7 @@ def _Load_Patterns(cur: PGCursor, data: dict) -> None:
 				departure_time = EXCLUDED.departure_time,
 				first_departure = EXCLUDED.first_departure,
 				last_departure = EXCLUDED.last_departure,
-				stop_pattern_id = EXCLUDED.stop_pattern_id,
+				stop_pattern = EXCLUDED.stop_pattern,
 				is_reversed = EXCLUDED.is_reversed,
 				arrival_times = EXCLUDED.arrival_times,
 				departure_times = EXCLUDED.departure_times
@@ -128,8 +128,8 @@ def _Load_Timetables(cur: PGCursor, data: dict) -> None:
 				id,
 				line_id,
 				label,
-				stop_pattern_id,
-				calendar_pattern_id,
+				stop_pattern,
+				calendar_pattern,
 				arrival_times,
 				departure_times
 			)
@@ -137,8 +137,8 @@ def _Load_Timetables(cur: PGCursor, data: dict) -> None:
 			ON CONFLICT (id) DO UPDATE SET
 				line_id = EXCLUDED.line_id,
 				label = EXCLUDED.label,
-				stop_pattern_id = EXCLUDED.stop_pattern_id,
-				calendar_pattern_id = EXCLUDED.calendar_pattern_id,
+				stop_pattern = EXCLUDED.stop_pattern,
+				calendar_pattern = EXCLUDED.calendar_pattern,
 				arrival_times = EXCLUDED.arrival_times,
 				departure_times = EXCLUDED.departure_times
 			""",

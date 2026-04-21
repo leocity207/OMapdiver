@@ -22,26 +22,9 @@ public:
 	QUERY(getStopPatterns,          "SELECT id, label, level, is_exceptional, color, icon, variants FROM stop_patterns ORDER BY id;")
 	QUERY(getStations,              "SELECT id, label, url, lines, CAST(directions AS TEXT) AS directions, have_disabled_equipment, have_bike_parking, have_car_parking, have_car_sharing, opening_time, closing_time FROM stations ORDER BY id;")
 	QUERY(getLines,                 "SELECT id, label, url, icon, stations, CAST(color AS TEXT) AS color FROM lines ORDER BY id;")
-	QUERY(getPatternsByLineId,
-		"SELECT id, label, interval_time, departure_time, first_departure, last_departure, stop_pattern_id, is_reversed, arrival_times, departure_times "
-		"FROM patterns WHERE line_id = :lineId ORDER BY id;",
-		PARAM(oatpp::String, lineId))
-
-	QUERY(getTimetablesByLineId,
-		"SELECT id, label, stop_pattern_id, calendar_pattern_id, arrival_times, departure_times "
-		"FROM timetables WHERE line_id = :lineId ORDER BY id;",
-		PARAM(oatpp::String, lineId))
-
-	QUERY(getInfoMessages,"SELECT info_message_id, line_id, pattern_id, timetable_id, station_id, index, level, message"
-		"line_id, "
-		"pattern_id, "
-		"timetable_id, "
-		"NULL AS station_id, "
-		"message_index AS index, "
-		"level, "
-		"message "
-	"FROM info_messages "
-	"ORDER BY id;")
+	QUERY(getPatterns,              "SELECT id, label, interval_time, departure_time, first_departure, last_departure, stop_pattern, is_reversed, arrival_times, departure_times FROM patterns ORDER BY id;")
+	QUERY(getTimetables,            "SELECT id, label, stop_pattern, calendar_pattern, arrival_times, departure_times FROM timetables ORDER BY id;")
+	QUERY(getInfoMessages,          "SELECT info_message_id, line_id, pattern_id, timetable_id, index, level, message FROM info_messages ORDER BY info_message_id;")
 };
 
 }

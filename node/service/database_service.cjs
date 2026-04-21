@@ -33,7 +33,7 @@ function mapPattern(row, info_messages) {
 		departure_time: row.departure_time,
 		first_departure: row.first_departure,
 		last_departure: row.last_departure,
-		stop_pattern: row.stop_pattern_id,
+		stop_pattern: row.stop_pattern,
 		is_reversed: row.is_reversed,
 		arrival_times: row.arrival_times,
 		departure_times: row.departure_times,
@@ -45,8 +45,8 @@ function mapTimetable(row, info_messages) {
 	return {
 		id: row.id,
 		label: row.label,
-		stop_pattern: row.stop_pattern_id,
-		calendar_pattern: row.calendar_pattern_id,
+		stop_pattern: row.stop_pattern,
+		calendar_pattern: row.calendar_pattern,
 		arrival_times: row.arrival_times,
 		departure_times: row.departure_times,
 		info_messages,
@@ -158,7 +158,7 @@ class DatabaseService {
 					departure_time,
 					first_departure,
 					last_departure,
-					stop_pattern_id,
+					stop_pattern,
 					is_reversed,
 					arrival_times,
 					departure_times
@@ -171,8 +171,8 @@ class DatabaseService {
 					id,
 					line_id,
 					label,
-					stop_pattern_id,
-					calendar_pattern_id,
+					stop_pattern,
+					calendar_pattern,
 					arrival_times,
 					departure_times
 				FROM timetables

@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS patterns (
 	departure_time    integer NOT NULL,
 	first_departure     text NOT NULL,
 	last_departure      text NOT NULL,
-	stop_pattern_id     text NOT NULL REFERENCES stop_patterns(id) ON DELETE RESTRICT,
+	stop_pattern     text NOT NULL REFERENCES stop_patterns(id) ON DELETE RESTRICT,
 	is_reversed         boolean NOT NULL DEFAULT false,
 	arrival_times     integer[],
 	departure_times   integer[]
@@ -93,8 +93,8 @@ CREATE TABLE IF NOT EXISTS timetables (
 	id                  text PRIMARY KEY,
 	line_id             text NOT NULL REFERENCES lines(id) ON DELETE CASCADE,
 	label               text NOT NULL,
-	stop_pattern_id     text NOT NULL REFERENCES stop_patterns(id) ON DELETE RESTRICT,
-	calendar_pattern_id text NOT NULL REFERENCES calendar_patterns(id) ON DELETE RESTRICT,
+	stop_pattern     text NOT NULL REFERENCES stop_patterns(id) ON DELETE RESTRICT,
+	calendar_pattern text NOT NULL REFERENCES calendar_patterns(id) ON DELETE RESTRICT,
 	arrival_times     integer[],
 	departure_times   integer[]
 	-- timetable info message (list)
@@ -120,9 +120,9 @@ CREATE TABLE IF NOT EXISTS info_messages (
 );
 
 CREATE INDEX IF NOT EXISTS idx_patterns_line_id ON patterns(line_id);
-CREATE INDEX IF NOT EXISTS idx_patterns_stop_pattern_id ON patterns(stop_pattern_id);
+CREATE INDEX IF NOT EXISTS idx_patterns_stop_pattern ON patterns(stop_pattern);
 CREATE INDEX IF NOT EXISTS idx_timetables_line_id ON timetables(line_id);
-CREATE INDEX IF NOT EXISTS idx_timetables_stop_pattern_id ON timetables(stop_pattern_id);
-CREATE INDEX IF NOT EXISTS idx_timetables_calendar_pattern_id ON timetables(calendar_pattern_id);
+CREATE INDEX IF NOT EXISTS idx_timetables_stop_pattern ON timetables(stop_pattern);
+CREATE INDEX IF NOT EXISTS idx_timetables_calendar_pattern ON timetables(calendar_pattern);
 CREATE INDEX IF NOT EXISTS idx_stations_label ON stations(label);
 CREATE INDEX IF NOT EXISTS idx_lines_label ON lines(label);
