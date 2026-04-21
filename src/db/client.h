@@ -21,7 +21,7 @@ public:
 	QUERY(getTerritories,           "SELECT id, label FROM territories ORDER BY id;")
 	QUERY(getStopPatterns,          "SELECT id, label, level, is_exceptional, color, icon, variants FROM stop_patterns ORDER BY id;")
 	QUERY(getStations,              "SELECT id, label, url, lines, CAST(directions AS TEXT) AS directions, have_disabled_equipment, have_bike_parking, have_car_parking, have_car_sharing, opening_hour, closing_hour FROM stations ORDER BY id;")
-	QUERY(getLines,                 "SELECT id, label, url, icon, stations, color FROM lines ORDER BY id;")
+	QUERY(getLines,                 "SELECT id, label, url, icon, stations, CAST(color AS TEXT) AS color FROM lines ORDER BY id;")
 	QUERY(getPatternsByLineId,
 		"SELECT id, label, interval_minutes, departure_minute, first_departure, last_departure, stop_pattern_id, is_reversed, arrival_minutes, departure_minutes "
 		"FROM patterns WHERE line_id = :lineId ORDER BY id;",
@@ -32,23 +32,16 @@ public:
 		"FROM timetables WHERE line_id = :lineId ORDER BY id;",
 		PARAM(oatpp::String, lineId))
 
-	QUERY(getLineInfoMessages,
-		"SELECT message_index AS index, level, message "
-		"FROM info_messages WHERE line_id = :lineId "
-		"ORDER BY COALESCE(message_index, 2147483647), id;",
-		PARAM(oatpp::String, lineId))
-
-	QUERY(getPatternInfoMessages,
-		"SELECT message_index AS index, level, message "
-		"FROM info_messages WHERE pattern_id = :patternId "
-		"ORDER BY COALESCE(message_index, 2147483647), id;",
-		PARAM(oatpp::String, patternId))
-
-	QUERY(getTimetableInfoMessages,
-		"SELECT message_index AS index, level, message "
-		"FROM info_messages WHERE timetable_id = :timetableId "
-		"ORDER BY COALESCE(message_index, 2147483647), id;",
-		PARAM(oatpp::String, timetableId))
+	QUERY(getInfoMessages,"SELECT info_message_id, line_id, pattern_id, timetable_id, station_id, index, level, message"
+		"line_id, "
+		"pattern_id, "
+		"timetable_id, "
+		"NULL AS station_id, "
+		"message_index AS index, "
+		"level, "
+		"message "
+	"FROM info_messages "
+	"ORDER BY id;")
 };
 
 }

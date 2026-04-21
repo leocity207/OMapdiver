@@ -6,6 +6,7 @@
 #include "src/dto/common/base.h"
 #include "patterns.h"
 #include "service_mission.h"
+#include "line_postgres.h"
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
@@ -22,6 +23,9 @@ namespace O::DTO
 			DTO_FIELD(List<Object<Pattern>>, patterns, "patterns");
 			DTO_FIELD(List<Object<Service_Mission>>, timetables, "timetables");
 			DTO_FIELD(List<Object<Info_Message>>, info_messages, "info_messages");
+
+			// bridge
+			static oatpp::Object<Line> From_Postgres(const oatpp::Object<Postgres_Line>& src, const std::shared_ptr<oatpp::json::ObjectMapper>& jsonMapper);
 	};
 }
 

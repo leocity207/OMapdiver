@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS info_messages (
     pattern_id   text REFERENCES patterns(id) ON DELETE CASCADE,
     timetable_id text REFERENCES timetables(id) ON DELETE CASCADE,
 
-    message_index integer NULL,
+    index integer NULL,
     level integer NOT NULL,
     message text NOT NULL,
 	UNIQUE (line_id, pattern_id, timetable_id, info_message_id),

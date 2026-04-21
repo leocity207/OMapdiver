@@ -3,8 +3,9 @@
 
 #include "src/dto/common/base.h"
 
-#include OATPP_CODEGEN_BEGIN(DTO)
+#include "station_postgres.h"
 
+#include OATPP_CODEGEN_BEGIN(DTO)
 
 namespace O::DTO
 {
@@ -37,6 +38,9 @@ namespace O::DTO
 		bool Has_Have_Car_Sharing() const;
 		bool Has_Opening_Hour() const;
 		bool Has_Closing_Hour() const;
+
+		// bridge
+		static oatpp::Object<Station> From_Postgres(const oatpp::Object<Postgres_Station>& src, const std::shared_ptr<oatpp::json::ObjectMapper>& jsonMapper);
 	};
 }
 
