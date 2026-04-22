@@ -47,6 +47,26 @@ void O::Controller::Network_Data_Handler::Rebuild_Network_String()
 	full_network->territories       = To_Fields_By_Id(territories);
 	full_network->lines             = To_Fields_By_Id(lines);
 
+	// lines
+	if (lines)
+	{
+		for (auto& line : *lines)
+		{
+			if (line && line->id)
+				line_Map[line->id->c_str()] = line;
+
+			if (line->patterns)
+				for (auto& pattern : *line->patterns)
+					if (pattern && pattern->id)
+						pattern_Map[pattern->id->c_str()] = pattern;
+
+			if (line->timetables)
+				for (auto& timetable : *line->timetables)
+					if (timetable && timetable->id)
+						timetable_Map[timetable->id->c_str()] = timetable;
+		}
+	}
+
 	if (patterns)
 	{
 		for (const auto& pattern : *patterns)
@@ -85,27 +105,6 @@ void O::Controller::Network_Data_Handler::Rebuild_Network_String()
 
 			line->timetables->push_back(timetable);
 			timetable_Map[timetable->id->c_str()] = timetable;
-		}
-	}
-
-
-	// lines
-	if (lines)
-	{
-		for (auto& line : *lines)
-		{
-			if (line && line->id)
-				line_Map[line->id->c_str()] = line;
-
-			if (line->patterns)
-				for (auto& pattern : *line->patterns)
-					if (pattern && pattern->id)
-						pattern_Map[pattern->id->c_str()] = pattern;
-
-			if (line->timetables)
-				for (auto& timetable : *line->timetables)
-					if (timetable && timetable->id)
-						timetable_Map[timetable->id->c_str()] = timetable;
 		}
 	}
 
@@ -161,16 +160,12 @@ void O::Controller::Network_Data_Handler::Rebuild_Network_String()
 
 	auto responseMapper = m_contentMappers->getMapper("application/json");
 	m_full_network_json = responseMapper->writeToString(full_network);
-
-	{
-		std::lock_guard<std::mutex> lock(m_mutex);
-		m_is_loaded = true;
-	}
+		
+	m_is_loaded = true;
 }
 
 bool O::Controller::Network_Data_Handler::Check_Update()
 {
-	std::lock_guard<std::mutex> lock(m_mutex);
 	return !m_is_loaded;
 }
 

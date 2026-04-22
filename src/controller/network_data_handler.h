@@ -32,8 +32,11 @@ namespace O::Controller
 
 		ENDPOINT("GET", "/dyn/network_data", Get_Network_Data)
 		{
-			if (Check_Update()) {
-				Rebuild_Network_String();
+			{
+				std::lock_guard<std::mutex> lock(m_mutex);
+				if (Check_Update()) {
+					Rebuild_Network_String();
+				}
 			}
 
 			auto response = createResponse(Status::CODE_200, m_full_network_json);

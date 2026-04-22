@@ -19,16 +19,14 @@ def Load_Stop_Patterns(cur: PGCursor, data_root: Path) -> None:
 				id,
 				label,
 				level,
-				is_exceptional,
 				color,
 				icon,
 				variant
 			)
-			VALUES (%s, %s, %s, %s, %s, %s, %s)
+			VALUES (%s, %s, %s, %s, %s, %s)
 			ON CONFLICT (id) DO UPDATE SET
 				label = EXCLUDED.label,
 				level = EXCLUDED.level,
-				is_exceptional = EXCLUDED.is_exceptional,
 				color = EXCLUDED.color,
 				icon = EXCLUDED.icon,
 				variant = EXCLUDED.variant
@@ -37,7 +35,6 @@ def Load_Stop_Patterns(cur: PGCursor, data_root: Path) -> None:
 				data["id"],
 				data["label"],
 				int(data["level"]),
-				bool(data.get("is_exceptional", False)),
 				data["color"],
 				data["icon"],
 				As_Text_List(data["variant"])

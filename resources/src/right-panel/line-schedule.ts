@@ -165,7 +165,7 @@ class Line_Schedule extends HTMLElement {
 		if (!this.schedule_data!.info_messages?.length)
 			header_info_icon.style.display = 'none';
 		header_title.textContent = this.schedule_data!.label;
-		header_minute.textContent = ":" + String(this.schedule_data!.departure_time).padStart(2, '0'); 
+		header_minute.textContent = Utils.Format_Minute(this.schedule_data!.departure_time); 
 		header_left_icon.innerHTML = this.network_data!.stop_patterns[this.schedule_data!.stop_pattern].icon
 
 

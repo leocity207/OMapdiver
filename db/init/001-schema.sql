@@ -37,7 +37,6 @@ CREATE TABLE IF NOT EXISTS stop_patterns (
 	id             text PRIMARY KEY,
 	label          text NOT NULL,
 	level          integer NOT NULL,
-	is_exceptional boolean NOT NULL DEFAULT false,
 	color          text NOT NULL,
 	icon           text NOT NULL,
 	variant        text[] NULL
@@ -78,14 +77,14 @@ CREATE TABLE IF NOT EXISTS patterns (
 	id                  text PRIMARY KEY,
 	line_id             text NOT NULL REFERENCES lines(id) ON DELETE CASCADE,
 	label               text NOT NULL,
-	interval_time    integer NOT NULL,
-	departure_time    integer NOT NULL,
-	first_departure     text NOT NULL,
-	last_departure      text NOT NULL,
-	stop_pattern     text NOT NULL REFERENCES stop_patterns(id) ON DELETE RESTRICT,
+	interval_time       integer NOT NULL,
+	departure_time      integer NOT NULL,
+	first_departure     integer NOT NULL,
+	last_departure      integer NOT NULL,
+	stop_pattern        text NOT NULL REFERENCES stop_patterns(id) ON DELETE RESTRICT,
 	is_reversed         boolean NOT NULL DEFAULT false,
-	arrival_times     integer[],
-	departure_times   integer[]
+	arrival_times       integer[],
+	departure_times     integer[]
 	-- pattern_info_messages (list)
 );
 
@@ -93,10 +92,10 @@ CREATE TABLE IF NOT EXISTS timetables (
 	id                  text PRIMARY KEY,
 	line_id             text NOT NULL REFERENCES lines(id) ON DELETE CASCADE,
 	label               text NOT NULL,
-	stop_pattern     text NOT NULL REFERENCES stop_patterns(id) ON DELETE RESTRICT,
-	calendar_pattern text NOT NULL REFERENCES calendar_patterns(id) ON DELETE RESTRICT,
-	arrival_times     integer[],
-	departure_times   integer[]
+	stop_pattern        text NOT NULL REFERENCES stop_patterns(id) ON DELETE RESTRICT,
+	calendar_pattern    text NOT NULL REFERENCES calendar_patterns(id) ON DELETE RESTRICT,
+	arrival_times       integer[],
+	departure_times     integer[]
 	-- timetable info message (list)
 );
 

@@ -138,7 +138,7 @@ class DatabaseService {
 			`),
 
 			this.query(`
-				SELECT id, label, level, is_exceptional, color, icon, variants
+				SELECT id, label, level, color, icon, variants
 				FROM stop_patterns
 				ORDER BY id
 			`),
