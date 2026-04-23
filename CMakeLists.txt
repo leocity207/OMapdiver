@@ -91,8 +91,13 @@ add_library(${project_name}-lib
 #----------------------------------
 # link server lib with dependancies
 
+find_package(PostgreSQL REQUIRED)
+if(NOT BUILD_TESTS)
+    set(OATPP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(OATPP_POSTGRESQL_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+endif()
 add_subdirectory(externals/oatpp)
-set(OATPP_MODULES_LOCATION OATPP_MODULES_LOCATION_CUSTOM)
+set(OATPP_MODULES_LOCATION OATPP_MODULES_LOCATION_CUSTOM CACHE STRING "" FORCE)
 set(OATPP_DIR_SRC ${CMAKE_CURRENT_SOURCE_DIR}/externals/oatpp/src)
 set(OATPP_DIR_LIB ${CMAKE_BINARY_DIR}/externals/oatpp)
 add_subdirectory(externals/oatpp-postgresql)
@@ -103,6 +108,7 @@ target_link_libraries(${project_name}-lib
 	PRIVATE oatpp-test
 	PRIVATE oatpp-postgresql
 	PRIVATE cxxopts
+	PRIVATE PostgreSQL::PostgreSQL
 )
 
 target_include_directories(${project_name}-lib 
@@ -120,7 +126,7 @@ add_executable(${project_name}-exe
 )
 target_link_libraries(${project_name}-exe 
 	${project_name}-lib
-	oatpp-postgresql
+	PostgreSQL::PostgreSQL
 )
 add_dependencies(${project_name}-exe ${project_name}-lib)
 

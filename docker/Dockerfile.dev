@@ -2,6 +2,9 @@
 FROM ubuntu:24.04
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    libstdc++6 \
+    libpq5 \
+    libpq-dev \
     build-essential \
     cmake \
     git \
@@ -25,13 +28,13 @@ COPY resources/ ./resources/
 COPY externals/ ./externals/
 COPY dev.sh ./dev.sh
 COPY package.json .
-copy pnpm-lock.yaml .
+COPY pnpm-lock.yaml .
 COPY pnpm-workspace.yaml .
 COPY rollup.config.js .
+COPY tsconfig.rollup.json .
 
 RUN chmod +x /app/dev.sh
 
 RUN pnpm install --frozen-lockfile
-
 
 EXPOSE 8000

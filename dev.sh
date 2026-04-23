@@ -23,7 +23,7 @@ fi
 # ----------------------------------------------------------------------
 if [ ! -f "build/CMakeCache.txt" ]; then
     echo "Configuring CMake (Debug mode, tests OFF)..."
-    cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=OFF
+    cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=OFF -DDB_HOST=db
 else
     echo "CMake already configured. Skipping configuration step."
 fi
@@ -63,7 +63,7 @@ echo "Watching for changes..."
     echo "CMakeLists.txt"
 } | entr -r sh -c '
     echo "Change detected — rebuilding..."
-    cmake --build build -j$(nproc)
+    cmake --build build -j$(nproc)  -DBUILD_TESTS=OFF -DDB_HOST=db
     echo "Starting server (will auto‑restart on exit)..."
     while true; do
         ./build/Mapdiver-exe
