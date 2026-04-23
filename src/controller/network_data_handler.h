@@ -15,7 +15,7 @@
 #include <sstream>
 #include <filesystem>
 
-#include OATPP_CODEGEN_BEGIN(ApiController) //<-- Begin Codegen
+#include OATPP_CODEGEN_BEGIN(ApiController)
 
 namespace O::Controller
 {
@@ -61,4 +61,5 @@ namespace O::Controller
 	};
 }
 
+#include OATPP_CODEGEN_END(ApiController)
 #endif
