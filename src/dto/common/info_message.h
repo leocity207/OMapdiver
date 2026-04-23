@@ -4,6 +4,8 @@
 #include <oatpp/macro/codegen.hpp>
 #include <oatpp/Types.hpp>
 
+#include "postgress_info_message.h"
+
 #include OATPP_CODEGEN_BEGIN(DTO)
 
 namespace O::DTO
@@ -19,6 +21,9 @@ namespace O::DTO
 		DTO_FIELD(Int16, index, "index");
 		DTO_FIELD(Int16, level, "level");
 		DTO_FIELD(String, message, "message");
+
+
+		static oatpp::Object<Info_Message> From_Postgres(const oatpp::Object<Postgres_Info_Message>& src);
 	};
 
 }

@@ -8,54 +8,58 @@
 #include <oatpp/json/ObjectMapper.hpp>
 
 #include "src/config.h"
-
 #include "src/dto/full_network.h"
+#include "src/db/client.h"
 
 #include <fstream>
 #include <sstream>
 #include <filesystem>
 
-#include OATPP_CODEGEN_BEGIN(ApiController) //<-- Begin Codegen
+#include OATPP_CODEGEN_BEGIN(ApiController)
 
 namespace O::Controller
 {
-
 	class Network_Data_Handler : public oatpp::web::server::api::ApiController
 	{
 	public:
-		Network_Data_Handler(OATPP_COMPONENT(std::shared_ptr<oatpp::web::mime::ContentMappers>, apiContentMappers));
+		Network_Data_Handler(
+			OATPP_COMPONENT(std::shared_ptr<oatpp::web::mime::ContentMappers>, apiContentMappers),
+			OATPP_COMPONENT(std::shared_ptr<O::Postgress::Client>, db)
+		)
+			: oatpp::web::server::api::ApiController(apiContentMappers),
+			  m_db(db)
+		{}
 
+		ENDPOINT("GET", "/dyn/network_data", Get_Network_Data)
+		{
+			{
+				std::lock_guard<std::mutex> lock(m_mutex);
+				if (Check_Update()) {
+					Rebuild_Network_String();
+				}
+			}
 
-		ENDPOINT("GET", "dyn/network_data", Get_Network_Data) {
-
-			if (Check_Update())
-				Rebuild_Network_String();
-
-			auto response = ResponseFactory::createResponse(Status::CODE_200, m_full_network_json);
-			response->putHeader("Content-Type", "application/json");
+			auto response = createResponse(Status::CODE_200, m_full_network_json);
+			response->putHeader("Content-Type", "application/json; charset=utf-8");
 			return response;
 		}
 
 	private:
-
-
-		void Rebuild_Network_String();
-		bool Check_Update();
-
-
-
-		std::pair<Fields<Object<O::DTO::Calendar_Pattern>>, std::filesystem::file_time_type> m_calendar_patterns;
-		std::pair<Fields<Object<O::DTO::Landmark>>        , std::filesystem::file_time_type> m_landmarks;
-		std::pair<Fields<Object<O::DTO::Line>>            , std::filesystem::file_time_type> m_lines;
-		std::pair<Fields<Object<O::DTO::Operator>>        , std::filesystem::file_time_type> m_operators;
-		std::pair<Fields<Object<O::DTO::Organiser>>       , std::filesystem::file_time_type> m_organiser;
-		std::pair<Fields<Object<O::DTO::Station>>         , std::filesystem::file_time_type> m_station;
-		std::pair<Fields<Object<O::DTO::Stop_Pattern>>    , std::filesystem::file_time_type> m_stop_patterns;
-		std::pair<Fields<Object<O::DTO::Territory>>       , std::filesystem::file_time_type> m_territories;
-		 
+		std::shared_ptr<O::Postgress::Client> m_db;
 		oatpp::String m_full_network_json;
+		bool m_is_loaded = false;
+		std::mutex m_mutex;
 
+		bool Check_Update();
+		void Rebuild_Network_String();
+
+		template <class T>
+		static oatpp::Fields<oatpp::Object<T>> To_Fields_By_Id(const oatpp::Vector<oatpp::Object<T>>& items);
+
+		template <class T>
+		static oatpp::List<oatpp::Object<T>> To_List(const oatpp::Vector<oatpp::Object<T>>& items);
 	};
 }
 
+#include OATPP_CODEGEN_END(ApiController)
 #endif

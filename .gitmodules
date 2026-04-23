@@ -4,3 +4,6 @@
 [submodule "externals/cxxopts"]
 	path = externals/cxxopts
 	url = https://github.com/jarro2783/cxxopts
+[submodule "externals/oatpp-postgresql"]
+	path = externals/oatpp-postgresql
+	url = https://github.com/oatpp/oatpp-postgresql.git

@@ -9,7 +9,7 @@ const SVG_NS = 'http://www.w3.org/2000/svg'
 
 export interface Line_Station_Data {
 	arrival_minute: number | null,
-	departure_minute: number | null,
+	departure_time: number | null,
 	station_ID: string | null,
 	reference_minute: number | null,
 	info_messages: InfoMessage[] | null,
@@ -233,9 +233,9 @@ class Line_Station extends HTMLElement {
 	 * @param {SVGPathElement} path
 	 */
 	_Render_Path_Shape(path: SVGPathElement): void {
-		const { arrival_minute, departure_minute } = this.station_data!;
+		const { arrival_minute, departure_time } = this.station_data!;
 		const has_arrival = arrival_minute != null;
-		const has_departure = departure_minute != null;
+		const has_departure = departure_time != null;
 
 		if(this.station_data!.property === "blank")
 			path.setAttribute('d', Line_Station.blank_station_path);
@@ -255,10 +255,10 @@ class Line_Station extends HTMLElement {
 	 */
 	_Render_Times(origin_time: HTMLElement, cadence_arrival: HTMLElement, cadence_departure: HTMLElement): void {
 		if(this.station_data!.property === 'blank') return;
-		let { arrival_minute, departure_minute, reference_minute} = this.station_data!;
+		let { arrival_minute, departure_time, reference_minute} = this.station_data!;
 		if(reference_minute === null)
 			reference_minute = 0;
-		const base = this.station_data!.parent.departure_minute;
+		const base = this.station_data!.parent.departure_time;
 
 
 		origin_time.textContent = arrival_minute ? Utils.Format_Minute(arrival_minute - reference_minute) : null;
@@ -271,8 +271,8 @@ class Line_Station extends HTMLElement {
 		else
 			cadence_arrival.style.display = 'none';
 
-		if (departure_minute != null && reference_minute <= departure_minute) {
-			cadence_departure.textContent = Utils.Format_Minute(base + departure_minute - hours_to_remove);
+		if (departure_time != null && reference_minute <= departure_time) {
+			cadence_departure.textContent = Utils.Format_Minute(base + departure_time - hours_to_remove);
 			cadence_departure.style.display = 'block';
 		}
 		else

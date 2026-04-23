@@ -165,7 +165,7 @@ class Line_Schedule extends HTMLElement {
 		if (!this.schedule_data!.info_messages?.length)
 			header_info_icon.style.display = 'none';
 		header_title.textContent = this.schedule_data!.label;
-		header_minute.textContent = ":" + String(this.schedule_data!.departure_minute).padStart(2, '0'); 
+		header_minute.textContent = Utils.Format_Minute(this.schedule_data!.departure_time); 
 		header_left_icon.innerHTML = this.network_data!.stop_patterns[this.schedule_data!.stop_pattern].icon
 
 
@@ -175,12 +175,12 @@ class Line_Schedule extends HTMLElement {
 		if (reference_index === -1)
 			reference_index = 0;
 
-		const reference_minute = this.schedule_data!.arrival_minutes[reference_index];
+		const reference_minute = this.schedule_data!.arrival_times[reference_index];
 
 
 		const refStation_stop: Line_Station_Data = {
 			arrival_minute: reference_minute,
-			departure_minute: this.schedule_data!.departure_minutes[reference_index],
+			departure_time: this.schedule_data!.departure_times[reference_index],
 			station_ID: this.reference_line!.stations[reference_index],
 			reference_minute: reference_minute,
 			info_messages : this.reference_line!.info_messages.filter( item => item.index === reference_index),
@@ -191,8 +191,8 @@ class Line_Schedule extends HTMLElement {
 		// Add the first station as Gray_Station if it's not the reference
 		if (reference_index > 0) {
 			const firstStop: Line_Station_Data = {
-				arrival_minute: this.schedule_data!.arrival_minutes[0],
-				departure_minute: this.schedule_data!.departure_minutes[0],
+				arrival_minute: this.schedule_data!.arrival_times[0],
+				departure_time: this.schedule_data!.departure_times[0],
 				station_ID: this.reference_line!.stations[0],
 				reference_minute: reference_minute,
 				info_messages: null,
@@ -206,7 +206,7 @@ class Line_Schedule extends HTMLElement {
 		if (reference_index > 1) {
 			const blank_stop: Line_Station_Data = {
 				arrival_minute: null,
-				departure_minute: null,
+				departure_time: null,
 				station_ID: null,
 				reference_minute: null,
 				info_messages: null,
@@ -222,8 +222,8 @@ class Line_Schedule extends HTMLElement {
 		// Add visible stations from reference onward
 		for (let i = reference_index + 1; i < this.reference_line!.stations.length; i++) {
 			const stop_object: Line_Station_Data = {
-				arrival_minute: this.schedule_data!.arrival_minutes[i],
-				departure_minute: this.schedule_data!.departure_minutes[i],
+				arrival_minute: this.schedule_data!.arrival_times[i],
+				departure_time: this.schedule_data!.departure_times[i],
 				station_ID: this.reference_line!.stations[i],
 				reference_minute: reference_minute,
 				info_messages: this.reference_line!.info_messages.filter( item => item.index === i),

@@ -30,4 +30,6 @@ class Static_File_Manager : public oatpp::web::server::api::ApiController {
 		}
 };
 
+#include OATPP_CODEGEN_END(ApiController)
+
 #endif // STATIC_FILE_HANDLER_HPP

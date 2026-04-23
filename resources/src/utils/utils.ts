@@ -167,10 +167,11 @@ class Utils {
 
 	/**
 	 * Format minutes as H:MM or :MM
-	 * @param {int} total_minutes an integer representing elapsed minutes
+	 * @param {int} total_seconds an integer representing elapsed minutes
 	 */
-	static Format_Minute(total_minutes: number): string {
+	static Format_Minute(total_seconds: number): string {
 		let negative = '';
+		let total_minutes = total_seconds / 60;
 		if(total_minutes < 0) {
 			negative = '-';
 			total_minutes = -total_minutes;

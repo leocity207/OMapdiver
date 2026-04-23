@@ -49,8 +49,8 @@ Structure (M means mendatory, O means optional):
 			{
 				"id": "String M: Reference id of the pattern",
 				"label": "String M: labbel of the pattern",
-				"interval_minutes": "Int M :interval time between two train",
-				"departure_minute": "Int M : departure minute of the train",
+				"interval_time": "Int M :interval time between two train",
+				"departure_time": "Int M : departure minute of the train",
 				"first_departure":"String M: time of the first departure in the day",
 				"last_departure":"String M: time of the last departure of the day",
 				"stop_pattern": "String M: stop patterne variant of the train",
@@ -62,10 +62,10 @@ Structure (M means mendatory, O means optional):
 						"message": "String M: information message",
 					}
 				],
-				"arrival_minutes": [
+				"arrival_times": [
 					"Int/null, minut of arrival at station",
 				],
-				"departure_minutes": [
+				"departure_times": [
 					"Int/null, minute of departure at station",
 				]
 			}
@@ -84,10 +84,10 @@ Structure (M means mendatory, O means optional):
 						"message": "String M: information message",
 					}
 				],
-				"arrival_minutes": [
+				"arrival_times": [
 					"String/null, minut of arrival at station",
 				],
-				"departure_minutes": [
+				"departure_times": [
 					"String/null, minute of departure at station",
 				]
 			}

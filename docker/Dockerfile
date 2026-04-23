@@ -6,6 +6,9 @@ RUN apt-get update && apt-get install -y \
     cmake \
     git \
     curl \
+    libstdc++6 \
+    libpq5 \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
@@ -20,13 +23,14 @@ COPY CMakeLists.txt .
 COPY resources/ ./resources/
 COPY externals/ ./externals/
 COPY package.json .
-copy pnpm-lock.yaml .
+COPY pnpm-lock.yaml .
 COPY pnpm-workspace.yaml .
 COPY rollup.config.js .
+COPY tsconfig.rollup.json .
 
 
 # Build
-RUN cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF \
+RUN cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DDB_HOST=db\
  && cmake --build build -j$(nproc)
 
 RUN pnpm install --frozen-lockfile
@@ -37,6 +41,7 @@ FROM ubuntu:24.04
 
 RUN apt-get update && apt-get install -y \
     libstdc++6 \
+    libpq5 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

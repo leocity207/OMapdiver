@@ -54,12 +54,12 @@ struct Station_Exemple
 		OATPP_ASSERT(object->Has_Have_Bike_Parking() == false);
 		OATPP_ASSERT(object->Has_Have_Car_Parkingt() == false);
 		OATPP_ASSERT(object->Has_Have_Car_Sharing() == false);
-		OATPP_ASSERT(object->Has_Opening_Hour() == false);
-		OATPP_ASSERT(object->Has_Closing_Hour() == false);
+		OATPP_ASSERT(object->Has_opening_time() == false);
+		OATPP_ASSERT(object->Has_closing_time() == false);
 
 	}
 
-	static inline const std::string serialized = R"({"id":"FR_03190_0","label":"Rennes","url":null,"lines":["l1","l2"],"directions":{"LGV_FR8_A_27":"s1","LER_NOR2_A_05":"s1","LGV_FR4_A_00":"s2"},"have_disabled_equipment":null,"have_bike_parking":null,"have_car_parking":null,"opening_hour":null,"closing_hour":null})";
+	static inline const std::string serialized = R"({"id":"FR_03190_0","label":"Rennes","url":null,"lines":["l1","l2"],"directions":{"LGV_FR8_A_27":"s1","LER_NOR2_A_05":"s1","LGV_FR4_A_00":"s2"},"have_disabled_equipment":null,"have_bike_parking":null,"have_car_parking":null,"opening_time":null,"closing_time":null})";
 
 	static std::string Test_Serialize()
 	{
