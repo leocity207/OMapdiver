@@ -146,7 +146,7 @@ if(BUILD_TESTS)
     add_dependencies(${project_name}-test ${project_name}-lib)
 
     enable_testing()
-    add_test(project-tests ${project_name}-test)
+    add_test(NAME project-tests COMMAND $<TARGET_FILE:${project_name}-test>)
 
 	set_target_properties(${project_name}-test PROPERTIES
 		CXX_STANDARD 20
