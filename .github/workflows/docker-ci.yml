@@ -15,6 +15,10 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Add resources
+        run: |
+          git clone https://github.com/leocity207/Mapdiver_NeoBretagne_Data.git resources/resources-config
+
       - name: Verify docker compose
         run: docker compose version
 
