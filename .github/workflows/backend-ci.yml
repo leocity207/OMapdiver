@@ -3,9 +3,6 @@ name: Backend CI (CMake)
 on:
   push:
     branches: [ master ]
-    paths:
-      - "src/**"
-      - "CMakeLists.txt"
 
 jobs:
   build-and-test:
