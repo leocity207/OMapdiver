@@ -1,0 +1,26 @@
+name: Docker CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Add resources
+        run: |
+          git clone https://github.com/leocity207/Mapdiver_NeoBretagne_Data.git resources/resources-config
+
+      - name: Verify docker compose
+        run: docker compose version
+
+      - name: Build services
+        run: docker compose build server
