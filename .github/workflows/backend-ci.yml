@@ -23,7 +23,7 @@ jobs:
             libpq-dev
 
       - name: Configure
-        run: cmake -S . -B build -DBUILD_TESTS=ON
+        run: cmake -S . -B build -DBUILD_TESTS=ON -DOATPP_BUILD_TESTS=OFF -DOATPP_POSTGRESQL_BUILD_TESTS=OFF
 
       - name: Build
         run: cmake --build build --parallel
