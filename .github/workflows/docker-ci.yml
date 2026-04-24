@@ -12,12 +12,11 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Verify docker compose
         run: docker compose version
-
-      - name: add submodule
-        run: git submodule init && git submodule update
 
       - name: Build services
         run: docker compose build server
