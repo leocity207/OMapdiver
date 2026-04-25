@@ -123,7 +123,8 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 	connectedCallback() {
 		this.Observable_connectedCallback();
 		this.Toggleable_connectedCallback();
-		this.Render();
+		if(this.states.length)
+			this.Render();
 
 		document.addEventListener("click", this._Handle_Outside_Click);
 		window.addEventListener("resize", this._Handle_Resize);

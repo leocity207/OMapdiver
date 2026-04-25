@@ -20,7 +20,7 @@
 	flex-wrap: wrap;
 	align-content: flex-start;
 	gap: 8px;
-	padding: 5px 5px 5px 5px;
+	padding: 10px;
 	overflow: auto;
 	background-color: rgb(245, 245, 245);
 }

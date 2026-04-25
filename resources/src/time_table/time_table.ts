@@ -24,8 +24,10 @@ class TimeTable extends HTMLElement {
 		const template = document.createElement('template');
 		const top_container = Utils.Create_Element_With_Class('div', 'line-info');
 		const calendar_pattern_selector = Switch_Pattern.Create("calendar_pattern");
+		calendar_pattern_selector.style.display = 'None';
 		calendar_pattern_selector.id = "calendar-pattern";
 		const stop_pattern_selector = Switch_Pattern.Create("stop_pattern");
+		stop_pattern_selector.style.display = 'None';
 		stop_pattern_selector.id = "stop-pattern";
 		top_container.append(calendar_pattern_selector, stop_pattern_selector);
 
@@ -62,6 +64,8 @@ class TimeTable extends HTMLElement {
 	}
 
 	Set_TimeTable_Content(line_ID: string, network_data: Network) {
+		this.calendar_pattern_selector.style.display = '';
+		this.stop_pattern_selector.style.display = '';
 		this.calendar_pattern_selector.Update(network_data.calendar_patterns as {[index: string]: Pattern_Schemes});
 		this.stop_pattern_selector.Update(network_data.stop_patterns as {[index: string]: Pattern_Schemes});
 		this.timetable_service_mission.Update(network_data.lines[line_ID], network_data.stations);

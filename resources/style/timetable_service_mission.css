@@ -62,7 +62,6 @@
 	width: 100%;
 	border-collapse: separate;
 	border-spacing: 0;
-	min-width: 900px;
 }
 
 .timetable-table thead th {
@@ -75,7 +74,7 @@
 
 .timetable-table th,
 .timetable-table td {
-	padding: 0.65rem 0.8rem;
+	padding: 0.3rem 0.8rem;
 	border-bottom: 1px solid #ececf2;
 	vertical-align: middle;
 }
