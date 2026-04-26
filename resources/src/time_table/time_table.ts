@@ -56,14 +56,6 @@ class TimeTable extends HTMLElement {
 		return elt;
 	}
 
-	On_Calendar_Pattern(selected_pattern: string) {
-		console.log(selected_pattern)
-	}
-
-	On_Stop_Pattern(selected_pattern: string) {
-		console.log(selected_pattern)
-	}
-
 	Set_TimeTable_Content(line_ID: string, network_data: Network) {
 		this.calendar_pattern_selector.style.display = '';
 		this.stop_pattern_selector.style.display = '';
@@ -73,8 +65,8 @@ class TimeTable extends HTMLElement {
 		this.stop_pattern_selector.Update(network_data.stop_patterns as {[index: string]: Pattern_Schemes}, "all");
 		this.timetable_service_mission.Update(network_data.lines[line_ID], network_data.stations);
 
-		Switch_Pattern.Get_Observable<string>("calendar_pattern").subscribe((event: ObservableEvent<string>) => this.On_Calendar_Pattern(event.data));
-		Switch_Pattern.Get_Observable<string>("stop_pattern").subscribe((event: ObservableEvent<string>)     => this.On_Stop_Pattern(event.data));
+		Switch_Pattern.Get_Observable<string>("calendar_pattern").subscribe((event: ObservableEvent<string>) => this.timetable_service_mission.Update_Displayed_State_Calendar_Patterns(event.data));
+		Switch_Pattern.Get_Observable<string>("stop_pattern").subscribe((event: ObservableEvent<string>)     => this.timetable_service_mission.Update_Displayed_State_Stop_Pattern(event.data));
 	}
 
 }

@@ -33,8 +33,8 @@ function Has_Any_Intersection(list_a: any[], list_b: any[]) {
 }
 
 interface Display_State { 
-	calendar_patterns: string[];
-	stop_patterns: string[];
+	calendar_pattern: string;
+	stop_pattern: string;
 	display_hidden_stations: boolean;
 	show_arrival_times: boolean; 
 }
@@ -83,8 +83,8 @@ class TimeTable_Services_Missions extends HTMLElement {
 		this.m_stations = null;
 
 		this.m_display_state = {
-			calendar_patterns: [],
-			stop_patterns: [],
+			calendar_pattern: "",
+			stop_pattern: "",
 			display_hidden_stations: false,
 			show_arrival_times: false,
 		};
@@ -107,42 +107,37 @@ class TimeTable_Services_Missions extends HTMLElement {
 	 * @param {Object} data - Line timetable data.
 	 * @param {Object|null} display_state - Optional display state update.
 	 */
-	Update(data: Line, stations: {[index: string]: Station}, display_state = null) {
+	Update(data: Line, stations: {[index: string]: Station}) {
 		this.m_data = data ?? null;
 		this.m_stations = stations ?? null;
-
-		if (display_state !== null) {
-			this.Update_Display_State(display_state);
-		}
 
 		this.Render();
 		this.setAttribute("data-ready", "true");
 	}
 
-	/**
-	 * Update only the display state without rebuilding the whole timetable.
-	 * @param {Object} display_state
-	 */
-	Update_Display_State(display_state: Display_State) {
-		if (display_state.calendar_patterns !== undefined) {
-			this.m_display_state.calendar_patterns = Pattern_List_To_Tokens(display_state.calendar_patterns);
-		}
+	Update_Displayed_State_Calendar_Patterns(pattern_id: string)
+	{
+		this.m_display_state.calendar_pattern = pattern_id;
+		this._Refresh_Visibility();
+	}
 
-		if (display_state.stop_patterns !== undefined) {
-			this.m_display_state.stop_patterns = Pattern_List_To_Tokens(display_state.stop_patterns);
-		}
+	Update_Displayed_State_Stop_Pattern(pattern_id: string)
+	{
+		this.m_display_state.stop_pattern = pattern_id;
+		this._Refresh_Visibility();
+	}
 
-		if (display_state.display_hidden_stations !== undefined) {
-			this.m_display_state.display_hidden_stations = Boolean(display_state.display_hidden_stations);
-		}
-
-		if (display_state.show_arrival_times !== undefined) {
-			this.m_display_state.show_arrival_times = Boolean(display_state.show_arrival_times);
-		}
-
+	Update_Display_Hidden_station(value: boolean)
+	{
+		this.m_display_state.display_hidden_stations = value;
 		this.classList.toggle("show-hidden-stations", this.m_display_state.display_hidden_stations);
-		this.classList.toggle("show-arrival-minutes", this.m_display_state.show_arrival_times);
+		this._Refresh_Visibility();
+	}
 
+	Update_Display_Arrival_Time(value : boolean)
+	{
+		this.m_display_state.show_arrival_times = value;
+		this.classList.toggle("show-arrival-minutes", this.m_display_state.show_arrival_times);
 		this._Refresh_Visibility();
 	}
 
@@ -292,8 +287,8 @@ class TimeTable_Services_Missions extends HTMLElement {
 		const thead = this.shadowRoot!.querySelector("thead") as HTMLElement;
 		const tbody = this.shadowRoot!.querySelector("tbody") as HTMLElement;
 
-		const active_calendar = this.m_display_state.calendar_patterns;
-		const active_stop = this.m_display_state.stop_patterns;
+		const active_calendar = this.m_display_state.calendar_pattern;
+		const active_stop = this.m_display_state.stop_pattern;
 
 		// 1) Column visibility: header + all cells in the same timetable column.
 		const header_cells = thead.querySelectorAll("th.timetable-header-cell") as NodeListOf<HTMLElement>;
@@ -301,8 +296,8 @@ class TimeTable_Services_Missions extends HTMLElement {
 			const cal_tokens = JSON.parse(th.dataset.calendarPatterns || "[]");
 			const stop_tokens = JSON.parse(th.dataset.stopPatterns || "[]");
 
-			const visible_by_calendar = Has_Any_Intersection(active_calendar, cal_tokens);
-			const visible_by_stop = Has_Any_Intersection(active_stop, stop_tokens);
+			const visible_by_calendar = Has_Any_Intersection([active_calendar], cal_tokens);
+			const visible_by_stop = Has_Any_Intersection([active_stop], stop_tokens);
 
 			const visible = visible_by_calendar && visible_by_stop;
 
