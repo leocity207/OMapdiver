@@ -38,6 +38,7 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 	m_special_toggle: HTMLElement | null = null;
 	m_special_label: HTMLElement | null = null;
 	m_indicator: HTMLElement | null = null;
+	m_default_choice: string | null = null;
 
 	/**
 	 * Base template for the switch.
@@ -59,6 +60,7 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 		template.content.appendChild(master);
 		return template;
 	})();
+	
 
 	constructor() {
 		super();
@@ -91,11 +93,9 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 		return elt;
 	}
 
-	Update(choices: {[index: string]: Pattern_Schemes}): void {
+	Update(choices: {[index: string]: Pattern_Schemes}, default_choice: string): void {
 		const all_states = Object.entries(choices).map(([key, value]) => value.id)
 
-
-		this.Toggleable_Init(all_states, all_states[0] );
 
 		const [special, normal] = Object.entries(choices).reduce(
 			([accTrue, accFalse], [key, value]) => {
@@ -114,7 +114,13 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 		
 		this.m_choices = normal;
 		this.m_special_choices = special;
+
+		this.m_default_choice = default_choice;
+		const initial_state = this.m_choices[this.m_default_choice]?.id ?? all_states[0];
+
+		this.Toggleable_Init(all_states, initial_state );
 		this.Render();
+		this.Set_State(this.Get_State());
 	}
 
 	/**
@@ -154,7 +160,16 @@ class Pattern_Switch extends Observable(Toggleable(HTMLElement)) {
 		this.m_indicator = this.shadowRoot!.querySelector(".switch-indicator");
 
 		// Normal choices on the left
-		for (const [key, value] of Object.entries(this.m_choices)) {
+		const entries = Object.entries(this.m_choices);
+		let ordered_entries = entries;
+		if (this.m_default_choice && this.m_choices[this.m_default_choice]) {
+			ordered_entries = [
+				[this.m_default_choice, this.m_choices[this.m_default_choice]],
+				...entries.filter(([key]) => key !== this.m_default_choice)
+			];
+		}
+
+		for (const [key, value] of ordered_entries) {
 			const button = document.createElement("button");
 			button.type = "button";
 			button.className = "switch-option switch-normal-option";

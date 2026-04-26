@@ -2,6 +2,7 @@ import Utils from "../utils/utils";
 import Switch_Pattern from "../components/pattern_switch"
 import TimeTable_Service_Mission from "./time_table_service_mission"
 import { Network, Pattern_Schemes } from "../utils/networktype";
+import { ObservableEvent } from "../utils/observable";
 
 // @ts-ignore for CSS import
 import CSS_timetable from '../../style/timetable.css';
@@ -56,19 +57,24 @@ class TimeTable extends HTMLElement {
 	}
 
 	On_Calendar_Pattern(selected_pattern: string) {
-
+		console.log(selected_pattern)
 	}
 
 	On_Stop_Pattern(selected_pattern: string) {
-
+		console.log(selected_pattern)
 	}
 
 	Set_TimeTable_Content(line_ID: string, network_data: Network) {
 		this.calendar_pattern_selector.style.display = '';
 		this.stop_pattern_selector.style.display = '';
-		this.calendar_pattern_selector.Update(network_data.calendar_patterns as {[index: string]: Pattern_Schemes});
-		this.stop_pattern_selector.Update(network_data.stop_patterns as {[index: string]: Pattern_Schemes});
+		network_data.calendar_patterns['all'] = {id: "all", label: "all", is_exceptional: false, info: null, icon : null };
+		network_data.stop_patterns['all'] = {id: "all", label: "all", is_exceptional: false, level: 0, variant: [], color: "", icon: ""};
+		this.calendar_pattern_selector.Update(network_data.calendar_patterns as {[index: string]: Pattern_Schemes}, "all");
+		this.stop_pattern_selector.Update(network_data.stop_patterns as {[index: string]: Pattern_Schemes}, "all");
 		this.timetable_service_mission.Update(network_data.lines[line_ID], network_data.stations);
+
+		Switch_Pattern.Get_Observable<string>("calendar_pattern").subscribe((event: ObservableEvent<string>) => this.On_Calendar_Pattern(event.data));
+		Switch_Pattern.Get_Observable<string>("stop_pattern").subscribe((event: ObservableEvent<string>)     => this.On_Stop_Pattern(event.data));
 	}
 
 }
