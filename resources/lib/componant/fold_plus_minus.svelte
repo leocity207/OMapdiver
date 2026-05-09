@@ -1,0 +1,52 @@
+<script lang="ts">
+	export let active = false;
+</script>
+
+<button
+	class="circle"
+	class:active
+	on:click={() => active = !active}
+	aria-pressed={active}
+>
+	<div class={active ? "minus" : "plus"}>
+		<div class="horizontal"></div>
+
+		{#if !active}
+			<div class="vertical"></div>
+		{/if}
+	</div>
+</button>
+
+<style>
+	.circle {
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		border: 1px solid black;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		position: relative;
+		transition: background-color 0.2s ease;
+	}
+
+
+	.horizontal,
+	.vertical {
+		position: absolute;
+		width: 15px; height: 1px;
+		background-color: black;
+		transition: transform 0.2s ease, opacity 0.2s ease;
+	}
+	.horizontal {
+		transform: rotate(0deg);
+	}
+	.vertical {
+		transform: rotate(90deg);
+	}
+
+	.circle.minus > .vertical {
+		opacity: 0;
+	}
+</style>
