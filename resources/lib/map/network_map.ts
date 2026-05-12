@@ -1,10 +1,12 @@
-import SVG_Map, { Map_Fabric_Object } from '../../src/map/svg_map';
-import Utils from '../utils/utils';
-import { Config_Type, Network_Config_Type } from '../utils/configtype';
-import { Color, FabricObject, ObjectEvents, TEvent, TPointerEvent, util } from 'fabric';
-import { String_Error } from '../utils/constant';
-import {Fabric_With_Props} from '../../src/map/svg_map'
-import { Line, Station } from '../types/network';
+import type { Line, Station } from '$lib/types/network';
+import type {Map_Fabric_Object, Fabric_With_Props} from './svg_map';
+import type {ObjectEvents } from 'fabric'
+import type { Map_Config_Type} from '$lib/types/map_config';
+import type { Network_Config_Type } from '$lib/types/network_config';
+import { Color, util } from 'fabric';
+import { String_Error } from '$lib/utils/constant';
+import Utils from '$lib/utils/utils';
+import SVG_Map from './svg_map';
 
 interface Custom_Click_event extends CustomEventInit {
 	type: string
@@ -45,7 +47,7 @@ class Network_Map extends SVG_Map {
 	* @param Lines, list of Line Object
 	* @param Station, list of Station Objects
 	*/
-	constructor(client_type: string, filename: string, map_config: Config_Type, network_config: Network_Config_Type) {
+	constructor(client_type: string, filename: string, map_config: Map_Config_Type, network_config: Network_Config_Type) {
 		super(client_type, filename, map_config);
 
 		this.network_config = network_config;

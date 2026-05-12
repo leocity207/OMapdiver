@@ -5,6 +5,11 @@
 export interface Map_Config_Type {
 
 	/**
+	 * turn on debug mode, which logs additional information to the console and turns on the debug mode of fabricjs, which shows the bounding boxes of objects
+	 */
+	DEBUG : boolean,
+
+	/**
 	 * Initial Zoom value if we cannot zoom on object ID
 	 */
 	INITIAL_ZOOM : number,

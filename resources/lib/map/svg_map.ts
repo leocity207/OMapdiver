@@ -4,7 +4,7 @@ import { animate, utils } from 'animejs';
 import Hammer from 'hammerjs';
 import normalizeWheel from 'normalize-wheel';
 import Utils from '../utils/utils';
-import { Config_Type } from '../utils/configtype';
+import type { Map_Config_Type } from '$lib/types/map_config';
 import { String_Error } from '../utils/constant';
 
 
@@ -46,7 +46,7 @@ class SVG_Map {
 	/**
 	 * The configurration of the svg map please look at ``config``
 	 */
-	config: Config_Type;
+	config: Map_Config_Type;
 
 	/**
 	 * The fabric canvas for the svg map
@@ -117,7 +117,7 @@ class SVG_Map {
 	 * @param {String} filename the filename of the svg map
 	 * @param {Object} config config of the svg map (see config)
 	 */
-	constructor(client_type: string, filename: string, config: Config_Type) {
+	constructor(client_type: string, filename: string, config: Map_Config_Type) {
 
 		this.filename = filename;
 		SVG_Map._Initialize_Fabric();
