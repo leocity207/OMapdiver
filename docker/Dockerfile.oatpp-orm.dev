@@ -1,0 +1,34 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git \
+    curl \
+    ca-certificates \
+    entr \
+    pkg-config \
+    libpq-dev \
+    libpq5 \
+    libssl-dev \
+    bash \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Dev helper script only; source will be bind-mounted from the host
+COPY src/ ./src/
+COPY CMakeLists.txt .
+COPY resources/ ./resources/
+COPY externals/ ./externals/
+COPY docker/dev-oatpp-orm.sh ./dev-oatpp-orm.sh
+RUN chmod +x /app/dev-oatpp-orm.sh
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=10s --timeout=3s --start-period=20s --retries=5 \
+	CMD curl -fsS http://localhost:8000/dyn/network_data || exit 1
+
+CMD ["/app/dev-oatpp-orm.sh"]

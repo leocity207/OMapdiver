@@ -1,11 +1,26 @@
 services:
-  server_dev:
+  webapp:
     build:
       context: .
-      dockerfile: docker/Dockerfile.dev
+      dockerfile: docker/Dockerfile.webapp.dev
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+    depends_on:
+      oatpp-orm:
+        condition: service_healthy
+    volumes:
+      - ./resources:/app/resources
+      - ./node_modules:/app/node_modules
+
+  oatpp-orm:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.oatpp-orm.dev
     ports:
       - "8000:8000"
-    command: /app/dev.sh
     stdin_open: true
     tty: true
     environment:
@@ -22,9 +37,6 @@ services:
         - action: sync
           path: ./src
           target: /app/src
-        - action: sync
-          path: ./resources
-          target: /app/resources
     depends_on:
       db:
         condition: service_healthy
@@ -55,7 +67,7 @@ services:
       db:
         condition: service_healthy
     command: >
-      python transport_loader/main.py
+      python /app/loader/main.py
       --host db
       --port 5432
       --dbname ${POSTGRES_DB:-appdb}

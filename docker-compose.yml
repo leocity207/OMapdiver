@@ -1,10 +1,21 @@
-version: "3.9"
-
 services:
-  server:
+  webapp:
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/Dockerfile.webapp.prod
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+    depends_on:
+      oatpp-orm:
+        condition: service_healthy
+
+  oatpp-orm:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.oatpp-orm.prod
     ports:
       - "8000:8000"
     restart: unless-stopped

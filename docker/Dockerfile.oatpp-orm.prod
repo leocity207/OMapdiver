@@ -1,0 +1,62 @@
+# ---------- BUILD STAGE ----------
+FROM ubuntu:24.04 AS builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git \
+    curl \
+    ca-certificates \
+    libpq-dev \
+    libssl-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy only the backend sources and build files
+COPY CMakeLists.txt .
+COPY src/ ./src/
+COPY externals/ ./externals/
+COPY resources/ ./resources/
+
+# If you have extra cmake modules or configs, copy them too
+# COPY cmake/ ./cmake/
+
+# Configure + build
+RUN cmake -S . -B build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_TESTS=OFF \
+ && cmake --build build -j"$(nproc)"
+
+# Optional: strip binary to reduce size
+# RUN strip build/Mapdiver-exe
+
+
+# ---------- RUNTIME STAGE ----------
+FROM ubuntu:24.04 AS runtime
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libstdc++6 \
+    libpq5 \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy the compiled server
+COPY --from=builder /app/build/Mapdiver-exe ./Mapdiver-exe
+
+# Copy runtime assets if your server serves them
+COPY --from=builder /app/resources ./resources
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=10s --timeout=3s --start-period=20s --retries=5 \
+	CMD curl -fsS http://localhost:8000/dyn/network_data || exit 1
+
+CMD ["./Mapdiver-exe"]

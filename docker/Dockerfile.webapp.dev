@@ -1,0 +1,14 @@
+FROM ghcr.io/pnpm/pnpm:11.1.1
+RUN pnpm runtime set node 22 -g
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml vite.config.js tsconfig.json svelte.config.js ./
+
+RUN pnpm install --frozen-lockfile
+
+COPY resources/ .
+
+EXPOSE 3000
+
+CMD ["pnpm", "run", "dev", "--", "--host", "0.0.0.0"]
