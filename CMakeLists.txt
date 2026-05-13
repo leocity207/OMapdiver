@@ -7,7 +7,7 @@ option(BUILD_TESTS "Build test executables" ON)
 #-------------------------
 # add resources by default if they don't exist
 set(RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources/resources-config")
-set(DB_HOST "127.0.0.1" CACHE STRING "PostgreSQL host")
+set(DB_HOST "db" CACHE STRING "PostgreSQL host")
 set(DB_PORT "5432" CACHE STRING "PostgreSQL port")
 set(DB_NAME "appdb" CACHE STRING "PostgreSQL database name")
 set(DB_USER "appuser" CACHE STRING "PostgreSQL database user")

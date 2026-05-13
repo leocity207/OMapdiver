@@ -19,7 +19,7 @@ namespace O::DTO
 		// Mandatory Fields
 		DTO_FIELD(String, line_id, "line_id");
 		DTO_FIELD(String, stop_pattern, "stop_pattern");
-		DTO_FIELD(String, calendar_pattern, "calendar_pattern");
+		DTO_FIELD(Vector<oatpp::String>, calendar_patterns, "calendar_patterns");
 		DTO_FIELD(List<Object<Info_Message>>, info_messages, "info_messages");
 		DTO_FIELD(Vector<oatpp::Int64>, departure_times, "departure_times");
 		DTO_FIELD(Vector<oatpp::Int64>, arrival_times, "arrival_times");

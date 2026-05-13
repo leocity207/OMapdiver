@@ -129,7 +129,7 @@ def _Load_Timetables(cur: PGCursor, data: dict) -> None:
 				line_id,
 				label,
 				stop_pattern,
-				calendar_pattern,
+				calendar_patterns,
 				arrival_times,
 				departure_times
 			)
@@ -138,7 +138,7 @@ def _Load_Timetables(cur: PGCursor, data: dict) -> None:
 				line_id = EXCLUDED.line_id,
 				label = EXCLUDED.label,
 				stop_pattern = EXCLUDED.stop_pattern,
-				calendar_pattern = EXCLUDED.calendar_pattern,
+				calendar_patterns = EXCLUDED.calendar_patterns,
 				arrival_times = EXCLUDED.arrival_times,
 				departure_times = EXCLUDED.departure_times
 			""",
@@ -147,7 +147,7 @@ def _Load_Timetables(cur: PGCursor, data: dict) -> None:
 				line_id,
 				timetable["label"],
 				timetable["stop_pattern"],
-				timetable["calendar_pattern"],
+				As_Text_List(timetable["calendar_patterns"]),
 				As_Int_List(timetable["arrival_times"]),
 				As_Int_List(timetable["departure_times"])
 			),
