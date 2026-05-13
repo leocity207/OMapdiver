@@ -7,7 +7,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml vite.config.js tsconfig.jso
 
 RUN pnpm install --frozen-lockfile
 
-COPY resources/ .
+COPY resources/ ./resources/
 
 EXPOSE 3000
 
