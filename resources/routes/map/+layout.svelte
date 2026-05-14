@@ -80,8 +80,8 @@
 		<div class="topbar-right"></div>
 	</header>
 
-	<LeftPanel bind:open={panel_open} title="Menu">
-		<nav class="menu">
+	<LeftPanel bind:open={panel_open} title="Options">
+		<nav class="options">
 			<ul>
 				<li><a href="/">Home</a></li>
 				<li><a href="/map">Map</a></li>
@@ -113,6 +113,14 @@
 </div>
 
 <style>
+
+	.topbar {
+		width: 100%;
+		display: flex;
+		padding-top: 0.5em;
+		padding-bottom: 0.5em;
+	}
+
 	.shell {
 		height: 100dvh;
 		min-height: 0;

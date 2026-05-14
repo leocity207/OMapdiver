@@ -133,6 +133,10 @@
 </div>
 
 <style>
+	header {
+		width: 100%;
+	}
+	
 	.viewer {
 		position: relative;
 		width: 100%;

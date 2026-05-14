@@ -17,7 +17,10 @@
 
 <style>
 	.hamburger{
-		width: 1.3125em;
+		background: none;
+		border: none;
+		cursor: pointer;
+		width: 3em;
 		position : relative;
 		height: 1em;
 	}
@@ -69,7 +72,7 @@
 	.bar{
 		position: absolute;
 		height: 1px;
-		width: 1.25em;
+		width: 100%;
 		background-color: #444;
 		opacity: 1;
 	}
