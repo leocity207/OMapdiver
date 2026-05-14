@@ -1,5 +1,5 @@
 import Utils from "../utils/utils";
-import Switch_Pattern from "../../lib/componant/pattern_switch"
+import Switch_Pattern from "../componants/pattern_switch"
 import TimeTable_Service_Mission from "./time_table_service_mission"
 import { Network, Pattern_Schemes } from "../types/network";
 import { ObservableEvent } from "../utils/observable";

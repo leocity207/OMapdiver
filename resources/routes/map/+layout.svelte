@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import Network_Map from '$lib/components/map/network_map.svelte';
+	import Network_Map from '$lib/map/network_map.svelte';
 
 	let { data, children } = $props();
 
@@ -88,7 +88,8 @@
 			/>
 		</section>
 
-		<aside class="panel">
+
+		<aside class="panel" style="display: none;">
 			{@render children()}
 		</aside>
 	</div>

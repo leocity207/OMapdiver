@@ -61,9 +61,9 @@ class Network_Map extends SVG_Map {
 	* @param Lines, list of Line Object
 	* @param Station, list of Station Objects
 	*/
-	Setup_Mouse_Handlers_With_Data(lines: {[index: string]: Line}, stations: {[index: string]: Station}) {
+	async Setup_Mouse_Handlers_With_Data(lines: {[index: string]: Line}, stations: {[index: string]: Station}) {
 		if(!this.network_config) throw Error(String_Error.NULL_NETWORK_DATA);
-		super.Setup_Mouse_Handlers();
+		await super.Setup_Mouse_Handlers();
 		this.lines = lines;
 		this.highlighted_line_codes = Object.keys(lines);
 		this.stations = stations

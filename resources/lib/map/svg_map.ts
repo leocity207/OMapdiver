@@ -1,7 +1,7 @@
 import * as fabric from 'fabric';
 import { loadSVGFromURL, util, FabricObject, Path, Line, Text, Rect, Circle, Polygon, Canvas } from 'fabric';
 import { animate, utils } from 'animejs';
-import Hammer from 'hammerjs';
+import type { HammerInput } from 'hammerjs';
 import normalizeWheel from 'normalize-wheel';
 import Utils from '../utils/utils';
 import type { Map_Config_Type } from '$lib/types/map_config';
@@ -200,12 +200,14 @@ class SVG_Map {
 	/**
 	 * Setup all the callback on the map
 	 */
-	Setup_Mouse_Handlers() {
+	async Setup_Mouse_Handlers() {
 
 		this.fabric_canvas!.on('mouse:wheel', this._Handle_User_Mousewheel_Zoom);
 		this.fabric_canvas!.on('object:moving', this._Handle_User_Map_Move_Touch);
 
 		// gesture is not well handled with fabricjs, use hammerjs
+		// Dynamically import Hammer to avoid SSR issues (window is not defined on server)
+		const Hammer = (await import('hammerjs')).default;
 		let hammer = new Hammer.Manager(this.fabric_canvas!.upperCanvasEl); // Initialize hammer
 		let pinch = new Hammer.Pinch({ threshold: 0.2 }) // Initialize pinch
 		let tap = new Hammer.Tap();

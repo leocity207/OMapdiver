@@ -1,5 +1,5 @@
 import Line_Schedule from './line-schedule';
-import Round_Cross from '../../lib/componant/round-cross';
+import Round_Cross from '../componants/round-cross';
 import Utils from "../utils/utils"
 import { Line, Network } from '../types/network';
 

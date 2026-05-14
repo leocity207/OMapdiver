@@ -1,5 +1,5 @@
 import Utils from "../utils/utils";
-import Top_Panel from "../../lib/componant/top_panel"
+import Top_Panel from "../componants/top_panel"
 import { Subject } from "rxjs";
 import { Network } from "../types/network";
 

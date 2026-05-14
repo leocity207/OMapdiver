@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { createEventDispatcher, onMount } from 'svelte';
-	import Network_Map from '/network_map';
+	import { onMount } from 'svelte';
+	import Network_Map from './network_map';
 	import { Get_Map_Config, Get_Network_Config } from '$lib/config/config_loader';
-	import type { Network } from '$lib/types/network-data';
+	import type { Network } from '$lib/types/network';
 
 	type Props = {
 		network_data: Network;
@@ -12,11 +12,7 @@
 	let {
 		network_data,
 		selected_id = null,
-	} = $props<Props>();
-
-	const dispatch = createEventDispatcher<{
-		select: { id: string; kind: MapElementKind };
-	}>();
+	} = $props() as Props;
 
 	let canvas_element!: HTMLCanvasElement;
 	let container_element!: HTMLDivElement;
@@ -25,9 +21,9 @@
 	let ready = $state(false);
 
 	let detachListeners = () => {};
-	let resizeObserver: ResizeObserver | null = null;
+	let resize_observer: ResizeObserver | null = null;
 
-	function Resolve_Kind(id: string): MapElementKind | null {
+	function Resolve_Kind(id: string): string | null {
 		if (network_data?.stations?.[id]) return 'station';
 		if (network_data?.lines?.[id]) return 'line';
 		return null;
@@ -65,12 +61,10 @@
 
 		const On_Station_Click = (event: Event) => {
 			const id = (event as CustomEvent<string>).detail;
-			dispatch('select', { id, kind: 'station' });
 		};
 
 		const On_Line_Click = (event: Event) => {
 			const id = (event as CustomEvent<string>).detail;
-			dispatch('select', { id, kind: 'line' });
 		};
 
 		resize_observer = new ResizeObserver((entries) => {
@@ -88,7 +82,7 @@
 		(async () => {
 			const map_instance = new Network_Map(
 				'Desktop',
-				'/image/map.svg',
+				'/customization/image/map.svg',
 				Get_Map_Config(),
 				Get_Network_Config()
 			);
@@ -99,17 +93,17 @@
 
 			map = map_instance;
 
-			map.Setup_Mouse_Handlers_With_Data(
+			await map.Setup_Mouse_Handlers_With_Data(
 				network_data.lines,
 				network_data.stations
 			);
 
 			document.addEventListener('station-click', On_Station_Click as EventListener);
-			document.addEventListener('line-click', onLineClick as EventListener);
+			document.addEventListener('line-click', On_Line_Click as EventListener);
 
 			detachListeners = () => {
 				document.removeEventListener('station-click', On_Station_Click as EventListener);
-				document.removeEventListener('line-click', onLineClick as EventListener);
+				document.removeEventListener('line-click', On_Line_Click as EventListener);
 			};
 
 			ready = true;
@@ -134,7 +128,7 @@
 	});
 </script>
 
-<div class="viewer" bind:this={canvas_element}>
+<div class="viewer" bind:this={container_element}>
 	<canvas bind:this={canvas_element}></canvas>
 </div>
 
@@ -152,16 +146,5 @@
 		display: block;
 		width: 100%;
 		height: 100%;
-	}
-
-	.loading {
-		position: absolute;
-		inset: 0;
-		display: grid;
-		place-items: center;
-		background: rgba(255, 255, 255, 0.75);
-		font-size: 0.95rem;
-		color: #555;
-		pointer-events: none;
 	}
 </style>
