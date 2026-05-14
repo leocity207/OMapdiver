@@ -2,19 +2,23 @@
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import Network_Map from '$lib/map/network_map.svelte';
+	import SearchBar from '$lib/componants/search_bar.svelte';
+	import Hamburger from '$lib/componants/hamburger.svelte';
+	import LeftPanel from '$lib/componants/left_panel.svelte';
 
 	let { data, children } = $props();
 
 	let search_query = $state('');
+	let panel_open = $state(false);
 
 	const search_items = $derived.by<SearchItem[]>(() => {
-		const stations = Object.entries(data.networkData.stations).map(([id, value]: [string, any]) => ({
+		const stations = Object.entries(data.network_data.stations).map(([id, value]: [string, any]) => ({
 			id,
 			kind: 'station' as const,
 			label: value.label ?? value.name ?? id
 		}));
 
-		const lines = Object.entries(data.networkData.lines).map(([id, value]: [string, any]) => ({
+		const lines = Object.entries(data.network_data.lines).map(([id, value]: [string, any]) => ({
 			id,
 			kind: 'line' as const,
 			label: value.label ?? value.name ?? id
@@ -44,9 +48,8 @@
 		search_query = '';
 	}
 
-	function Handle_Submit() {
-		const match = find_match(search_query);
-		if (match) Open_Element(match.id);
+	function Handle_Search_Select(item: SearchItem) {
+		Open_Element(item.id);
 	}
 
 	function Handle_Map_Select(event: CustomEvent<{ id: string; kind: MapElementKind }>) {
@@ -59,31 +62,41 @@
 </svelte:head>
 
 <div class="shell">
-	<header class="topbar">
-		<form class="search" on:submit|preventDefault={Handle_Submit}>
-			<input
-				bind:value={search_query}
-				list="map-search-options"
-				placeholder="Search a station or a line"
-				autocomplete="off"
-				spellcheck="false"
-			/>
-			<button type="submit">Search</button>
-		</form>
 
-		<datalist id="map-search-options">
-			{#each search_items as item}
-				<option value={item.label}></option>
-			{/each}
-		</datalist>
+	<header class="topbar">
+		<div class="topbar-left">
+			<Hamburger active={panel_open} onToggle={() => (panel_open = !panel_open)} />
+		</div>
+
+		<div class="topbar-center">
+			<SearchBar
+				bind:value={search_query}
+				items={search_items}
+				placeholder="Search a station or a line"
+				onSelect={Handle_Search_Select}
+			/>
+		</div>
+
+		<div class="topbar-right"></div>
 	</header>
+
+	<LeftPanel bind:open={panel_open} title="Menu">
+		<nav class="menu">
+			<ul>
+				<li><a href="/">Home</a></li>
+				<li><a href="/map">Map</a></li>
+				{#if false}
+					<li><a href="/line-timetable">Lines</a></li>
+					<li><a href="/station-timetable">Stations</a></li>
+				{/if}
+			</ul>
+		</nav>
+	</LeftPanel>
 
 	<div class="workspace">
 		<section class="map-pane">
 			<Network_Map
-				networkData={data.networkData}
-				selectedId={page.params.elementid ?? null}
-				svgUrl="/image/map.svg"
+				network_data={data.network_data}
 				on:select={Handle_Map_Select}
 			/>
 		</section>
@@ -106,41 +119,55 @@
 		display: flex;
 		flex-direction: column;
 		background: #fafafa;
-	}
-
-	.topbar {
-		flex: 0 0 auto;
-		position: sticky;
-		top: 0;
-		z-index: 20;
-		padding: 0.75rem 1rem;
-		background: #f5f5f5;
-		border-bottom: 1px solid #e5e5e5;
-		box-shadow: 0 1px 10px rgba(0, 0, 0, 0.04);
-	}
-
-	.search {
 		display: flex;
-		gap: 0.5rem;
 		align-items: center;
-		max-width: 42rem;
+		justify-content: space-between;
+		gap: 1rem;
 	}
 
-	.search input {
-		flex: 1;
-		min-width: 0;
-		height: 2.75rem;
-		padding: 0 0.9rem;
-		border: 1px solid #d7d7d7;
-		border-radius: 999px;
-		background: white;
-		font: inherit;
-		outline: none;
+	.topbar-left {
+		flex: 0 0 auto;
+		display: flex;
+		align-items: center;
 	}
 
-	.search input:focus {
-		border-color: #b3b3b3;
-		box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+	.topbar-center {
+		flex: 1 0 auto;
+		display: flex;
+		justify-content: center;
+	}
+
+	.topbar-right {
+		flex: 0 0 auto;
+	}
+
+	.menu {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.menu ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.menu li {
+		margin: 0.5rem 0;
+	}
+
+	.menu a {
+		display: block;
+		padding: 0.75rem 1rem;
+		color: #333;
+		text-decoration: none;
+		border-radius: 0.5rem;
+		transition: background 0.2s ease;
+	}
+
+	.menu a:hover {
+		background: #e5e5e5 0 3px rgba(0, 0, 0, 0.05);
 	}
 
 	.search button {

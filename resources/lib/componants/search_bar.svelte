@@ -1,226 +1,177 @@
-import Observable from "../../src/utils/observable";
-import Utils from "../../src/utils/utils"
+<script lang="ts">
+	let {
+		value = $bindable(''),
+		placeholder = 'Search...',
+		items = [],
+		onSelect = (item: {label: string}) => {}
+	} = $props<{
+		value?: string;
+		placeholder?: string;
+		items?: {label: string}[];
+		onSelect?: (item: {label: string}) => void;
+	}>();
 
-//@ts-ignore for css import
-import CSS_search_bar from '../../style/search-bar.css';
+	let focused = $state(false);
+	let current_focus = $state(-1);
+	let inputEl: HTMLInputElement;
 
-/**
- * Search bar can be used to display research help
- *
- * Structure
- * ---------
- * .. code-block:: html
- *
- * 	<input class='search-bar'>
- * 	<div class="autocomplete-items">
- * 		<div>
- * 			<strong>
- * 					* for the text that math
- * 			</strong>
- * 			* leftover of the text
- * 			<input type="hidden" value="">
- * 		</div>
- * 	</div>
- */
-class Search_Bar extends Observable(HTMLElement) {
+	let filtered_items = $derived.by(() => {
+		if (!value.trim()) return [];
+		const query = value.toLowerCase();
+		return items.filter((item: {label: string}) => item.label.toLowerCase().includes(query));
+	});
 
-
-		_autocomplete_match_list: Array<string> = [];
-		_autocomplete_container: HTMLElement | null = null;
-		_current_focus: number = -1;
-
-	/**
-	 * Base template
-	 */
-	static template = (() => {
-		const template = document.createElement('template');
-
-		const search_bar =Utils.Create_Element_With_Class('input','search-bar');
-		search_bar.setAttribute("placeholder", "Recherche par ligne/gare");
-
-		template.content.append(search_bar);
-		return template;
-	})();
-
-	constructor() {
-		super();
-		this.attachShadow({ mode: "open" });
-		Utils.Add_Stylesheet(this.shadowRoot!, CSS_search_bar);
-		Utils.Clone_Node_Into(this.shadowRoot!, Search_Bar.template);
+	function Handle_Select(item: {label: string}) {
+		value = item.label;
+		onSelect(item);
+		focused = false;
+		current_focus = -1;
 	}
 
-	/**
-	 * Factory cronstructor of Round_Cross
-	 * @param {string} name
-	 * @returns Round_Cross
-	 */
-	static Create(name: string) {
-		let object = document.createElement("search-bar") as Search_Bar;
-		object.Observable_Init(name);
-		return object;
-	}
-
-	/**
-	 * Called when node is connected to the DOM
-	 */
-	connectedCallback() {
-		this.Observable_connectedCallback();
-		this.addEventListener("click", () => {
-			Utils.Get_Subnode(this.shadowRoot!,".search-bar").classList.toggle("active");
-		});
-	}
-
-	/**
-	 * Called when node disapear from the dom
-	 */
-	disconnectedCallback() {
-		this.removeEventListener("click", () => {
-			Utils.Get_Subnode(this.shadowRoot!,".search-bar").classList.toggle("active");
-		});
-	}
-
-	/**
-	 * Initializes autocomplete functionality with a list of suggestions.
-	 * @param {Array<string>} match_list - List of suggestions.
-	 */
-	Set_Autocomplete_List(match_list: Array<string>) {
-		this._autocomplete_match_list = match_list;
-		this._autocomplete_container = null;
-		this._current_focus = -1;
-
-		const search_input = Utils.Get_Subnode(this.shadowRoot!, "input") as HTMLInputElement;
-
-		search_input.addEventListener("input", () => this._On_Input(search_input));
-		search_input.addEventListener("keydown", (e) => this._On_Key_Down(e, search_input));
-		document.addEventListener("click", (e) => this._On_Document_Click(e, search_input));
-	}
-
-	/**
-	 * Handles input changes and shows matching suggestions.
-	 * @param {HTMLInputElement} search_input
-	*/
-	_On_Input(search_input: HTMLInputElement) {
-		const val = search_input.value;
-		this._Close_Autocomplete_List();
-
-		if (!val) return;
-
-		this._current_focus = -1;
-		this._autocomplete_container = document.createElement("div");
-		this._autocomplete_container.setAttribute("class", "autocomplete-items");
-		search_input.insertAdjacentElement("afterend", this._autocomplete_container);
-
-		for (const match of this._autocomplete_match_list
-			.filter(m => m.toUpperCase().startsWith(val.toUpperCase()))
-			.slice(0, 5)) {
-			if (match.toUpperCase().startsWith(val.toUpperCase())) {
-				this._autocomplete_container.appendChild(
-					this._Create_Suggestion_Element(match, val, search_input)
-				);
+	function Handle_Key_Down(e: KeyboardEvent) {
+		if (!focused || filtered_items.length === 0) {
+			if (e.key === 'Enter') {
+				e.preventDefault();
+				focused = true;
 			}
+			return;
 		}
-	}
-
-	/**
-	 * Creates a suggestion DOM element.
-	 * @param {string} match - The suggestion value.
-	 * @param {string} val - Current input value.
-	 * @param {HTMLInputElement} search_input - The search input element.
-	 * @returns {HTMLElement}
-	*/
-	_Create_Suggestion_Element(match: string, val: string, search_input: HTMLInputElement) {
-		const suggestion = document.createElement("div");
-
-		const strong = document.createElement("strong");
-		strong.textContent = match.substr(0, val.length);
-		suggestion.appendChild(strong);
-
-		suggestion.appendChild(document.createTextNode(match.substr(val.length)));
-
-		const hiddenInput = document.createElement("input");
-		hiddenInput.type = "hidden";
-		hiddenInput.value = match;
-		suggestion.appendChild(hiddenInput);
-
-		suggestion.addEventListener("click", () => {
-			search_input.value = "";
-			this._Close_Autocomplete_List();
-			this.Emit(hiddenInput.value);
-		});
-
-		return suggestion;
-	}
-
-	/**
-	 * Highlights the focused autocomplete item.
-	 *
-	 * @param {HTMLCollectionOf<Element>} items
-	 * @private
-	 */
-	_Highlight_Item(items: HTMLCollectionOf<Element>) {
-		Array.from(items).forEach(node => node.classList.remove("autocomplete-active"));
-		if (this._current_focus >= 0 && this._current_focus < items.length) {
-			items[this._current_focus].classList.add("autocomplete-active");
-		}
-	}
-
-	/**
-	 * Handles key navigation (arrow and enter) on the input.
-	 * @param {KeyboardEvent} e
-	 * @param {HTMLInputElement} input
-	*/
-	_On_Key_Down(e: KeyboardEvent, input: HTMLInputElement) {
-		if (!this._autocomplete_container) return;
-
-		const items = this._autocomplete_container.getElementsByTagName("div");
-		if (!items.length) return;
 
 		switch (e.key) {
-			case "ArrowDown":
-				this._current_focus = (this._current_focus + 1) % items.length;
-				this._Highlight_Item(items);
-				break;
-
-			case "ArrowUp":
-				this._current_focus = (this._current_focus - 1 + items.length) % items.length;
-				this._Highlight_Item(items);
-				break;
-
-			case "Enter":
+			case 'ArrowDown':
 				e.preventDefault();
-				if (this._current_focus >= 0 && this._current_focus < items.length) {
-					items[this._current_focus].click();
+				current_focus = (current_focus + 1) % filtered_items.length;
+				break;
+
+			case 'ArrowUp':
+				e.preventDefault();
+				current_focus = (current_focus - 1 + filtered_items.length) % filtered_items.length;
+				break;
+
+			case 'Enter':
+				e.preventDefault();
+				if (current_focus >= 0 && current_focus < filtered_items.length) {
+					Handle_Select(filtered_items[current_focus]);
 				}
 				break;
 
-			default:
+			case 'Escape':
+				e.preventDefault();
+				focused = false;
+				current_focus = -1;
+				break;
+
+			case 'Tab':
+				focused = false;
+				current_focus = -1;
 				break;
 		}
 	}
 
-	/**
-	* Closes the autocomplete suggestion list.
-	*/
-	_Close_Autocomplete_List() {
-		if (this._autocomplete_container) {
-			this._autocomplete_container.remove();
-			this._autocomplete_container = null;
-		}
+	function Handle_Input() {
+		focused = true;
+		current_focus = -1;
 	}
 
-	/**
-	* Handles clicks outside of the shadow DOM to close autocomplete.
-	* @param {MouseEvent} e
-	* @param {HTMLElement} input
-	*/
-	_On_Document_Click(e: MouseEvent, input: HTMLInputElement) {
-		const target = e.target as HTMLElement | null;
-		if (!this.contains(target) && !this.shadowRoot!.contains(target)) {
-			this._Close_Autocomplete_List();
+	function Handle_Focus() {
+		focused = true;
+	}
+
+	function Handle_Blur() {
+		// Small delay to allow click on autocomplete item
+		setTimeout(() => {
+			focused = false;
+			current_focus = -1;
+		}, 100);
+	}
+</script>
+
+<div class="search-bar-wrapper">
+	<input
+		bind:this={inputEl}
+		class="search-input"
+		bind:value
+		{placeholder}
+		onfocus={Handle_Focus}
+		onblur={Handle_Blur}
+		oninput={Handle_Input}
+		onkeydown={Handle_Key_Down}
+		autocomplete="off"
+		spellcheck="false"
+	/>
+
+	{#if focused && filtered_items.length > 0}
+		<div class="autocomplete-items">
+			{#each filtered_items as item, index}
+				<div
+					class="autocomplete-item"
+					class:autocomplete-active={index === current_focus}
+					onclick={() => Handle_Select(item)}
+					onkeydown={Handle_Key_Down}
+					role="option"
+					aria-selected={index === current_focus}
+				>
+					<strong>{item.label.substring(0, value.length)}</strong>{item.label.substring(value.length)}
+				</div>
+			{/each}
+		</div>
+	{/if}
+</div>
+
+<style>
+	.search-bar-wrapper {
+		position: relative;
+		flex: 0 0 auto;
+	}
+
+	.search-input {
+		width: 10rem;
+		height: 2.75rem;
+		padding: 0 0.9rem;
+		border: 2px solid #d7d7d7;
+		border-radius: 0.4em;
+		background: white;
+		font: inherit;
+		outline: none;
+		font-size: 1rem;
+	}
+
+	.search-input:focus {
+		border-color: #b3b3b3;
+		outline: none;
+	}
+
+	.autocomplete-items {
+		position: absolute;
+		border: 1px solid #ccc;
+		border-top: none;
+		z-index: 99;
+		background-color: white;
+		max-height: 200px;
+		overflow-y: auto;
+		width: calc(10rem + 5px);
+	}
+
+	.autocomplete-item {
+		padding: 5px;
+		cursor: pointer;
+		border-bottom-width: 0.5px;
+		border-bottom-style: solid;
+		border-bottom-color: #aaaaaa;
+	}
+
+	.autocomplete-item:hover,
+	.autocomplete-active {
+		background-color: #e9e9e9;
+	}
+
+	@media (max-width: 900px) {
+		.search-input {
+			width: 8rem;
+		}
+
+		.autocomplete-items {
+			width: calc(8rem + 5px);
 		}
 	}
-}
-
-customElements.define("search-bar", Search_Bar);
-
-export default Search_Bar;
+</style>
