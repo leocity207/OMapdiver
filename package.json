@@ -6,6 +6,7 @@
   "scripts": {
     "dev:init:db-bare": "docker compose -f docker-compose.dev.yml -p dev up db",
     "dev:init:db": "docker compose -f docker-compose.dev.yml -p dev up db && docker compose -f docker-compose.dev.yml -p dev up json_loader",
+    "dev:up" :"docker compose -f docker-compose.dev.yml -p dev up",
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",

@@ -13,7 +13,7 @@ export default defineConfig({
 		host: true,
 		proxy: {
 			'/dyn': {
-				target: 'http://127.0.0.1:8080',
+				target: 'http://oatpp-orm:8000',
 				changeOrigin: true
 			}
 		}
