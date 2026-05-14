@@ -4,33 +4,32 @@
 	let { data } = $props<{ data: PageData }>();
 </script>
 
-<section class="panel">
+<div class="element-details">
 	<div class="header">
 		<div>
 			<p class="eyebrow">{data.element.kind}</p>
 			<h1>{data.element.label}</h1>
 			<p class="meta">ID: {data.element.id}</p>
 		</div>
-
-		<a class="close" href="/map" aria-label="Close panel">×</a>
 	</div>
 
 	<details open>
 		<summary>Raw data</summary>
 		<pre>{JSON.stringify(data.element.raw, null, 2)}</pre>
 	</details>
-</section>
+</div>
 
 <style>
-	.panel {
-		padding: 1.25rem;
+	.element-details {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.header {
-		display: flex;
-		gap: 1rem;
-		align-items: flex-start;
-		justify-content: space-between;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid #e5e5e5;
 		margin-bottom: 1rem;
 	}
 
@@ -53,20 +52,9 @@
 		font-size: 0.92rem;
 	}
 
-	.close {
-		display: inline-grid;
-		place-items: center;
-		width: 2rem;
-		height: 2rem;
-		border-radius: 999px;
-		text-decoration: none;
-		color: #222;
-		background: #f1f1f1;
-		font-size: 1.25rem;
-		line-height: 1;
-	}
-
 	details {
+		flex: 1;
+		overflow: hidden;
 		border-top: 1px solid #e5e5e5;
 		padding-top: 0.85rem;
 	}

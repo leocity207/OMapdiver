@@ -1,15 +1,23 @@
 <script lang="ts">
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
+	import { T } from '$lib/i18n';
 	import Network_Map from '$lib/map/network_map.svelte';
 	import SearchBar from '$lib/componants/search_bar.svelte';
 	import Hamburger from '$lib/componants/hamburger.svelte';
 	import LeftPanel from '$lib/componants/left_panel.svelte';
+	import RightPanel from '$lib/componants/right_panel.svelte';
+	import Switch from '$lib/componants/switch.svelte';
 
 	let { data, children } = $props();
 
 	let search_query = $state('');
 	let panel_open = $state(false);
+	let simple_color = $state(false);
+
+	const is_viewing_element = $derived(
+		page.url.pathname.match(/^\/map\/[^/]+$/)
+	);
 
 	const search_items = $derived.by<SearchItem[]>(() => {
 		const stations = Object.entries(data.network_data.stations).map(([id, value]: [string, any]) => ({
@@ -80,17 +88,18 @@
 		<div class="topbar-right"></div>
 	</header>
 
-	<LeftPanel bind:open={panel_open} title="Options">
-		<nav class="options">
-			<ul>
-				<li><a href="/">Home</a></li>
-				<li><a href="/map">Map</a></li>
-				{#if false}
-					<li><a href="/line-timetable">Lines</a></li>
-					<li><a href="/station-timetable">Stations</a></li>
-				{/if}
-			</ul>
-		</nav>
+	<LeftPanel bind:open={panel_open}>
+		<div class="panel-header">
+			<div>
+				<div class="panel-title">{T('direct_routes')}</div>
+				<div class="panel-subtitle">{T('select_station_or_line')}</div>
+			</div>
+		</div>
+
+		<div class="panel-options">
+			<div class="options-title">{T('options')}:</div>
+			<Switch label={T('simple_color')} bind:checked={simple_color} />
+		</div>
 	</LeftPanel>
 
 	<div class="workspace">
@@ -101,10 +110,9 @@
 			/>
 		</section>
 
-
-		<aside class="panel" style="display: none;">
+		<RightPanel open={is_viewing_element}>
 			{@render children()}
-		</aside>
+		</RightPanel>
 	</div>
 
 	{#if navigating.to}
@@ -119,6 +127,12 @@
 		display: flex;
 		padding-top: 0.5em;
 		padding-bottom: 0.5em;
+		position: relative;
+		z-index: 1000;
+		background-color: #f5f5f5;
+		border-bottom-style: solid;
+		border-bottom-color: #9b9b9b;
+		border-bottom-width: 1px;
 	}
 
 	.shell {
@@ -149,64 +163,17 @@
 		flex: 0 0 auto;
 	}
 
-	.menu {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	}
-
-	.menu ul {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	}
-
-	.menu li {
-		margin: 0.5rem 0;
-	}
-
-	.menu a {
-		display: block;
-		padding: 0.75rem 1rem;
-		color: #333;
-		text-decoration: none;
-		border-radius: 0.5rem;
-		transition: background 0.2s ease;
-	}
-
-	.menu a:hover {
-		background: #e5e5e5 0 3px rgba(0, 0, 0, 0.05);
-	}
-
-	.search button {
-		height: 2.75rem;
-		padding: 0 1rem;
-		border: 0;
-		border-radius: 999px;
-		background: #222;
-		color: white;
-		font: inherit;
-		cursor: pointer;
-	}
-
 	.workspace {
+		position:absolute;
 		flex: 1 1 auto;
 		min-height: 0;
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 24rem;
+		grid-template-columns: minmax(0, 1fr);
 	}
 
 	.map-pane {
 		min-width: 0;
 		min-height: 0;
-	}
-
-	.panel {
-		min-width: 0;
-		min-height: 0;
-		overflow: auto;
-		background: white;
-		border-left: 1px solid #e5e5e5;
 	}
 
 	.route-loading {
@@ -221,15 +188,38 @@
 		font-size: 0.9rem;
 	}
 
-	@media (max-width: 900px) {
-		.workspace {
-			grid-template-columns: 1fr;
-			grid-template-rows: minmax(18rem, 1fr) auto;
-		}
+	.panel-header {
+		padding: 1.5rem;
+		border-bottom: 1px solid #e5e5e5;
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 1rem;
+	}
 
-		.panel {
-			border-left: 0;
-			border-top: 1px solid #e5e5e5;
-		}
+	.panel-title {
+		font-size: 1.2em;
+		margin-bottom: 0.625em;
+		line-height: 1.4;
+		font-weight: bold;
+	}
+
+	.panel-subtitle {
+		font-size: 0.9375em;
+		margin-bottom: 1.125em;
+		line-height: 1.7;
+		color: #666;
+	}
+
+	.panel-options {
+		padding: 1rem;
+		margin-left: 1rem;
+	}
+
+	.options-title {
+		font-size: 0.9375em;
+		margin-bottom: 1.125em;
+		line-height: 1.7;
+		font-weight: 600;
 	}
 </style>

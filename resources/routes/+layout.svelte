@@ -78,8 +78,8 @@
 	}
 
 	.app-selector a {
-		width: 4rem;
-		height: 4rem;
+		width: 2rem;
+		height: 2rem;
 		padding: 0.5rem;
 		border-radius: 0 0 10px 10px;
 		display: flex;

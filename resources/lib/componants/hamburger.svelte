@@ -22,7 +22,7 @@
 		cursor: pointer;
 		width: 3em;
 		position : relative;
-		height: 1em;
+		height: 70%;
 	}
 
 	.active .bar1{
@@ -71,7 +71,7 @@
 
 	.bar{
 		position: absolute;
-		height: 1px;
+		height: 2px;
 		width: 100%;
 		background-color: #444;
 		opacity: 1;

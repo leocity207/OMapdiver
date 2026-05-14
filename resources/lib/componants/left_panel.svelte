@@ -1,14 +1,10 @@
 <script lang="ts">
 	let {
 		open = $bindable(false),
-		title = '',
-		subtitle = '',
 		enabled = true,
 		children
 	} = $props<{
 		open?: boolean;
-		title?: string;
-		subtitle?: string;
 		enabled?: boolean;
 		children?: any;
 	}>();
@@ -20,17 +16,6 @@
 
 {#if enabled}
 	<aside class:open class="left-panel">
-		<header class="header">
-			<div>
-				{#if title}<div class="title">{title}</div>{/if}
-				{#if subtitle}<div class="subtitle">{subtitle}</div>{/if}
-			</div>
-
-			<button type="button" class="toggle" on:click={toggle} aria-expanded={open}>
-				{open ? '×' : '☰'}
-			</button>
-		</header>
-
 		<div class="content" hidden={!open}>
 			{@render children?.()}
 		</div>
@@ -38,77 +23,50 @@
 {/if}
 
 <style>
+
+
 	.left-panel {
-		position: fixed;
-		left: 0;
-		top: 0;
-		height: 100vh;
+		height: 100%;
 		width: 18.75rem;
-		background: white;
-		box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-		transition: transform 0.3s ease;
-		transform: translateX(-100%);
-		z-index: 100;
+		background-color: #f5f5f5;
+		position: fixed;
+		z-index: 900;
+		left: -18.75rem;
+		top: 5rem;
+		transition: left 0.3s ease;
 		display: flex;
 		flex-direction: column;
 	}
 
 	.left-panel.open {
-		transform: translateX(0);
+		left: 0;
 	}
 
-	.header {
-		flex: 0 0 auto;
-		padding: 1.5rem;
-		border-bottom: 1px solid #e5e5e5;
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		gap: 1rem;
-	}
-
-	.title {
-		font-size: 1.5rem;
-		font-weight: 600;
-		margin: 0 0 0.5rem 0;
-	}
-
-	.subtitle {
-		font-size: 0.9rem;
-		color: #666;
-		margin: 0;
-	}
-
-	.toggle {
-		flex: 0 0 auto;
-		background: none;
-		border: none;
-		font-size: 1.5rem;
-		cursor: pointer;
-		color: #333;
-		padding: 0;
-		width: 2rem;
-		height: 2rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 0.5rem;
-		transition: background 0.2s ease;
-	}
-
-	.toggle:hover {
-		background: #f0f0f0;
+	.left-panel.open::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		right: -6px;
+		width: 6px;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.1);
+		pointer-events: none;
+		z-index: 1;
 	}
 
 	.content {
 		flex: 1 1 auto;
 		overflow-y: auto;
-		padding: 1rem;
 	}
 
 	@media (max-width: 900px) {
 		.left-panel {
 			width: 100%;
+			left: -100%;
+		}
+
+		.left-panel.open {
+			left: 0;
 		}
 	}
 </style>

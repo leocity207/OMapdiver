@@ -1,127 +1,91 @@
-import Observable from "../../src/utils/observable";
-import Toggleable from "../../src/utils/toggleable";
-import Utils from "../../src/utils/utils"
+<script lang="ts">
+	let {
+		label = '',
+		checked = $bindable(false)
+	} = $props<{
+		label?: string;
+		checked?: boolean;
+	}>();
 
-//@ts-ignore for css import
-import CSS_switch from '../../style/switch.css';
+	function handleChange(event: Event) {
+		const input = event.target as HTMLInputElement;
+		checked = input.checked;
+	}
+</script>
 
-/**
- * The **Switch_Event** is a UI component that can hold two states and triggers an event when toggled by the user.
- *
- * Functionality
- * -------------
- *
- * - Can switch between **two states** (e.g., ON/OFF, Enabled/Disabled).
- * - Sends an **event notification** whenever the state changes.
- *
- * Structure
- * ---------
- * .. code-block:: html
- *
- * 	<div class="switch-container">
- * 		<text> *text of the switch
- * 		<label>
- * 			<input>
- * 			<span>
- * 		</label>
- * 	</div>
- *
- */
-class Switch_Event extends Observable(Toggleable(HTMLElement))  {
+<div class="switch-container">
+	{#if label}
+		<span class="switch-label">{label}</span>
+	{/if}
+	<label class="switch">
+		<input type="checkbox" {checked} onchange={handleChange} />
+		<span class="slider"></span>
+	</label>
+</div>
 
-	/**
-	 * text to be displayed on the left of the Switch
-	 */
-	private m_text: string = "";
-	
-	private _Handle_Click_bound: (event: Event) => void;
-
-	/**
-	 * Base template for the round cross wich contain the circle and the cross
-	 */
-	static template = (() => {
-		const template = document.createElement('template');
-
-		const master_switch = Utils.Create_Element_With_Class('div', 'switch-container');
-
-		const text_elt = document.createElement("span");
-		const label_switch = Utils.Create_Element_With_Class('label','switch');
-
-		const input_checkbox = document.createElement("input");
-		input_checkbox.setAttribute("type", "checkbox");
-		const span_checkbox = Utils.Create_Element_With_Class('span','slider');
-		label_switch.append(input_checkbox, span_checkbox);
-
-		master_switch.append(text_elt, label_switch);
-		template.content.appendChild(master_switch);
-		return template;
-	})();
-
-	constructor() {
-		super();
-
-		this.m_text = "";
-		this.attachShadow({ mode: "open" });
-		Utils.Add_Stylesheet(this.shadowRoot!, CSS_switch)
-		Utils.Clone_Node_Into(this.shadowRoot!,Switch_Event.template);
-		this._Handle_Click_bound = this._Handle_Click.bind(this);
+<style>
+	.switch-container {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
 	}
 
-	/**
-	 * Creates and initializes a Switch_Event instance.
-	 * @param {string} name - The identifier for the switch.
-	 * @param {string} text - The label text for the switch.
-	 * @returns {Switch_Event} A new instance of Switch_Event.
-	 */
-	static Create(name:string, text: string): Switch_Event {
-		const elt = document.createElement("switch-event") as Switch_Event;
-		elt.Observable_Init(name);
-		elt.Toggleable_Init([false,true],false);
-		elt.m_text = text;
-		return elt;
+	.switch-label {
+		font-size: 0.9375em;
+		line-height: 1.7;
+		margin-bottom: 1.125em;
 	}
 
-	/**
-	* Called when node is connected to the dom
-	*/
-	connectedCallback() {
-		this.Observable_connectedCallback();
-		this.Toggleable_connectedCallback();
-		const checkbox = this.shadowRoot!.querySelector("input[type='checkbox']");
-		if(checkbox)
-			checkbox.addEventListener("click", this._Handle_Click_bound);
+	.switch {
+		position: relative;
+		display: inline-block;
+		width: 3.5em;
+		height: 2em;
+		scale: 0.7;
 	}
 
-	/**
-	 * Called when node disapear from the dom
-	 */
-	disconnectedCallback() {
-		const checkbox = this.shadowRoot!.querySelector("input[type='checkbox']");
-		if(checkbox)
-			checkbox.removeEventListener("click", this._Handle_Click_bound);
+	.switch input {
+		opacity: 0;
+		width: 0;
+		height: 0;
 	}
 
-	/**
-	 * Render the node add styles and
-	 */
-	Render() {
-		const text_elt = Utils.Get_Subnode(this.shadowRoot!,'text');
-		text_elt.textContent = this.m_text;
+	.slider {
+		position: absolute;
+		cursor: pointer;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: #fff;
+		border: 1px solid #adb5bd;
+		transition: 0.4s;
+		border-radius: 30px;
 	}
 
-	/**
-	 * Handle the event
-	 *
-	 * @param {Event} event
-	 */
-	_Handle_Click(event: Event) {
-		event.stopPropagation(); // (optionnel) évite que le clic remonte inutilement
-		this.Next_State();
-		this.Emit(this.Get_State());
+	.slider::before {
+		position: absolute;
+		content: "";
+		height: 1.4em;
+		width: 1.4em;
+		border-radius: 50%;
+		left: 0.27em;
+		bottom: 0.25em;
+		background-color: #adb5bd;
+		transition: 0.4s;
 	}
-}
 
-// Define the custom element
-customElements.define("switch-event", Switch_Event);
+	.switch input:checked + .slider {
+		background-color: #ff0000;
+		border-color: #ff0000;
+	}
 
-export default Switch_Event;
+	.switch input:focus + .slider {
+		box-shadow: 0 0 1px #ff0000;
+	}
+
+	.switch input:checked + .slider::before {
+		transform: translateX(1.4em);
+		background-color: #fff;
+	}
+</style>

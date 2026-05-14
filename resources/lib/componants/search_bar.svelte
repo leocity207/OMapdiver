@@ -126,7 +126,7 @@
 
 	.search-input {
 		width: 10rem;
-		height: 2.75rem;
+		height: 2rem;
 		padding: 0 0.9rem;
 		border: 2px solid #d7d7d7;
 		border-radius: 0.4em;

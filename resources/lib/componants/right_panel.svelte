@@ -29,34 +29,25 @@
 {/if}
 
 <style>
-	.base-panel.right {
-		right: -18.75em;
+	.right-panel {
+		height: calc(100vh - 3.5rem);
+		width: 24rem;
+		background-color: white;
+		position: fixed;
+		z-index: 900;
+		right: -24rem;
+		top: 3.5rem;
 		transition: right 0.3s ease;
+		display: flex;
+		flex-direction: column;
+		border-left: 1px solid #e5e5e5;
 	}
 
-	.title {
-		font-size: 1.75em;
-		margin-bottom: 0.625em;
-		line-height: 1.4;
-	}
-
-	.text {
-		font-size: 0.9375em;
-		margin-bottom: 1.125em;
-		line-height: 1.7;
-	}
-
-	switch-event {
-		display: block;
-		margin-left: 2rem !important;
-	}
-
-	.open.right {
+	.right-panel.open {
 		right: 0;
-		height: 92vh;
 	}
 
-	.base-panel.right.open::before {
+	.right-panel.open::before {
 		content: "";
 		position: absolute;
 		top: 0;
@@ -66,5 +57,50 @@
 		background-color: rgba(0, 0, 0, 0.1);
 		pointer-events: none;
 		z-index: 1;
+	}
+
+	.header {
+		flex: 0 0 auto;
+		padding: 1.5rem;
+		border-bottom: 1px solid #e5e5e5;
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.close {
+		background: none;
+		border: none;
+		font-size: 1.5rem;
+		cursor: pointer;
+		color: #333;
+		padding: 0;
+		width: 2rem;
+		height: 2rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0.5rem;
+		transition: background 0.2s ease;
+	}
+
+	.close:hover {
+		background: #f0f0f0;
+	}
+
+	.content {
+		flex: 1 1 auto;
+		overflow-y: auto;
+		padding: 1.25rem;
+	}
+
+	@media (max-width: 900px) {
+		.right-panel {
+			width: 100%;
+			right: -100%;
+		}
+
+		.right-panel.open {
+			right: 0;
+		}
 	}
 </style>
