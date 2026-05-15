@@ -1,80 +1,83 @@
-import Observable from "../../src/utils/observable";
-import Utils from "../../src/utils/utils"
+<script lang="ts">
+	let {
+		size = 20,
+		color = '#000000',
+		strokeWidth = 0.7,
+		hoverColor = undefined,
+		onclick = undefined
+	} = $props<{
+		size?: number;
+		color?: string;
+		strokeWidth?: number;
+		hoverColor?: string;
+		onclick?: () => void;
+	}>();
 
-//@ts-ignore for css import
-import CSS_round_cross from '../../style/round-cross.css';
+	let is_hovering = $state(false);
 
-/**
- * Round_Cross emits an event when clicked.
- *
- * Structure
- * ---------
- * .. code-block:: html
- *
- * 	<div class='circle'>
- * 		<div class='left'>
- * 		</div>
- * 		<div class='right'>
- * 		</div>
- * 	</div>
- */
-class Round_Cross extends Observable(HTMLElement) {
+	const effective_color = is_hovering && hoverColor ? hoverColor : color;
+</script>
 
-	/**
-	 * Base template strucutre
-	 */
-	static template = (() => {
-		const template = document.createElement('template');
+<button
+	class="round-cross"
+	style:--size="{size}px"
+	style:--color={effective_color}
+	style:--stroke-width="{strokeWidth}px"
+	onmouseenter={() => (is_hovering = true)}
+	onmouseleave={() => (is_hovering = false)}
+	onclick={onclick}
+	aria-label="Close"
+>
+	<div class="circle">
+		<div class="left"></div>
+		<div class="right"></div>
+	</div>
+</button>
 
-		// Create the main circle
-		const wrapper = Utils.Create_Element_With_Class('div','circle');
-		const left = Utils.Create_Element_With_Class('div','left');
-		const right = Utils.Create_Element_With_Class('div','right');
-
-		wrapper.appendChild(left);
-		wrapper.appendChild(right);
-		template.content.appendChild(wrapper);
-		return template;
-	})();
-
-	constructor() {
-		super();
-		this.attachShadow({ mode: "open" });
-		Utils.Add_Stylesheet(this.shadowRoot!, CSS_round_cross);
-		Utils.Clone_Node_Into(this.shadowRoot!, Round_Cross.template);
+<style>
+	.round-cross {
+		all: unset;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		padding: 0;
+		border: none;
+		background: none;
 	}
 
-	/**
-	 * Factory cronstructor of Round_Cross
-	 * @param {string} name
-	 * @returns Round_Cross
-	 */
-	static Create(name: string) {
-		const object = document.createElement("round-cross") as Round_Cross;
-		object.Observable_Init(name);
-		return object;
+	.circle {
+		width: var(--size);
+		height: var(--size);
+		border-radius: 50%;
+		border: 1px solid var(--color);
+		position: relative;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.2s ease;
 	}
 
-	/**
-	 * Called when node is connected to the dom
-	 */
-	connectedCallback() {
-		this.Observable_connectedCallback();
-		this.addEventListener("click", () => {
-			this.Emit(null);
-		});
+	.round-cross:hover .circle {
+		background-color: rgba(0, 0, 0, 0.05);
+		transform: scale(1.1);
 	}
 
-	/**
-	 * Called when node disapear from the dom
-	 */
-	disconnectedCallback() {
-		this.removeEventListener("click",() => {
-			this.Emit(null);
-		});
+	.left,
+	.right {
+		position: absolute;
+		width: calc(var(--size) * 0.75);
+		height: var(--stroke-width);
+		background-color: var(--color);
+		transition: background-color 0.2s ease;
 	}
-}
 
-customElements.define("round-cross", Round_Cross);
+	.left {
+		transform: rotate(45deg);
+	}
 
-export default Round_Cross
+	.right {
+		transform: rotate(-45deg);
+	}
+</style>

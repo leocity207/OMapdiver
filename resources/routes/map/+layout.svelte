@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { T } from '$lib/i18n';
@@ -63,6 +64,28 @@
 	function Handle_Map_Select(event: CustomEvent<{ id: string; kind: MapElementKind }>) {
 		Open_Element(event.detail.id);
 	}
+
+	onMount(() => {
+		// Listen for line-click events from map
+		const handle_line_click = (event: Event) => {
+			const custom_event = event as CustomEvent<string>;
+			Open_Element(custom_event.detail);
+		};
+
+		// Listen for station-click events from map
+		const handle_station_click = (event: Event) => {
+			const custom_event = event as CustomEvent<string>;
+			Open_Element(custom_event.detail);
+		};
+
+		document.addEventListener('line-click', handle_line_click);
+		document.addEventListener('station-click', handle_station_click);
+
+		return () => {
+			document.removeEventListener('line-click', handle_line_click);
+			document.removeEventListener('station-click', handle_station_click);
+		};
+	});
 </script>
 
 <svelte:head>

@@ -427,7 +427,7 @@ class Network_Map extends SVG_Map {
 		const track_code = this._Find_Track_Code_In_Id(target_id);
 		if (!track_code)
 			throw new Error("Track code not found.");
-		history.pushState({ line: track_code }, "", track_code);
+		//history.pushState({ line: track_code }, "", track_code);
 		document.dispatchEvent(new CustomEvent('line-click', { detail: track_code, type: "line"} as Custom_Click_event));
 	}
 
@@ -446,7 +446,7 @@ class Network_Map extends SVG_Map {
 		const station_code = this._Find_Station_Code_In_Id(target_id);
 		if (!station_code)
 			throw new Error("Station code not found.");
-		history.pushState({ station: station_code }, "", station_code);
+		//history.pushState({ station: station_code }, "", station_code);
 		document.dispatchEvent(new CustomEvent('station-click', { detail: station_code, type: "station"} as Custom_Click_event ));
 	}
 

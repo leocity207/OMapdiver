@@ -32,7 +32,7 @@
 		position: fixed;
 		z-index: 900;
 		left: -18.75rem;
-		top: 5rem;
+		top: 6rem;
 		transition: left 0.3s ease;
 		display: flex;
 		flex-direction: column;

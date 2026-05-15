@@ -7,10 +7,10 @@ function toLabel(record: NetworkRecord | undefined, id: string) {
 }
 
 export const load: PageLoad = async ({ params, parent }) => {
-	const { networkData } = await parent();
+	const { network_data } = await parent();
 	const id = params.elementid;
 
-	const station = networkData.stations[id];
+	const station = network_data.stations[id];
 	if (station) {
 		const element: MapElementDetail = {
 			id,
@@ -19,10 +19,10 @@ export const load: PageLoad = async ({ params, parent }) => {
 			raw: station
 		};
 
-		return { element };
+		return { element, network_data };
 	}
 
-	const line = networkData.lines[id];
+	const line = network_data.lines[id];
 	if (line) {
 		const element: MapElementDetail = {
 			id,
@@ -31,7 +31,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 			raw: line
 		};
 
-		return { element };
+		return { element, network_data };
 	}
 
 	throw error(404, `Unknown map element: ${id}`);
