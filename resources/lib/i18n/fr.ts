@@ -6,7 +6,8 @@ const fr = {
 	direct_routes: 'Liaisons grandes lignes directes',
 	select_station_or_line: 'Sélectionnez votre ligne/gare de départ sur la carte ou utilisez le champ de saisie',
 	options: 'Options',
-	simple_color: 'Couleur simple'
+	simple_color: 'Couleur simple',
+	search: 'Rechercher une gare ou une ligne'
 };
 
 export default fr;

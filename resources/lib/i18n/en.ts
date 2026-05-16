@@ -6,7 +6,8 @@ const en = {
 	direct_routes: 'Direct Long-Distance Routes',
 	select_station_or_line: 'Select your starting line/station on the map or use the search field',
 	options: 'Options',
-	simple_color: 'Simple color'
+	simple_color: 'Simple color',
+	search: 'Search a station or a line'
 };
 
 export default en;

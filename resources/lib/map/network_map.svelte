@@ -56,15 +56,25 @@
 		map.Initial_Zoom_Move?.();
 	}
 
+	function Highlight_Line(line_id: string) {
+		map?.Highlight_Lines?.([line_id]);
+	}
+
+	function Highlight_Station_Lines(station_id: string) {
+		map?.Highlight_All_Lines_At_Station?.(station_id);
+	}
+
 	onMount(() => {
 		let destroyed = false;
 
 		const On_Station_Click = (event: Event) => {
 			const id = (event as CustomEvent<string>).detail;
+			Highlight_Station_Lines(id);
 		};
 
 		const On_Line_Click = (event: Event) => {
 			const id = (event as CustomEvent<string>).detail;
+			Highlight_Line(id);
 		};
 
 		resize_observer = new ResizeObserver((entries) => {

@@ -15,6 +15,7 @@
 	let search_query = $state('');
 	let panel_open = $state(false);
 	let simple_color = $state(false);
+	let map: Network_Map | null = null;
 
 	const is_viewing_element = $derived(
 		page.url.pathname.match(/^\/map\/[^/]+$/)
@@ -103,7 +104,7 @@
 			<SearchBar
 				bind:value={search_query}
 				items={search_items}
-				placeholder="Search a station or a line"
+				placeholder={T('search')}
 				onSelect={Handle_Search_Select}
 			/>
 		</div>
@@ -127,7 +128,7 @@
 
 	<div class="workspace">
 		<section class="map-pane">
-			<Network_Map
+			<Network_Map bind:this={map}
 				network_data={data.network_data}
 				on:select={Handle_Map_Select}
 			/>
