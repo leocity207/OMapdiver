@@ -7,11 +7,14 @@
 	type Props = {
 		network_data: Network;
 		selected_id?: string | null;
+		
+		color_map?: "default" | "easy";
 	};
 
 	let {
 		network_data,
 		selected_id = null,
+		color_map = $bindable("default"),
 	} = $props() as Props;
 
 	let canvas_element!: HTMLCanvasElement;
@@ -135,6 +138,11 @@
 	$effect(() => {
 		if (!ready) return;
 		Apply_Selection();
+	});
+
+	$effect(() => {
+		if (!ready) return;
+		map?.Change_Color(color_map);
 	});
 </script>
 

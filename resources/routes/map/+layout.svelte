@@ -14,7 +14,7 @@
 
 	let search_query = $state('');
 	let panel_open = $state(false);
-	let simple_color = $state(false);
+	let color_map = $state(false);
 	let map: Network_Map | null = null;
 
 	const is_viewing_element = $derived(
@@ -122,7 +122,7 @@
 
 		<div class="panel-options">
 			<div class="options-title">{T('options')}:</div>
-			<Switch label={T('simple_color')} bind:checked={simple_color} />
+			<Switch label={T('color_map')} bind:checked={color_map} />
 		</div>
 	</LeftPanel>
 
@@ -131,11 +131,12 @@
 			<Network_Map bind:this={map}
 				network_data={data.network_data}
 				on:select={Handle_Map_Select}
+				color_map={color_map ? 'easy' : 'default'}
 			/>
 		</section>
 
 		<RightPanel open={is_viewing_element}>
-			{@render children()}
+			{@render children(color_map)}
 		</RightPanel>
 	</div>
 

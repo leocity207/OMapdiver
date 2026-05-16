@@ -6,10 +6,12 @@
 
 	let {
 		station_data,
-		network_data
+		network_data,
+		color_map = $bindable("default")
 	} = $props<{
 		station_data: Station;
 		network_data: Network;
+		color_map?: "default" | "easy";
 	}>();
 
 	function get_grouped_schedules(): Map<string, (Pattern & { parent?: Line })[]> {

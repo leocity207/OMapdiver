@@ -6,10 +6,12 @@
 
 	let {
 		line_data,
-		network_data
+		network_data,
+		color_map = $bindable("default")
 	} = $props<{
 		line_data: Line;
 		network_data: Network;
+		color_map?: "default" | "easy";
 	}>();
 
 	let logoEl: HTMLDivElement | null = null;
@@ -24,7 +26,7 @@
 		if (logoEl) {
 			const rect = logoEl.querySelector('rect');
 			if (rect)
-				rect.setAttribute('fill', line_data.color.default);
+				rect.setAttribute('fill', line_data.color[color_map]);
 		}
 	});
 </script>

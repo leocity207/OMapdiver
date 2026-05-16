@@ -5,14 +5,14 @@
 	import StationInfo from '$lib/info_panel/station-info.svelte';
 	import Round_Cross from '$lib/componants/round-cross.svelte';
 
-	let { data } = $props<{ data: PageData }>();
+	let { data, color_map = $bindable("default") } = $props<{ data: PageData, color_map: "default" | "easy" }>();
 </script>
 
 <div class="element-details">
 	{#if data.element.kind === 'line'}
-		<LineInfo line_data={data.element.raw} network_data={data.network_data} />
+		<LineInfo line_data={data.element.raw} network_data={data.network_data} color_map={color_map}/>
 	{:else if data.element.kind === 'station'}
-		<StationInfo station_data={data.element.raw} network_data={data.network_data} />
+		<StationInfo station_data={data.element.raw} network_data={data.network_data} color_map={color_map} />
 	{/if}
 </div>
 
