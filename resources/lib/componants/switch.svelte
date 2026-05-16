@@ -33,7 +33,6 @@
 	.switch-label {
 		font-size: 0.9375em;
 		line-height: 1.7;
-		margin-bottom: 1.125em;
 	}
 
 	.switch {

@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import type { Network, Line } from '$lib/types/network';
 	import LineSchedule from './line-schedule.svelte';
+	import Round_Cross from '$lib/componants/round-cross.svelte';
 
 	let {
 		line_data,
@@ -10,21 +12,35 @@
 		network_data: Network;
 	}>();
 
+	let logoEl: HTMLDivElement | null = null;
 	function get_patterns() {
 		return line_data.patterns.map(pattern => ({
 			...pattern,
 			parent: line_data
 		}));
 	}
+
+	$effect(() => {
+		if (logoEl) {
+			const rect = logoEl.querySelector('rect');
+			if (rect)
+				rect.setAttribute('fill', line_data.color.default);
+		}
+	});
 </script>
 
 <div class="line-info">
-	<div class="line-header">
-		<div class="line-logo">
+	<header>
+		<div class="logo" bind:this={logoEl}>
 			{@html line_data.icon}
 		</div>
-		<div class="line-title">Ligne {line_data.label}</div>
-	</div>
+		<div class="title">
+			Ligne {line_data.label}
+		</div>
+		<div class="close-button">
+			<Round_Cross onclick={() => goto('../')} />
+		</div>
+	</header>
 
 	{#if line_data.info_messages?.length}
 		<div class="line-infomessages">
@@ -42,27 +58,36 @@
 </div>
 
 <style>
-	.line-header {
+
+	header {
+		padding: 1rem;
+		padding-bottom: 0;
 		display: flex;
-		align-items: center;
-		margin-bottom: 0.5em;
+		padding-left: .5rem;
 	}
 
-	.line-logo {
-		width: 100px;
-		height: 40px;
+	header > .title {
+		font-size: 1.5em;
+		flex: 1;
+	}
+
+	.logo {
+		width: 8rem;
 		margin-right: 0.5em;
-		margin-left: 0.5em;
 	}
 
-	.line-logo :global(svg) {
+	.logo :global(svg) {
 		width: 100%;
 		height: 100%;
 		display: block;
 	}
 
-	.line-title {
-		font-size: 1.25em;
+	.logo :global(path) {
+		fill: white;
+	}
+
+	.title {
+		font-size: 1em;
 		flex: 1;
 	}
 
@@ -83,5 +108,11 @@
 	.schedules {
 		margin-top: 0.5em;
 		overflow: auto;
+	}
+
+	header > .close-button {
+		height: 2rem;
+		width: 2rem;
+		aspect-ratio: 1 / 1;
 	}
 </style>

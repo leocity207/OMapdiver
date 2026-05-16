@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Network, Pattern, Line } from '$lib/types/network';
 	import LineStation from './line-station.svelte';
+	import FoldPlusMinus from '$lib/componants/fold_plus_minus.svelte';
+	import Utils from '$lib/utils/utils';
 
 	let {
 		schedule_data,
@@ -13,12 +15,6 @@
 	}>();
 
 	let details_open = $state(false);
-
-	function format_minute(minutes: number): string {
-		const hours = Math.floor(minutes / 60);
-		const mins = minutes % 60;
-		return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
-	}
 
 	function toggle_details() {
 		details_open = !details_open;
@@ -87,7 +83,7 @@
 			<div class="header-left-text">{schedule_data.label}</div>
 		</div>
 		<div class="header-right">
-			<div class="header-minute">{format_minute(schedule_data.departure_time)}</div>
+			<div class="header-minute">{Utils.Format_Minute(schedule_data.departure_time)}</div>
 			{#if schedule_data.info_messages?.length}
 				<div class="header-icon">
 					<svg class="schedule-info-icon" viewBox="0 0 20 20">
@@ -96,8 +92,8 @@
 					</svg>
 				</div>
 			{/if}
-			<div class="fold-icon" class:open={details_open}>
-				{details_open ? '−' : '+'}
+			<div class="fold-icon">
+				<FoldPlusMinus bind:active={details_open} />
 			</div>
 		</div>
 	</div>
@@ -140,8 +136,8 @@
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
-		gap: 4px;
 		width: 100%;
+		height :100%;
 	}
 
 	.header-right {
@@ -152,9 +148,7 @@
 	}
 
 	.header-left-icon {
-		width: 24px;
-		height: 24px;
-		aspect-ratio: 1 / 1;
+		height: 1.5rem;
 	}
 
 	.header-left-icon :global(svg) {
@@ -186,8 +180,9 @@
 
 	.fold-icon {
 		cursor: pointer;
-		font-size: 1.2em;
-		min-width: 1.5em;
-		text-align: center;
+		width: 1.5em;
+		height: 1.5em;
+		flex-shrink: 0;
+		pointer-events: none;
 	}
 </style>

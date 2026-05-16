@@ -20,9 +20,9 @@
 		background: none;
 		border: none;
 		cursor: pointer;
-		width: 3em;
+		width: 2em;
 		position : relative;
-		height: 70%;
+		height: 60%;
 	}
 
 	.active .bar1{

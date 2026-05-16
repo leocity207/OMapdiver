@@ -1,26 +1,29 @@
 <script lang="ts">
-	export let active = false;
+	let {
+		active = $bindable(false)
+	} = $props<{
+		active?: boolean;
+	}>();
 </script>
 
 <button
 	class="circle"
 	class:active
-	on:click={() => active = !active}
+	onclick={() => (active = !active)}
 	aria-pressed={active}
+	title="fold/unfold details"
 >
-	<div class={active ? "minus" : "plus"}>
+	<div class={active ? 'minus' : 'plus'}>
 		<div class="horizontal"></div>
-
-		{#if !active}
-			<div class="vertical"></div>
-		{/if}
+		<div class="vertical"></div>
 	</div>
 </button>
 
 <style>
 	.circle {
-		width: 20px;
-		height: 20px;
+		width: 100%;
+		height: 100%;
+		aspect-ratio: 1 / 1;
 		border-radius: 50%;
 		border: 1px solid black;
 		display: flex;
@@ -29,24 +32,35 @@
 		cursor: pointer;
 		position: relative;
 		transition: background-color 0.2s ease;
+		background: transparent;
+		padding: 0;
+		appearance: none;
 	}
-
 
 	.horizontal,
 	.vertical {
 		position: absolute;
-		width: 15px; height: 1px;
+		width: 75%;
+		height: 5%;
 		background-color: black;
 		transition: transform 0.2s ease, opacity 0.2s ease;
+		translate: -50%;
+		pointer-events: none;
 	}
+
 	.horizontal {
-		transform: rotate(0deg);
+		transform: rotate(180deg);
 	}
+
 	.vertical {
 		transform: rotate(90deg);
 	}
 
-	.circle.minus > .vertical {
-		opacity: 0;
+	.minus > .vertical{
+		transform: rotate(0deg);
+	}
+
+	.minus > .horizontal{
+		transform: rotate(0deg);
 	}
 </style>

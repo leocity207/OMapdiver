@@ -8,7 +8,7 @@ const dictionaries = {
 
 export type Translation_Key = keyof typeof en;
 
-let current_language: keyof typeof dictionaries = 'en';
+let current_language: keyof typeof dictionaries = 'fr';
 
 export function Set_Language(lang: keyof typeof dictionaries) {
 	current_language = lang;

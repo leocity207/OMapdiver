@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Network, Station, Pattern, Line } from '$lib/types/network';
 	import LineSchedule from './line-schedule.svelte';
+	import Round_Cross from '$lib/componants/round-cross.svelte';
+	import { goto } from '$app/navigation';
 
 	let {
 		station_data,
@@ -42,9 +44,15 @@
 </script>
 
 <div class="station-info">
-	<div class="station-header">
-		<div class="station-title">{station_data.label}</div>
-	</div>
+
+	<header>
+		<div class="title">
+			{station_data.label}
+		</div>
+		<div class="close-button">
+			<Round_Cross onclick={() => goto('../')} />
+		</div>
+	</header>
 
 	<div class="station-subtitle">
 		Liaisons grandes lignes directes<br />
@@ -68,23 +76,10 @@
 </div>
 
 <style>
-	.station-header {
-		display: flex;
-		align-items: center;
-		margin-bottom: 0.5em;
-		padding-left: 0.5em;
-	}
-
-	.station-title {
-		font-size: 1.25em;
-		flex: 1;
-	}
 
 	.station-subtitle {
-		background: #f0f0f0;
 		padding: 0.75em;
-		margin-bottom: 1em;
-		border-left: 4px solid #666;
+		padding-bottom: 0;
 		font-size: 0.9em;
 		line-height: 1.5;
 	}
@@ -95,8 +90,7 @@
 	}
 
 	.schedule-direction-header {
-		padding: 0.75em 0.5em;
-		background: #f8f8f8;
+		padding: 0 0.5em 0 0.5em;
 		border-bottom: 1px solid #ddd;
 		margin-top: 1em;
 	}
@@ -109,5 +103,23 @@
 		font-weight: 600;
 		color: #333;
 		font-size: 0.95em;
+	}
+
+	header {
+		padding: 1rem;
+		padding-bottom: 0;
+		display: flex;
+	}
+
+	header > .title {
+		font-size: 1.5em;
+		font-weight: bold;
+		flex: 1;
+	}
+
+	header > .close-button {
+		height: 2rem;
+		width: 2rem;
+		aspect-ratio: 1 / 1;
 	}
 </style>

@@ -51,6 +51,10 @@
 			</div>
 		</a>
 	{/if}
+
+	<div class="logo">
+		<img src="/customization/image/logo.svg" alt="Logo" />
+	</div>
 </nav>
 
 {#if navigating.to}
@@ -88,6 +92,15 @@
 		text-decoration: none;
 		background: transparent;
 		transition: background-color 120ms ease;
+	}
+	.logo {
+		margin-left: auto;
+		padding-right: 2vh;
+	}
+
+	.logo> img {
+		height: 2rem;
+		width: auto;
 	}
 
 	.app-selector a:hover {

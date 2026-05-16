@@ -26,7 +26,7 @@
 
 <style>
 	.right-panel {
-		height: calc(100vh - 3.5rem);
+		height: calc(100vh - 6rem);
 		width: 24rem;
 		background-color: white;
 		top: 6rem;
@@ -62,6 +62,16 @@
 		justify-content: flex-end;
 		align-items: center;
 		flex-shrink: 0;
+	}
+
+	.close-button {
+		width: 1.5rem;
+		height: 1.5rem;
+		color: #333;
+	}
+
+	.close-button:hover {
+		color: #000;
 	}
 
 	.content {

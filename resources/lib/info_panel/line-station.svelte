@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Network, Pattern } from '$lib/types/network';
+	import Utils from '$lib/utils/utils';
 
 	interface LineStationData {
 		arrival_minute: number | null;
@@ -19,13 +20,6 @@
 	}>();
 
 	const SVG_NS = 'http://www.w3.org/2000/svg';
-
-	function format_minute(minutes: number): string {
-		if (minutes === null || minutes === undefined) return '';
-		const hours = Math.floor(minutes / 60);
-		const mins = minutes % 60;
-		return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
-	}
 
 	function get_path(): string {
 		if (station_data.property === 'blank') {
@@ -61,7 +55,18 @@
 
 	function get_relative_time(minute: number | null): string {
 		if (minute === null || station_data.reference_minute === null) return '';
-		return format_minute(minute - station_data.reference_minute);
+		return Utils.Format_Minute(minute - station_data.reference_minute);
+	}
+
+	function should_show_gradient(): boolean {
+		return station_data.property === 'half-grayed';
+	}
+
+	function get_fill(): string {
+		if (should_show_gradient()) {
+			return `url(#station-vertical-gradient-${station_data.station_id})`;
+		}
+		return get_fill_color();
 	}
 </script>
 
@@ -74,23 +79,27 @@
 
 	<div class="times-cadence">
 		<span class="cadence-arrival">
-			{station_data.arrival_minute !== null ? format_minute(station_data.arrival_minute) : ''}
+			{station_data.arrival_minute !== null ? Utils.Format_Minute(station_data.arrival_minute) : ''}
 		</span>
 		<span class="cadence-departure">
-			{station_data.departure_time !== null ? format_minute(station_data.departure_time) : ''}
+			{station_data.departure_time !== null ? Utils.Format_Minute(station_data.departure_time) : ''}
 		</span>
 	</div>
 
 	<div class="station-icon-wrap">
 		<svg class="station-icon-svg" viewBox="0 0 10 40" preserveAspectRatio="none">
-			<defs>
-				<linearGradient id="station-vertical-gradient-{station_data.station_id}" x1="0%" y1="0%" x2="0%" y2="100%">
-					<stop offset="50%" stop-color="#888888" />
-					<stop offset="50%" stop-color={get_fill_color()} class="station-gradient-color" />
-				</linearGradient>
-			</defs>
-			<path d={get_path()} fill="url(#station-vertical-gradient-{station_data.station_id})" />
-			<circle cx="5" cy="20" r="4" fill="white" />
+			{#if should_show_gradient()}
+				<defs>
+					<linearGradient id="station-vertical-gradient-{station_data.station_id}" x1="0%" y1="0%" x2="0%" y2="100%">
+						<stop offset="50%" stop-color="#888888" />
+						<stop offset="50%" stop-color={get_fill_color()} class="station-gradient-color" />
+					</linearGradient>
+				</defs>
+			{/if}
+			<path d={get_path()} fill={get_fill()} />
+			{#if station_data.property !== 'blank'}
+				<circle cx="5" cy="20" r="4" fill="white" />
+			{/if}
 		</svg>
 	</div>
 

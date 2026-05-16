@@ -1,28 +1,15 @@
 <script lang="ts">
 	let {
-		size = 20,
-		color = '#000000',
-		strokeWidth = 0.7,
-		hoverColor = undefined,
 		onclick = undefined
 	} = $props<{
-		size?: number;
-		color?: string;
-		strokeWidth?: number;
-		hoverColor?: string;
 		onclick?: () => void;
 	}>();
 
 	let is_hovering = $state(false);
-
-	const effective_color = is_hovering && hoverColor ? hoverColor : color;
 </script>
 
 <button
 	class="round-cross"
-	style:--size="{size}px"
-	style:--color={effective_color}
-	style:--stroke-width="{strokeWidth}px"
 	onmouseenter={() => (is_hovering = true)}
 	onmouseleave={() => (is_hovering = false)}
 	onclick={onclick}
@@ -37,20 +24,23 @@
 <style>
 	.round-cross {
 		all: unset;
+		width: 100%;
+		height: 100%;
+		aspect-ratio: 1 / 1;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		cursor: pointer;
 		padding: 0;
 		border: none;
-		background: none;
+		background: transparent;
 	}
 
 	.circle {
-		width: var(--size);
-		height: var(--size);
+		width: 100%;
+		height: 100%;
 		border-radius: 50%;
-		border: 1px solid var(--color);
+		border: 1px solid currentColor;
 		position: relative;
 		cursor: pointer;
 		display: flex;
@@ -67,9 +57,9 @@
 	.left,
 	.right {
 		position: absolute;
-		width: calc(var(--size) * 0.75);
-		height: var(--stroke-width);
-		background-color: var(--color);
+		width: 75%;
+		height: 3%;
+		background-color: currentColor;
 		transition: background-color 0.2s ease;
 	}
 

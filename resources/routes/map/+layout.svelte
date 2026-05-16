@@ -174,6 +174,7 @@
 		flex: 0 0 auto;
 		display: flex;
 		align-items: center;
+		padding-left: 0.5em;
 	}
 
 	.topbar-center {
