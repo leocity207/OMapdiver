@@ -7,7 +7,9 @@ const en = {
 	select_station_or_line: 'Select your starting line/station on the map or use the search field',
 	options: 'Options',
 	easy_color_mode: 'Simple color',
-	search: 'Search a station or a line'
+	search_all: 'Search a station or a line',
+	search_line: 'Search a line',
+	search_station: 'Search a station'
 };
 
 export default en;

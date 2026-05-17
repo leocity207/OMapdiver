@@ -3,22 +3,18 @@
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { T } from '$lib/i18n';
-	import Network_Map from '$lib/map/network_map.svelte';
 	import SearchBar from '$lib/componants/search_bar.svelte';
 	import Hamburger from '$lib/componants/hamburger.svelte';
 	import LeftPanel from '$lib/componants/left_panel.svelte';
-	import RightPanel from '$lib/componants/right_panel.svelte';
 	import Switch from '$lib/componants/switch.svelte';
 
 	let { data, children } = $props();
 
 	let search_query = $state('');
 	let panel_open = $state(false);
-	let map_options = $state({ easy_color_mode: false });
-	let color_mode = $derived(map_options.easy_color_mode ? 'easy' : 'default');
-	let map: Network_Map | null = null;
+	let station_timetable_options = $state();
 
-	setContext('map_options', map_options);
+	setContext('station_timetable_options', station_timetable_options);
 
 	const is_viewing_element = $derived(
 		page.url.pathname.match(/^\/map\/[^/]+$/)
@@ -31,13 +27,7 @@
 			label: value.label ?? value.name ?? id
 		}));
 
-		const lines = Object.entries(data.network_data.lines).map(([id, value]: [string, any]) => ({
-			id,
-			kind: 'line' as const,
-			label: value.label ?? value.name ?? id
-		}));
-
-		return [...stations, ...lines].sort((a, b) => a.label.localeCompare(b.label));
+		return [...stations].sort((a, b) => a.label.localeCompare(b.label));
 	});
 
 	function normalize(value: string) {
@@ -69,27 +59,6 @@
 		Open_Element(event.detail.id);
 	}
 
-	onMount(() => {
-		// Listen for line-click events from map
-		const handle_line_click = (event: Event) => {
-			const custom_event = event as CustomEvent<string>;
-			Open_Element(custom_event.detail);
-		};
-
-		// Listen for station-click events from map
-		const handle_station_click = (event: Event) => {
-			const custom_event = event as CustomEvent<string>;
-			Open_Element(custom_event.detail);
-		};
-
-		document.addEventListener('line-click', handle_line_click);
-		document.addEventListener('station-click', handle_station_click);
-
-		return () => {
-			document.removeEventListener('line-click', handle_line_click);
-			document.removeEventListener('station-click', handle_station_click);
-		};
-	});
 </script>
 
 <svelte:head>
@@ -107,7 +76,7 @@
 			<SearchBar
 				bind:value={search_query}
 				items={search_items}
-				placeholder={T('search_all')}
+				placeholder={T('search_line')}
 				onSelect={Handle_Search_Select}
 			/>
 		</div>
@@ -116,32 +85,7 @@
 	</header>
 
 	<LeftPanel bind:open={panel_open}>
-		<div class="panel-header">
-			<div>
-				<div class="panel-title">{T('direct_routes')}</div>
-				<div class="panel-subtitle">{T('select_station_or_line')}</div>
-			</div>
-		</div>
-
-		<div class="panel-options">
-			<div class="options-title">{T('options')}:</div>
-			<Switch label={T('easy_color_mode')} bind:checked={map_options.easy_color_mode} />
-		</div>
 	</LeftPanel>
-
-	<div class="workspace">
-		<section class="map-pane">
-			<Network_Map bind:this={map}
-				network_data={data.network_data}
-				on:select={Handle_Map_Select}
-				easy_color_mode={color_mode}
-			/>
-		</section>
-
-		<RightPanel open={is_viewing_element}>
-			{@render children()}
-		</RightPanel>
-	</div>
 
 	{#if navigating.to}
 		<div class="route-loading">Loading…</div>

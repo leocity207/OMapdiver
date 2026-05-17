@@ -7,7 +7,9 @@ const fr = {
 	select_station_or_line: 'Sélectionnez votre ligne/gare de départ sur la carte ou utilisez le champ de saisie',
 	options: 'Options',
 	easy_color_mode: 'Couleur simple',
-	search: 'Rechercher une gare ou une ligne'
+	search_all: 'Rechercher une gare ou une ligne',
+	search_station: 'Rechercher une gare',
+	search_line: "Rechercher une ligne"
 };
 
 export default fr;
