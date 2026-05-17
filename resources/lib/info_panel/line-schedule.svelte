@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Network, Pattern, Line } from '$lib/types/network';
+	import type { Color_Map } from '$lib/types/color_map.ts'
 	import LineStation from './line-station.svelte';
 	import FoldPlusMinus from '$lib/componants/fold_plus_minus.svelte';
 	import Utils from '$lib/utils/utils';
@@ -7,11 +8,13 @@
 	let {
 		schedule_data,
 		network_data,
-		reference_station = null
+		reference_station = null,
+		color_mode = $bindable("default")
 	} = $props<{
 		schedule_data: Pattern & { parent?: Line };
 		network_data: Network;
 		reference_station: string | null;
+		color_mode?: Color_Map;
 	}>();
 
 	let details_open = $state(false);
@@ -101,7 +104,7 @@
 	{#if details_open}
 		<div class="schedule-details open">
 			{#each get_stations() as station (station.station_id ?? 'blank')}
-				<LineStation station_data={station} {network_data} />
+				<LineStation station_data={station} {network_data} {color_mode} />
 			{/each}
 		</div>
 	{/if}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Network, Station, Pattern, Line } from '$lib/types/network';
+	import type { Color_Map } from '$lib/types/color_map.ts'
 	import LineSchedule from './line-schedule.svelte';
 	import Round_Cross from '$lib/componants/round-cross.svelte';
 	import { goto } from '$app/navigation';
@@ -7,11 +8,11 @@
 	let {
 		station_data,
 		network_data,
-		color_map = $bindable("default")
+		color_mode = $bindable("default")
 	} = $props<{
 		station_data: Station;
 		network_data: Network;
-		color_map?: "default" | "easy";
+		color_mode?: Color_Map;
 	}>();
 
 	function get_grouped_schedules(): Map<string, (Pattern & { parent?: Line })[]> {
@@ -67,11 +68,7 @@
 				<span class="direction-label">Direction: {get_direction_label(direction_code)}</span>
 			</div>
 			{#each schedule_group as schedule (schedule.id)}
-				<LineSchedule
-					schedule_data={schedule}
-					{network_data}
-					reference_station={station_data.id}
-				/>
+				<LineSchedule schedule_data={schedule} {network_data} reference_station={station_data.id} {color_mode}/>
 			{/each}
 		{/each}
 	</div>

@@ -1,18 +1,22 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { getContext } from 'svelte';
 	import { goto } from '$app/navigation';
 	import LineInfo from '$lib/info_panel/line-info.svelte';
 	import StationInfo from '$lib/info_panel/station-info.svelte';
 	import Round_Cross from '$lib/componants/round-cross.svelte';
 
-	let { data, color_map = $bindable("default") } = $props<{ data: PageData, color_map: "default" | "easy" }>();
+	let { data } = $props<{ data: PageData }>();
+	let map_options = getContext<{easy_color_mode: boolean;}>('map_options');
+	let color_mode = $derived(map_options.easy_color_mode ? 'easy' : 'default');
+
 </script>
 
 <div class="element-details">
 	{#if data.element.kind === 'line'}
-		<LineInfo line_data={data.element.raw} network_data={data.network_data} color_map={color_map}/>
+		<LineInfo line_data={data.element.raw} network_data={data.network_data} {color_mode}/>
 	{:else if data.element.kind === 'station'}
-		<StationInfo station_data={data.element.raw} network_data={data.network_data} color_map={color_map} />
+		<StationInfo station_data={data.element.raw} network_data={data.network_data} {color_mode}/>
 	{/if}
 </div>
 

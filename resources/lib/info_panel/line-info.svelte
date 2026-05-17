@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { getContext } from 'svelte';
+	import type { Color_Map } from '$lib/types/color_map.ts'
 	import { goto } from '$app/navigation';
 	import type { Network, Line } from '$lib/types/network';
 	import LineSchedule from './line-schedule.svelte';
@@ -7,12 +9,13 @@
 	let {
 		line_data,
 		network_data,
-		color_map = $bindable("default")
+		color_mode = $bindable("default")
 	} = $props<{
 		line_data: Line;
 		network_data: Network;
-		color_map?: "default" | "easy";
+		color_mode?: Color_Map;
 	}>();
+
 
 	let logoEl: HTMLDivElement | null = null;
 	function get_patterns() {
@@ -26,7 +29,7 @@
 		if (logoEl) {
 			const rect = logoEl.querySelector('rect');
 			if (rect)
-				rect.setAttribute('fill', line_data.color[color_map]);
+				rect.setAttribute('fill', line_data.color[color_mode]);
 		}
 	});
 </script>
@@ -54,7 +57,7 @@
 
 	<div class="schedules">
 		{#each get_patterns() as pattern (pattern.id)}
-			<LineSchedule schedule_data={pattern} {network_data} reference_station={null} />
+			<LineSchedule schedule_data={pattern} {network_data} reference_station={null} {color_mode} />
 		{/each}
 	</div>
 </div>

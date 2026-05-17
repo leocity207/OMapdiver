@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Network, Pattern } from '$lib/types/network';
+	import type { Color_Map } from '$lib/types/color_map.ts'
 	import Utils from '$lib/utils/utils';
 
 	interface LineStationData {
@@ -13,10 +14,12 @@
 
 	let {
 		station_data,
-		network_data
+		network_data,
+		color_mode = $bindable("default")
 	} = $props<{
 		station_data: LineStationData;
 		network_data: Network;
+		color_mode?: Color_Map;
 	}>();
 
 	const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -39,7 +42,7 @@
 
 	function get_fill_color(): string {
 		const line = station_data.parent.parent;
-		const color = line?.color?.default || '#888';
+		const color = line?.color[color_mode] || '#888';
 		if (station_data.property === 'gray') return '#888888';
 		if (station_data.property === 'blank') return '#888888';
 		if (station_data.property === 'half-grayed') return color;

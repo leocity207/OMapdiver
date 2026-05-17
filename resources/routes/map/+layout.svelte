@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount , setContext} from 'svelte';
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { T } from '$lib/i18n';
@@ -14,8 +14,11 @@
 
 	let search_query = $state('');
 	let panel_open = $state(false);
-	let color_map = $state(false);
+	let map_options = $state({ easy_color_mode: false });
+	let color_mode = $derived(map_options.easy_color_mode ? 'easy' : 'default');
 	let map: Network_Map | null = null;
+
+	setContext('map_options', map_options);
 
 	const is_viewing_element = $derived(
 		page.url.pathname.match(/^\/map\/[^/]+$/)
@@ -122,7 +125,7 @@
 
 		<div class="panel-options">
 			<div class="options-title">{T('options')}:</div>
-			<Switch label={T('color_map')} bind:checked={color_map} />
+			<Switch label={T('easy_color_mode')} bind:checked={map_options.easy_color_mode} />
 		</div>
 	</LeftPanel>
 
@@ -131,12 +134,12 @@
 			<Network_Map bind:this={map}
 				network_data={data.network_data}
 				on:select={Handle_Map_Select}
-				color_map={color_map ? 'easy' : 'default'}
+				easy_color_mode={color_mode}
 			/>
 		</section>
 
 		<RightPanel open={is_viewing_element}>
-			{@render children(color_map)}
+			{@render children()}
 		</RightPanel>
 	</div>
 
