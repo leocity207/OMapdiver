@@ -1,198 +1,155 @@
 <script lang="ts">
-	import { onMount , setContext} from 'svelte';
-	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { T } from '$lib/i18n';
-	import SearchBar from '$lib/componants/search_bar.svelte';
-	import Hamburger from '$lib/componants/hamburger.svelte';
-	import LeftPanel from '$lib/componants/left_panel.svelte';
-	import Switch from '$lib/componants/switch.svelte';
+	import TopPanel from '$lib/componants/top_panel.svelte';
+	import LineSelectorPanel from '$lib/line-timetable/line_selector_panel.svelte';
+	import PatternSwitch from '$lib/componants/pattern_switch.svelte';
+	import type { Network } from '$lib/types/network';
+
+	interface PatternScheme {
+		id: string;
+		label: string;
+		is_exceptional: boolean;
+		info?: any;
+		icon?: any;
+		level?: number;
+		variant?: any[];
+		color?: string;
+	}
 
 	let { data, children } = $props();
 
-	let search_query = $state('');
-	let panel_open = $state(false);
-	let station_timetable_options = $state();
+	let line_selector_open = $state(false);
+	let calendar_pattern = $state('all');
+	let stop_pattern = $state('all');
 
-	setContext('station_timetable_options', station_timetable_options);
+	const network_data = $derived(data.network_data as Network);
 
-	const is_viewing_element = $derived(
-		page.url.pathname.match(/^\/map\/[^/]+$/)
-	);
-
-	const search_items = $derived.by<SearchItem[]>(() => {
-		const stations = Object.entries(data.network_data.stations).map(([id, value]: [string, any]) => ({
-			id,
-			kind: 'station' as const,
-			label: value.label ?? value.name ?? id
-		}));
-
-		return [...stations].sort((a, b) => a.label.localeCompare(b.label));
+	// Get calendar patterns with 'all' option
+	let calendar_patterns = $derived.by(() => {
+		if (!network_data?.calendar_patterns) return {};
+		return {
+			all: {
+				id: 'all',
+				label: 'All',
+				is_exceptional: false,
+				info: null,
+				icon: null
+			},
+			...network_data.calendar_patterns
+		};
 	});
 
-	function normalize(value: string) {
-		return value.trim().toLowerCase();
+	// Get stop patterns with 'all' option
+	let stop_patterns = $derived.by(() => {
+		if (!network_data?.stop_patterns) return {};
+		return {
+			all: {
+				id: 'all',
+				label: 'All',
+				is_exceptional: false,
+				level: 0,
+				variant: [],
+				color: '',
+				icon: ''
+			},
+			...network_data.stop_patterns
+		};
+	});
+
+	function handle_line_select(event: CustomEvent<{ line: string; network: Network }>) {
+		const line_id = event.detail.line;
+		void goto(`/line-timetable/${encodeURIComponent(line_id)}`);
+		line_selector_open = false;
 	}
 
-	function find_match(query: string) {
-		const q = normalize(query);
-		if (!q) return null;
-
-		return (
-			search_items.find((item) => normalize(item.label) === q) ??
-			search_items.find((item) => normalize(item.label).startsWith(q)) ??
-			search_items.find((item) => normalize(item.label).includes(q)) ??
-			null
-		);
+	function handle_calendar_pattern_change(value: string) {
+		calendar_pattern = value;
+		// Could dispatch event or update UI based on pattern change
 	}
 
-	function Open_Element(id: string) {
-		void goto(`/map/${encodeURIComponent(id)}`);
-		search_query = '';
+	function handle_stop_pattern_change(value: string) {
+		stop_pattern = value;
+		// Could dispatch event or update UI based on pattern change
 	}
-
-	function Handle_Search_Select(item: SearchItem) {
-		Open_Element(item.id);
-	}
-
-	function Handle_Map_Select(event: CustomEvent<{ id: string; kind: MapElementKind }>) {
-		Open_Element(event.detail.id);
-	}
-
 </script>
 
 <svelte:head>
-	<title>Map</title>
+	<title>Line Timetable</title>
 </svelte:head>
 
-<div class="shell">
+<div class="line-timetable-container">
+	<!-- Top Panel with Line Selector -->
+	<TopPanel bind:open={line_selector_open} enabled={true}>
+		<LineSelectorPanel
+			network_data={network_data}
+			on:line_select={handle_line_select}
+		/>
+	</TopPanel>
 
-	<header class="topbar">
-		<div class="topbar-left">
-			<Hamburger active={panel_open} onToggle={() => (panel_open = !panel_open)} />
-		</div>
-
-		<div class="topbar-center">
-			<SearchBar
-				bind:value={search_query}
-				items={search_items}
-				placeholder={T('search_line')}
-				onSelect={Handle_Search_Select}
+	<!-- Pattern Switches -->
+	<div class="patterns-container">
+		<div class="pattern-switch-group">
+			<label for="calendar-pattern-switch">Calendar:</label>
+			<PatternSwitch
+				id="calendar-pattern-switch"
+				choices={calendar_patterns}
+				default_choice="all"
+				onchange={handle_calendar_pattern_change}
 			/>
 		</div>
 
-		<div class="topbar-right"></div>
-	</header>
+		<div class="pattern-switch-group">
+			<label for="stop-pattern-switch">Stop Pattern:</label>
+			<PatternSwitch
+				id="stop-pattern-switch"
+				choices={stop_patterns}
+				default_choice="all"
+				onchange={handle_stop_pattern_change}
+			/>
+		</div>
+	</div>
 
-	<LeftPanel bind:open={panel_open}>
-	</LeftPanel>
-
-	{#if navigating.to}
-		<div class="route-loading">Loading…</div>
-	{/if}
+	<!-- Main Content Area -->
+	<div class="content-area">
+		{@render children()}
+	</div>
 </div>
 
 <style>
-
-	.topbar {
-		width: 100%;
-		display: flex;
-		padding-top: 0.5em;
-		padding-bottom: 0.5em;
-		position: relative;
-		z-index: 1000;
-		background-color: #f5f5f5;
-		border-bottom-style: solid;
-		border-bottom-color: #9b9b9b;
-		border-bottom-width: 1px;
-	}
-
-	.shell {
-		height: 100dvh;
-		min-height: 0;
+	.line-timetable-container {
 		display: flex;
 		flex-direction: column;
-		background: #fafafa;
+		height: 100vh;
+		background: #fff;
+	}
+
+	.patterns-container {
+		display: flex;
+		gap: 1rem;
+		padding: 0.75rem 1rem;
+		border-bottom: 1px solid #ddd;
+		background: #f9f9f9;
+		align-items: center;
+		flex-wrap: wrap;
+	}
+
+	.pattern-switch-group {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
+		gap: 0.5rem;
+
+		label {
+			font-size: 0.875rem;
+			font-weight: 500;
+			color: #333;
+			white-space: nowrap;
+		}
 	}
 
-	.topbar-left {
-		flex: 0 0 auto;
+	.content-area {
+		flex: 1;
+		overflow: auto;
 		display: flex;
-		align-items: center;
-		padding-left: 0.5em;
-	}
-
-	.topbar-center {
-		flex: 1 0 auto;
-		display: flex;
-		justify-content: center;
-	}
-
-	.topbar-right {
-		flex: 0 0 auto;
-	}
-
-	.workspace {
-		position:absolute;
-		flex: 1 1 auto;
-		min-height: 0;
-		display: grid;
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.map-pane {
-		min-width: 0;
-		min-height: 0;
-	}
-
-	.route-loading {
-		position: fixed;
-		right: 1rem;
-		top: 4.5rem;
-		z-index: 50;
-		padding: 0.5rem 0.8rem;
-		border-radius: 0.75rem;
-		background: white;
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-		font-size: 0.9rem;
-	}
-
-	.panel-header {
-		padding: 1.5rem;
-		border-bottom: 1px solid #e5e5e5;
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		gap: 1rem;
-	}
-
-	.panel-title {
-		font-size: 1.2em;
-		margin-bottom: 0.625em;
-		line-height: 1.4;
-		font-weight: bold;
-	}
-
-	.panel-subtitle {
-		font-size: 0.9375em;
-		margin-bottom: 1.125em;
-		line-height: 1.7;
-		color: #666;
-	}
-
-	.panel-options {
-		padding: 1rem;
-		margin-left: 1rem;
-	}
-
-	.options-title {
-		font-size: 0.9375em;
-		margin-bottom: 1.125em;
-		line-height: 1.7;
-		font-weight: 600;
+		flex-direction: column;
 	}
 </style>
