@@ -67,9 +67,16 @@
 
 	function get_fill(): string {
 		if (should_show_gradient()) {
-			return `url(#station-vertical-gradient-${station_data.station_id})`;
+			// Create unique gradient ID using pattern ID + station ID to avoid conflicts
+			// when the same station appears in different schedules
+			const gradient_id = `gradient-${station_data.parent.id}-${station_data.station_id}`;
+			return `url(#${gradient_id})`;
 		}
 		return get_fill_color();
+	}
+
+	function get_gradient_id(): string {
+		return `gradient-${station_data.parent.id}-${station_data.station_id}`;
 	}
 </script>
 
@@ -93,7 +100,7 @@
 		<svg class="station-icon-svg" viewBox="0 0 10 40" preserveAspectRatio="none">
 			{#if should_show_gradient()}
 				<defs>
-					<linearGradient id="station-vertical-gradient-{station_data.station_id}" x1="0%" y1="0%" x2="0%" y2="100%">
+					<linearGradient id={get_gradient_id()} x1="0%" y1="0%" x2="0%" y2="100%">
 						<stop offset="50%" stop-color="#888888" />
 						<stop offset="50%" stop-color={get_fill_color()} class="station-gradient-color" />
 					</linearGradient>
