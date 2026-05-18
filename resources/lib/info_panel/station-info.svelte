@@ -23,7 +23,12 @@
 			if (!line) return;
 
 			line.patterns.forEach((schedule: Pattern) => {
-				const last_stop = line.stations[line.stations.length - 1];
+				// Determine the actual last stop based on pattern direction
+				const last_stop = schedule.is_reversed 
+					? line.stations[0]  // If reversed, last stop is first in array
+					: line.stations[line.stations.length - 1];  // Otherwise, last stop is last in array
+				
+				// Skip if this station is the terminal/last stop of the pattern
 				if (last_stop === station_data.id) return;
 
 				const schedule_with_parent = { ...schedule, parent: line };

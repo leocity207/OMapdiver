@@ -25,15 +25,27 @@
 
 	function get_stations() {
 		const line = schedule_data.parent as Line;
-		const reference_idx = reference_station ? line.stations.indexOf(reference_station) : 0;
+		const total_stations = line.stations.length;
+		const is_reversed = schedule_data.is_reversed;
+		
+		// Find reference station index in original line.stations
+		let reference_idx = reference_station ? line.stations.indexOf(reference_station) : 0;
+		
+		// If pattern is reversed, adjust the index to pattern's perspective
+		if (is_reversed && reference_station !== null) {
+			reference_idx = total_stations - 1 - reference_idx;
+		}
+		
 		const stations = [];
 		const reference_minute = schedule_data.arrival_times[reference_idx];
 
 		if (reference_idx > 0) {
+			const first_idx = is_reversed ? total_stations - 1 : 0;
+			const first_station_id = is_reversed ? line.stations[total_stations - 1] : line.stations[0];
 			stations.push({
 				arrival_minute: schedule_data.arrival_times[0],
 				departure_time: schedule_data.departure_times[0],
-				station_id: line.stations[0],
+				station_id: first_station_id,
 				reference_minute: reference_minute,
 				property: 'gray',
 				parent: schedule_data
@@ -51,24 +63,42 @@
 			});
 		}
 
+		// Reference station
+		let ref_station_id = reference_station || (is_reversed ? line.stations[total_stations - 1] : line.stations[0]);
 		stations.push({
 			arrival_minute: schedule_data.arrival_times[reference_idx],
 			departure_time: schedule_data.departure_times[reference_idx],
-			station_id: line.stations[reference_idx],
+			station_id: ref_station_id,
 			reference_minute: reference_minute,
 			property: reference_idx > 0 ? 'half-grayed' : null,
 			parent: schedule_data
 		});
 
-		for (let i = reference_idx + 1; i < line.stations.length; i++) {
-			stations.push({
-				arrival_minute: schedule_data.arrival_times[i],
-				departure_time: schedule_data.departure_times[i],
-				station_id: line.stations[i],
-				reference_minute: reference_minute,
-				property: null,
-				parent: schedule_data
-			});
+		// Add remaining stations
+		if (is_reversed) {
+			// For reversed: go backwards from reference
+			for (let i = reference_idx + 1; i < total_stations; i++) {
+				stations.push({
+					arrival_minute: schedule_data.arrival_times[i],
+					departure_time: schedule_data.departure_times[i],
+					station_id: line.stations[total_stations - 1 - i],
+					reference_minute: reference_minute,
+					property: null,
+					parent: schedule_data
+				});
+			}
+		} else {
+			// For normal: go forwards from reference
+			for (let i = reference_idx + 1; i < total_stations; i++) {
+				stations.push({
+					arrival_minute: schedule_data.arrival_times[i],
+					departure_time: schedule_data.departure_times[i],
+					station_id: line.stations[i],
+					reference_minute: reference_minute,
+					property: null,
+					parent: schedule_data
+				});
+			}
 		}
 
 		return stations;

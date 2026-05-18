@@ -18,7 +18,7 @@
 
 
 	let logoEl: HTMLDivElement | null = null;
-	function get_patterns() {
+	function Get_Patterns() {
 		return line_data.patterns.map(pattern => ({
 			...pattern,
 			parent: line_data
@@ -56,7 +56,7 @@
 	{/if}
 
 	<div class="schedules">
-		{#each get_patterns() as pattern (pattern.id)}
+		{#each Get_Patterns() as pattern (pattern.id)}
 			<LineSchedule schedule_data={pattern} {network_data} reference_station={null} {color_mode} />
 		{/each}
 	</div>
