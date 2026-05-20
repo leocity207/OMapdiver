@@ -1,9 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import TopPanel from '$lib/componants/top_panel.svelte';
-	import LineSelectorPanel from '$lib/line-timetable/line_selector_panel.svelte';
+    import {onMount, setContext} from 'svelte';
+    import { T } from '$lib/i18n';
+	import Top_Panel from '$lib/componants/top_panel.svelte';
+	import Line_Selector_Panel from '$lib/line-timetable/line_selector_panel.svelte';
 	import PatternSwitch from '$lib/componants/pattern_switch.svelte';
 	import type { Network } from '$lib/types/network';
+    import SearchBar from '$lib/componants/search_bar.svelte';
+	import Hamburger from '$lib/componants/hamburger.svelte';
+	import LeftPanel from '$lib/componants/left_panel.svelte';
 
 	interface PatternScheme {
 		id: string;
@@ -16,11 +21,32 @@
 		color?: string;
 	}
 
+
+
 	let { data, children } = $props();
 
-	let line_selector_open = $state(false);
+	let line_selector_open = $state(true);
 	let calendar_pattern = $state('all');
 	let stop_pattern = $state('all');
+    let search_query = $state('');
+	let panel_open = $state(false);
+	let station_timetable_options = $state();
+
+	setContext('station_timetable_options', station_timetable_options);
+
+	const is_viewing_element = $derived(
+		page.url.pathname.match(/^\/map\/[^/]+$/)
+	);
+
+	const search_items = $derived.by<SearchItem[]>(() => {
+		const stations = Object.entries(data.network_data.stations).map(([id, value]: [string, any]) => ({
+			id,
+			kind: 'station' as const,
+			label: value.label ?? value.name ?? id
+		}));
+
+		return [...stations].sort((a, b) => a.label.localeCompare(b.label));
+	});
 
 	const network_data = $derived(data.network_data as Network);
 
@@ -56,6 +82,10 @@
 		};
 	});
 
+    function Handle_Search_Select(item: SearchItem) {
+		Open_Element(item.id);
+	}
+
 	function handle_line_select(event: CustomEvent<{ line: string; network: Network }>) {
 		const line_id = event.detail.line;
 		void goto(`/line-timetable/${encodeURIComponent(line_id)}`);
@@ -78,13 +108,33 @@
 </svelte:head>
 
 <div class="line-timetable-container">
+
+    <header class="topbar">
+		<div class="topbar-left">
+			<Hamburger active={panel_open} onToggle={() => (panel_open = !panel_open)} />
+		</div>
+
+		<div class="topbar-center">
+			<SearchBar
+				bind:value={search_query}
+				items={search_items}
+				placeholder={T('search_station')}
+				onSelect={Handle_Search_Select}
+			/>
+		</div>
+
+		<div class="topbar-right"></div>
+	</header>
+    
+
 	<!-- Top Panel with Line Selector -->
-	<TopPanel bind:open={line_selector_open} enabled={true}>
-		<LineSelectorPanel
-			network_data={network_data}
-			on:line_select={handle_line_select}
-		/>
-	</TopPanel>
+	<Top_Panel bind:open={line_selector_open} enabled={true}>
+		<Line_Selector_Panel network_data={network_data} on:line_select={handle_line_select}/>
+	</Top_Panel>
+
+    <LeftPanel bind:open={panel_open}>
+	</LeftPanel>
+
 
 	<!-- Pattern Switches -->
 	<div class="patterns-container">
@@ -116,6 +166,34 @@
 </div>
 
 <style>
+
+	.topbar {
+		width: 100%;
+		display: flex;
+		padding-top: 0.5em;
+		padding-bottom: 0.5em;
+		position: relative;
+		z-index: 1000;
+		background-color: #f5f5f5;
+	}
+
+	.topbar-left {
+		flex: 0 0 auto;
+		display: flex;
+		align-items: center;
+		padding-left: 0.5em;
+	}
+
+	.topbar-center {
+		flex: 1 0 auto;
+		display: flex;
+		justify-content: center;
+	}
+
+	.topbar-right {
+		flex: 0 0 auto;
+	}
+
 	.line-timetable-container {
 		display: flex;
 		flex-direction: column;

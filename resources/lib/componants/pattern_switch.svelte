@@ -27,7 +27,7 @@
 	let special_choices = $state<Record<string, PatternScheme>>({});
 	let current_state = $state<string>('');
 	let dropdown_open = $state(false);
-	let left_buttons = $state<Map<string, HTMLButtonElement>>(new Map());
+	let left_buttons = $state<Record<string, HTMLButtonElement>>({});
 	let special_menu: HTMLElement | null = null;
 	let special_toggle: HTMLButtonElement | null = null;
 	let indicator: HTMLElement | null = null;
@@ -109,10 +109,10 @@
 
 		let selected_button: HTMLElement | null = null;
 
-		// Find in normal buttons
-		for (const [value, button] of left_buttons) {
-			if (value === current_state) {
-				selected_button = button;
+		// Find in normal buttons - search through object values
+		for (const value_id in left_buttons) {
+			if (value_id === current_state) {
+				selected_button = left_buttons[value_id];
 				break;
 			}
 		}
@@ -185,6 +185,17 @@
 	let is_special_selected = $derived(
 		Object.values(special_choices).some(c => c.id === current_state)
 	);
+
+	// Action to register button references
+	function register_button(element: HTMLElement, button_id: string) {
+		left_buttons[button_id] = element as HTMLButtonElement;
+		return {
+			destroy() {
+				delete left_buttons[button_id];
+			}
+		};
+	}
+
 </script>
 
 <div class="switch-container">
@@ -199,7 +210,7 @@
 					class:is-selected={value.id === current_state}
 					data-value={value.id}
 					aria-pressed={value.id === current_state}
-					//bind:this={left_buttons.get(value.id) || (left_buttons.set(value.id, undefined), left_buttons.get(value.id))}
+					use:register_button={value.id}
 					on:click={handle_normal_click}
 				>
 					{value.label}

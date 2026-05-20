@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount , setContext} from 'svelte';
+	import { setContext} from 'svelte';
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { T } from '$lib/i18n';
@@ -62,7 +62,7 @@
 </script>
 
 <svelte:head>
-	<title>Map</title>
+	<title>Station Timetable</title>
 </svelte:head>
 
 <div class="shell">
@@ -80,8 +80,6 @@
 				onSelect={Handle_Search_Select}
 			/>
 		</div>
-
-		<div class="topbar-right"></div>
 	</header>
 
 	<LeftPanel bind:open={panel_open}>
@@ -102,9 +100,6 @@
 		position: relative;
 		z-index: 1000;
 		background-color: #f5f5f5;
-		border-bottom-style: solid;
-		border-bottom-color: #9b9b9b;
-		border-bottom-width: 1px;
 	}
 
 	.shell {
