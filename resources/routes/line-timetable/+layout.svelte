@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-    import {onMount, setContext} from 'svelte';
-    import { T } from '$lib/i18n';
+	import {onMount, setContext} from 'svelte';
+	import { T } from '$lib/i18n';
 	import Top_Panel from '$lib/componants/top_panel.svelte';
 	import Line_Selector_Panel from '$lib/line-timetable/line_selector_panel.svelte';
 	import PatternSwitch from '$lib/componants/pattern_switch.svelte';
 	import type { Network } from '$lib/types/network';
-    import SearchBar from '$lib/componants/search_bar.svelte';
+	import SearchBar from '$lib/componants/search_bar.svelte';
 	import Hamburger from '$lib/componants/hamburger.svelte';
 	import LeftPanel from '$lib/componants/left_panel.svelte';
 
@@ -28,7 +28,7 @@
 	let line_selector_open = $state(true);
 	let calendar_pattern = $state('all');
 	let stop_pattern = $state('all');
-    let search_query = $state('');
+	let search_query = $state('');
 	let panel_open = $state(false);
 	let station_timetable_options = $state();
 
@@ -82,7 +82,7 @@
 		};
 	});
 
-    function Handle_Search_Select(item: SearchItem) {
+	function Handle_Search_Select(item: SearchItem) {
 		Open_Element(item.id);
 	}
 
@@ -109,7 +109,7 @@
 
 <div class="line-timetable-container">
 
-    <header class="topbar">
+	<header class="topbar">
 		<div class="topbar-left">
 			<Hamburger active={panel_open} onToggle={() => (panel_open = !panel_open)} />
 		</div>
@@ -125,14 +125,14 @@
 
 		<div class="topbar-right"></div>
 	</header>
-    
+	
 
 	<!-- Top Panel with Line Selector -->
 	<Top_Panel bind:open={line_selector_open} enabled={true}>
 		<Line_Selector_Panel network_data={network_data} on:line_select={handle_line_select}/>
 	</Top_Panel>
 
-    <LeftPanel bind:open={panel_open}>
+	<LeftPanel bind:open={panel_open}>
 	</LeftPanel>
 
 

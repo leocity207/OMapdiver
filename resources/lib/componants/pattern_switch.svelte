@@ -24,13 +24,15 @@
 
 	// State
 	let normal_choices = $state<Record<string, PatternScheme>>({});
-	let special_choices = $state<Record<string, PatternScheme>>({});
+	let special_choices = $state<Record<string, switchPatternScheme>>({});
 	let current_state = $state<string>('');
 	let dropdown_open = $state(false);
 	let left_buttons = $state<Record<string, HTMLButtonElement>>({});
 	let special_menu: HTMLElement | null = null;
 	let special_toggle: HTMLButtonElement | null = null;
 	let indicator: HTMLElement | null = null;
+	let container: HTMLElement | null = null;
+	let track: HTMLElement | null = null;
 
 	// Derived
 	let all_states = $derived.by(() => {
@@ -98,8 +100,7 @@
 
 	function handle_outside_click(event: MouseEvent) {
 		const path = event.composedPath();
-		const self = document.querySelector('.switch-container');
-		if (!path.includes(self!)) {
+		if (!path.includes(container)) {
 			dropdown_open = false;
 		}
 	}
@@ -132,7 +133,6 @@
 
 		indicator.style.opacity = '1';
 
-		const track = document.querySelector('.switch-track') as HTMLElement;
 		if (!track) return;
 
 		const track_rect = track.getBoundingClientRect();
@@ -198,8 +198,8 @@
 
 </script>
 
-<div class="switch-container">
-	<div class="switch-track">
+<div class="switch-container" bind:this={container}>
+	<div class="switch-track" bind:this={track}>
 		<span class="switch-indicator" bind:this={indicator}></span>
 
 		<div class="switch-left-group">
