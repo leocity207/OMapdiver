@@ -6,23 +6,35 @@
   "scripts": {
     "dev:init:db-bare": "docker compose -f docker-compose.dev.yml -p dev up db",
     "dev:init:db": "docker compose -f docker-compose.dev.yml -p dev up db && docker compose -f docker-compose.dev.yml -p dev up json_loader",
-    "dev:up" :"docker compose -f docker-compose.dev.yml -p dev up",
+    "dev:up": "docker compose -f docker-compose.dev.yml -p dev up",
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "format": "prettier --write ."
+    "lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"format": "prettier . --write",
+		"format:check": "prettier . --check"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@sveltejs/adapter-node": "^5.5.4",
     "@sveltejs/kit": "^2.59.1",
     "@sveltejs/vite-plugin-svelte": "^5.1.1",
     "@types/hammerjs": "^2.0.46",
     "@types/normalize-wheel": "^1.0.4",
+    "eslint": "^10.4.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-svelte": "^3.17.1",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "globals": "^17.6.0",
     "prettier": "^3.8.3",
     "svelte": "^5.55.5",
     "svelte-check": "^4.4.8",
+    "svelte-eslint-parser": "^1.6.1",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.59.4",
     "vite": "^6.4.2"
   },
   "dependencies": {
