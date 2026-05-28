@@ -1,49 +1,23 @@
 <script lang="ts">
-	import type { Line, Network, Station, Timetable } from '$lib/types/network';
+	import type { Line, Network, Timetable } from '$lib/types/network';
+	import type { Line_Timetable_Options } from '$lib/types/options';
 	import Utils from '$lib/utils/utils';
 
 	let {
 		line_data,
 		network_data,
-		activeCalendarPattern = 'all',
-		activeStopPattern = 'all',
-		showHiddenStations = false,
-		showArrivalTimes = false
+		options
 	} = $props<{
 		line_data: Line;
 		network_data: Network;
-		activeCalendarPattern?: string;
-		activeStopPattern?: string;
-		showHiddenStations?: boolean;
-		showArrivalTimes?: boolean;
+		options: Line_Timetable_Options;
 	}>();
 
-	function normalizeToken(value: unknown): string {
-		return String(value ?? '')
-			.trim()
-			.toLowerCase()
-			.replace(/[^a-z0-9_-]+/g, '-');
-	}
-
-	function getStationLabel(id: string): string {
-		return network_data?.stations?.[id]?.label ?? id;
-	}
-
-	function getTimetableLabel(t: Timetable): string {
-		return t?.id ?? t?.label ?? '';
-	}
-
-	function patternMatch(active: string, value: string | null | undefined): boolean {
-		const v = normalizeToken(value ?? 'all');
-		const a = normalizeToken(active ?? 'all');
-		return a === 'all' || v === 'all' || a === v;
-	}
-
 	function isTimetableVisible(t: Timetable): boolean {
-		return (
-			patternMatch(activeCalendarPattern, t.calendar_pattern) &&
-			patternMatch(activeStopPattern, t.stop_pattern)
-		);
+		let is_stopping_pattern_visible: boolean = t.stop_pattern === options.selected_stop_pattern || options.selected_stop_pattern === 'all';
+		let is_calendar_pattern_visible: boolean = t.calendar_patterns.includes(options.selected_calendar_pattern) || options.selected_calendar_pattern === 'all';
+
+		return is_stopping_pattern_visible && is_calendar_pattern_visible;
 	}
 
 	function hasCell(t: Timetable, idx: number): boolean {
@@ -55,9 +29,9 @@
 	function isRowVisible(stationIndex: number): boolean {
 		if (!line_data?.timetables) return false;
 
-		return line_data.timetables.some((t) => {
-			if (!isTimetableVisible(t)) return false;
-			return hasCell(t, stationIndex);
+		return line_data.timetables.some((timetable: Timetable) => {
+			if (!isTimetableVisible(timetable)) return false;
+			return hasCell(timetable, stationIndex);
 		});
 	}
 
@@ -94,10 +68,10 @@
 			<thead>
 				<tr>
 					<th class="station-header">Stations</th>
-					{#each timetables as t}
-						{#if isTimetableVisible(t)}
+					{#each timetables as timetable}
+						{#if isTimetableVisible(timetable)}
 							<th class="timetable-header-cell">
-								{getTimetableLabel(t)}
+								{timetable.label}
 							</th>
 						{/if}
 					{/each}
@@ -106,23 +80,23 @@
 
 			<tbody>
 				{#each stationIds as stationId, i}
-					<tr class="station-row" class:hidden={!showHiddenStations && !isRowVisible(i)}>
+					<tr class="station-row" class:hidden={!options.showHiddenStations && !isRowVisible(i)}>
 
 						<th class="station-cell">
-							{getStationLabel(stationId)}
+							{network_data.stations[stationId].label}
 						</th>
 
-						{#each timetables as t}
-							{#if isTimetableVisible(t)}
-								{@const a = t.arrival_times?.[i]}
-								{@const d = t.departure_times?.[i]}
+						{#each timetables as timetable}
+							{#if isTimetableVisible(timetable)}
+								{@const a = timetable.arrival_times?.[i]}
+								{@const d = timetable.departure_times?.[i]}
 
 								<td class="timetable-cell">
 
 									{#if d != null}
 										<div class="time-content">
 
-											{#if showArrivalTimes && a != null}
+											{#if options.showArrivalTimes && a != null}
 												<span class="time-arrival">
 													{Utils.Format_Minute(a)}
 												</span>

@@ -9,26 +9,14 @@
 	import SearchBar from '$lib/componants/search_bar.svelte';
 	import Hamburger from '$lib/componants/hamburger.svelte';
 	import LeftPanel from '$lib/componants/left_panel.svelte';
-
-	interface Pattern_Scheme {
-		id: string;
-		label: string;
-		is_exceptional: boolean;
-		info?: any;
-		icon?: any;
-		level?: number;
-		variant?: any[];
-		color?: string;
-	}
-
-
+	import { Get_Line_Timetable_Options } from '$lib/utils/options.svelte.js';
 
 	let { data, children } = $props();
 
 	let line_selector_open = $state(true);
-	let calendar_pattern = $state('all');
-	let stop_pattern = $state('all');
 	let panel_open = $state(true);
+	let options = Get_Line_Timetable_Options();
+
 
 	const search_items = $derived.by<Search_Item[]>(() => {
 		const lines = Object.entries(data.network_data.lines).map(([id, value]: [string, any]) => ({
@@ -79,9 +67,13 @@
 		line_selector_open = false;
 	};
 
-	const Handle_Calendar_Pattern_Change = (value: string): string => calendar_pattern = value
+	const Handle_Calendar_Pattern_Change = (value: string): void => {
+		options.selected_calendar_pattern = value;
+	};
 
-	const Handle_Stop_Pattern_Change = (value: string): string => stop_pattern = value;
+	const Handle_Stop_Pattern_Change = (value: string): void => {
+		options.selected_stop_pattern = value;
+	};
 </script>
 
 <svelte:head>

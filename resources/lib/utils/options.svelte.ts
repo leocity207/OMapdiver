@@ -24,7 +24,15 @@ export function Set_Station_Timetable_Options(update: Station_Timetable_Options)
 }
 
 export function Get_Global_Options(): Global_Options {
-	return getContext<Global_Options>(GLOBAL_OPTIONS_KEY);
+	let options =  getContext<Global_Options>(GLOBAL_OPTIONS_KEY);
+	if (!options) {
+		let options2 = $state({
+			easy_color_mode: false
+		});
+		setContext(GLOBAL_OPTIONS_KEY, options2);
+		return options2;
+	}
+	return options;
 }
 
 export function Get_Map_Options(): Map_Options {
@@ -32,9 +40,33 @@ export function Get_Map_Options(): Map_Options {
 }
 
 export function Get_Line_Timetable_Options(): Line_Timetable_Options {
-	return getContext<Line_Timetable_Options>(LINE_TIMETABLE_OPTIONS_KEY);
+	let options =  getContext<Line_Timetable_Options>(LINE_TIMETABLE_OPTIONS_KEY);
+	if (!options) {
+		let options2 = $state({
+			selected_calendar_pattern: 'all',
+			selected_stop_pattern: 'all',
+			force_show_all_stations: false,
+			first_last_departure_mode: false,
+			show_arrival_times: false
+		});
+		setContext(LINE_TIMETABLE_OPTIONS_KEY, options2);
+		return options2;
+	}
+	return options;
 }	
 
 export function Get_Station_Timetable_Options(): Station_Timetable_Options {
-	return getContext<Station_Timetable_Options>(STATION_TIMETABLE_OPTIONS_KEY);
+	let options =  getContext<Station_Timetable_Options>(STATION_TIMETABLE_OPTIONS_KEY);
+	if (!options) {
+		let option2s = $state({
+			selected_calendar_pattern: 'all',
+			selected_stop_pattern: 'all',
+			show_arrival_times: false,
+			display_mode: 'hourly',
+			group_by_direction: false
+		});
+		setContext(STATION_TIMETABLE_OPTIONS_KEY, option2s);
+		return option2s;
+	}
+	return options;
 }	

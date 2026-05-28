@@ -69,7 +69,7 @@ export interface Timetable {
 		id: string,
 		label: string,
 		stop_pattern: string,
-		calendar_pattern: string,
+		calendar_patterns: string[],
 		info_messages: InfoMessage[],
 		arrival_times: (number | null)[],
 		departure_times: (number | null)[]
