@@ -19,11 +19,11 @@
 
 	let details_open = $state(false);
 
-	function toggle_details() {
+	function Toggle_Details() {
 		details_open = !details_open;
 	}
 
-	function get_stations() {
+	function Get_Stations() {
 		const line = schedule_data.parent as Line;
 		const total_stations = line.stations.length;
 		const is_reversed = schedule_data.is_reversed;
@@ -106,7 +106,7 @@
 </script>
 
 <div class="schedule-item">
-	<div class="schedule-header" onclick={toggle_details}>
+	<button class="schedule-header" onclick={Toggle_Details}>
 		<div class="header-left">
 			<div class="header-left-icon">
 				{#if network_data.stop_patterns[schedule_data.stop_pattern]}
@@ -129,11 +129,11 @@
 				<FoldPlusMinus bind:active={details_open} />
 			</div>
 		</div>
-	</div>
+	</button>
 
 	{#if details_open}
 		<div class="schedule-details open">
-			{#each get_stations() as station (station.station_id ?? 'blank')}
+			{#each Get_Stations() as station (station.station_id ?? 'blank')}
 				<LineStation station_data={station} {network_data} {color_mode} />
 			{/each}
 		</div>
@@ -157,6 +157,9 @@
 		justify-content: space-between;
 		user-select: none;
 		align-items: center;
+		border: none;
+		background: none;
+		width: 100%;
 	}
 
 	.schedule-details {

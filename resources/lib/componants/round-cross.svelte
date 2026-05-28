@@ -1,20 +1,14 @@
 <script lang="ts">
 	let {
-		onclick = undefined
+		onclick = undefined,
+		title = "round cross"
 	} = $props<{
 		onclick?: () => void;
+		title?: string;
 	}>();
-
-	let is_hovering = $state(false);
 </script>
 
-<button
-	class="round-cross"
-	onmouseenter={() => (is_hovering = true)}
-	onmouseleave={() => (is_hovering = false)}
-	onclick={onclick}
-	aria-label="Close"
->
+<button {onclick} aria-label="Close" title={title}>
 	<div class="circle">
 		<div class="left"></div>
 		<div class="right"></div>
@@ -22,12 +16,11 @@
 </button>
 
 <style>
-	.round-cross {
+	button {
 		all: unset;
 		width: 100%;
 		height: 100%;
 		aspect-ratio: 1 / 1;
-		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		cursor: pointer;
@@ -49,8 +42,7 @@
 		transition: all 0.2s ease;
 	}
 
-	.round-cross:hover .circle {
-		background-color: rgba(0, 0, 0, 0.05);
+	button:hover .circle {
 		transform: scale(1.1);
 	}
 

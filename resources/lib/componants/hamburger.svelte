@@ -1,22 +1,24 @@
 <script lang="ts">
-	export let active: boolean = false;
-	export let onToggle: (() => void) | undefined;
+
+	let {
+		active = $bindable(),
+		title = "Fold plus/minus"
+	} = $props<{ 
+		active: boolean;
+		title?: string;
+	}>();
+
+	const onclick =() => (active = !active);
 </script>
 
-<button
-	class="hamburger"
-	class:active
-	on:click={onToggle}
-	aria-label="Menu"
-	aria-pressed={active}
->
-	<div class="bar bar1"></div>
-	<div class="bar bar2"></div>
-	<div class="bar bar3"></div>
+<button class:active {onclick} {title} aria-pressed={active}>
+	<div></div>
+	<div></div>
+	<div></div>
 </button>
 
 <style>
-	.hamburger{
+	button{
 		background: none;
 		border: none;
 		cursor: pointer;
@@ -25,7 +27,7 @@
 		height: 60%;
 	}
 
-	.active .bar1{
+	.active div:nth-child(1){
 		transition: top .25s ease,-webkit-transform .25s ease .25s;
 		transition: top .25s ease,transform .25s ease .25s;
 		transition: top .25s ease,transform .25s ease .25s,-webkit-transform .25s ease .25s;
@@ -34,26 +36,26 @@
 		transform: rotate(45deg);
 	}
 
-	.bar1{
+	button div:nth-child(1){
 		top: 0%;
 		transition: top .25s ease .25s,-webkit-transform .25s ease;
 		transition: transform .25s ease,top .25s ease .25s;
 		transition: transform .25s ease,top .25s ease .25s,-webkit-transform .25s ease;
 	}
 
-	.active .bar2{
+	.active div:nth-child(2){
 		transition: opacity .125s ease .25s;
 		opacity: 0;
 	}
 
-	.bar2{
+	button div:nth-child(2){
 		top: 50%;
 		transition: top .25s ease .25s,-webkit-transform .25s ease;
 		transition: transform .25s ease,top .25s ease .25s;
 		transition: transform .25s ease,top .25s ease .25s,-webkit-transform .25s ease;
 	}
 
-	.active .bar3{
+	.active div:nth-child(3){
 		transition: top .25s ease,-webkit-transform .25s ease .25s;
 		transition: top .25s ease,transform .25s ease .25s;
 		transition: top .25s ease,transform .25s ease .25s,-webkit-transform .25s ease .25s;
@@ -62,14 +64,14 @@
 		transform: rotate(-45deg);
 	}
 
-	.bar3{
+	button div:nth-child(3){
 		top: 100%;
 		transition: top .25s ease .25s,-webkit-transform .25s ease;
 		transition: transform .25s ease,top .25s ease .25s;
 		transition: transform .25s ease,top .25s ease .25s,-webkit-transform .25s ease;
 	}
 
-	.bar{
+	button > div{
 		position: absolute;
 		height: 2px;
 		width: 100%;
@@ -77,7 +79,7 @@
 		opacity: 1;
 	}
 
-	.hamburger:hover .bar{
+	button:hover > div{
 		background-color: #eb0000;
 	}
 </style>

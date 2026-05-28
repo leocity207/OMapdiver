@@ -1,1 +1,1 @@
-export type ColorMap = 'default' | 'easy';
+export type Color_Map = 'default' | 'easy';

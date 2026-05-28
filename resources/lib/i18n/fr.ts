@@ -9,7 +9,12 @@ const fr = {
 	easy_color_mode: 'Couleur simple',
 	search_all: 'Rechercher une gare ou une ligne',
 	search_station: 'Rechercher une gare',
-	search_line: "Rechercher une ligne"
+	search_line: "Rechercher une ligne",
+	all_directions: 'Toutes les directions',
+	line: 'Ligne',
+	more: 'Plus',
+	calendar_pattern: 'Motif de calendrier',
+	stop_pattern: "Motif d'arrêt"
 };
 
 export default fr;

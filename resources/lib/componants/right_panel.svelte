@@ -1,31 +1,25 @@
 <script lang="ts">
-	import RoundCross from './round-cross.svelte';
+
+	import type { Snippet } from 'svelte';
 
 	let {
-		open = $bindable(false),
-		enabled = true,
+		open = $bindable(),
 		children
 	} = $props<{
-		open?: boolean;
-		enabled?: boolean;
-		children?: any;
+		open: boolean;
+		children?: Snippet;
 	}>();
 
-	function close() {
-		open = false;
-	}
 </script>
 
-{#if enabled}
-	<aside class:open class="right-panel">
-		<div class="content" hidden={!open}>
-			{@render children?.()}
-		</div>
-	</aside>
-{/if}
+<aside class:open >
+	<div hidden={!open}>
+		{@render children?.()}
+	</div>
+</aside>
 
 <style>
-	.right-panel {
+	aside {
 		height: calc(100vh - 6rem);
 		width: 24rem;
 		background-color: white;
@@ -39,11 +33,11 @@
 		border-left: 1px solid #e5e5e5;
 	}
 
-	.right-panel.open {
+	aside.open {
 		right: 0;
 	}
 
-	.right-panel.open::before {
+	aside.open::before {
 		content: "";
 		position: absolute;
 		top: 0;
@@ -55,37 +49,18 @@
 		z-index: 1;
 	}
 
-	.panel-header {
-		padding: 1rem;
-		border-bottom: 1px solid #e5e5e5;
-		display: flex;
-		justify-content: flex-end;
-		align-items: center;
-		flex-shrink: 0;
-	}
-
-	.close-button {
-		width: 1.5rem;
-		height: 1.5rem;
-		color: #333;
-	}
-
-	.close-button:hover {
-		color: #000;
-	}
-
-	.content {
+	aside > div {
 		flex: 1 1 auto;
 		overflow-y: auto;
 	}
 
 	@media (max-width: 900px) {
-		.right-panel {
+		aside {
 			width: 100%;
 			right: -100%;
 		}
 
-		.right-panel.open {
+		aside.open {
 			right: 0;
 		}
 	}

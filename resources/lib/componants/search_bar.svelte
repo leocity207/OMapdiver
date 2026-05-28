@@ -1,29 +1,35 @@
 <script lang="ts">
+
+	export interface Search_Item {
+		label: string,
+		id: string,
+		type: "station" | "line"
+	}[];
+
 	let {
-		value = $bindable(''),
-		placeholder = 'Search...',
-		items = [],
-		onSelect = (item: {label: string}) => {}
+		current_text = $bindable(''),
+		placeholder,
+		items,
+		On_Select
 	} = $props<{
-		value?: string;
-		placeholder?: string;
-		items?: {label: string}[];
-		onSelect?: (item: {label: string}) => void;
+		current_text?: string;
+		placeholder: string;
+		items: Search_Item[];
+		On_Select: (item: Search_Item) => void;
 	}>();
 
 	let focused = $state(false);
 	let current_focus = $state(-1);
-	let inputEl: HTMLInputElement;
 
 	let filtered_items = $derived.by(() => {
-		if (!value.trim()) return [];
-		const query = value.toLowerCase();
-		return items.filter((item: {label: string}) => item.label.toLowerCase().includes(query));
+		if (!current_text.trim()) return [];
+		const query = current_text.toLowerCase();
+		return items.filter((item: Search_Item) => item.label.toLowerCase().includes(query));
 	});
 
-	function Handle_Select(item: {label: string}) {
-		value = item.label;
-		onSelect(item);
+	function Handle_Select(item: Search_Item) {
+		current_text = item.label;
+		On_Select(item);
 		focused = false;
 		current_focus = -1;
 	}
@@ -50,9 +56,8 @@
 
 			case 'Enter':
 				e.preventDefault();
-				if (current_focus >= 0 && current_focus < filtered_items.length) {
+				if (current_focus >= 0 && current_focus < filtered_items.length)
 					Handle_Select(filtered_items[current_focus]);
-				}
 				break;
 
 			case 'Escape':
@@ -87,31 +92,13 @@
 </script>
 
 <div class="search-bar-wrapper">
-	<input
-		bind:this={inputEl}
-		class="search-input"
-		bind:value
-		{placeholder}
-		onfocus={Handle_Focus}
-		onblur={Handle_Blur}
-		oninput={Handle_Input}
-		onkeydown={Handle_Key_Down}
-		autocomplete="off"
-		spellcheck="false"
-	/>
+	<input class="search-input" bind:value={current_text} {placeholder} onfocus={Handle_Focus} onblur={Handle_Blur} oninput={Handle_Input} onkeydown={Handle_Key_Down} autocomplete="off"/>
 
 	{#if focused && filtered_items.length > 0}
 		<div class="autocomplete-items">
 			{#each filtered_items as item, index}
-				<div
-					class="autocomplete-item"
-					class:autocomplete-active={index === current_focus}
-					onclick={() => Handle_Select(item)}
-					onkeydown={Handle_Key_Down}
-					role="option"
-					aria-selected={index === current_focus}
-				>
-					<strong>{item.label.substring(0, value.length)}</strong>{item.label.substring(value.length)}
+				<div class="autocomplete-item" class:autocomplete-active={index === current_focus} onclick={() => Handle_Select(item)} onkeydown={Handle_Key_Down} role="option" tabindex={index} aria-selected={index === current_focus}>
+					<strong>{item.label.substring(0, current_text.length)}</strong>{item.label.substring(current_text.length)}
 				</div>
 			{/each}
 		</div>

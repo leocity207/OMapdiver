@@ -127,23 +127,6 @@
 		justify-content: center;
 	}
 
-	.topbar-right {
-		flex: 0 0 auto;
-	}
-
-	.workspace {
-		position:absolute;
-		flex: 1 1 auto;
-		min-height: 0;
-		display: grid;
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.map-pane {
-		min-width: 0;
-		min-height: 0;
-	}
-
 	.route-loading {
 		position: fixed;
 		right: 1rem;
@@ -154,40 +137,5 @@
 		background: white;
 		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 		font-size: 0.9rem;
-	}
-
-	.panel-header {
-		padding: 1.5rem;
-		border-bottom: 1px solid #e5e5e5;
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		gap: 1rem;
-	}
-
-	.panel-title {
-		font-size: 1.2em;
-		margin-bottom: 0.625em;
-		line-height: 1.4;
-		font-weight: bold;
-	}
-
-	.panel-subtitle {
-		font-size: 0.9375em;
-		margin-bottom: 1.125em;
-		line-height: 1.7;
-		color: #666;
-	}
-
-	.panel-options {
-		padding: 1rem;
-		margin-left: 1rem;
-	}
-
-	.options-title {
-		font-size: 0.9375em;
-		margin-bottom: 1.125em;
-		line-height: 1.7;
-		font-weight: 600;
 	}
 </style>

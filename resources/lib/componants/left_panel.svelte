@@ -1,31 +1,29 @@
 <script lang="ts">
+
+	import type { Snippet } from 'svelte';
+
 	let {
-		open = $bindable(false),
-		enabled = true,
+		open = $bindable(),
 		children
 	} = $props<{
-		open?: boolean;
-		enabled?: boolean;
-		children?: any;
+		open: boolean;
+		children?: Snippet;
 	}>();
-
-	function toggle() {
-		open = !open;
-	}
+	
 </script>
 
-{#if enabled}
-	<aside class:open class="left-panel">
-		<div class="content" hidden={!open}>
-			{@render children?.()}
-		</div>
-	</aside>
-{/if}
+
+<aside class:open>
+	<div hidden={!open}>
+		{@render children?.()}
+	</div>
+</aside>
+
 
 <style>
 
 
-	.left-panel {
+	aside {
 		height: 100%;
 		width: 18.75rem;
 		background-color: #f5f5f5;
@@ -38,11 +36,11 @@
 		flex-direction: column;
 	}
 
-	.left-panel.open {
+	aside.open {
 		left: 0;
 	}
 
-	.left-panel.open::after {
+	aside.open::after {
 		content: "";
 		position: absolute;
 		top: 0;
@@ -54,18 +52,18 @@
 		z-index: 1;
 	}
 
-	.content {
+	aside > div {
 		flex: 1 1 auto;
 		overflow-y: auto;
 	}
 
 	@media (max-width: 900px) {
-		.left-panel {
+		aside {
 			width: 100%;
 			left: -100%;
 		}
 
-		.left-panel.open {
+		aside.open {
 			left: 0;
 		}
 	}

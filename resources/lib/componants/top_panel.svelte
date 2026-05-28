@@ -2,43 +2,35 @@
 	import type { Snippet } from 'svelte';
 
 	let {
-		open = $bindable(false),
-		enabled = true,
-		contentId = 'top-panel-content',
-		toggleLabel = 'Toggle top panel',
+		open = $bindable(),
 		children
 	} = $props<{
-		open?: boolean;
-		enabled?: boolean;
-		contentId?: string;
-		toggleLabel?: string;
-		children?: Snippet;
+		open: boolean;
+		children: Snippet;
 	}>();
 
-	function toggle() {
-		open = !open;
-	}
+	const onclick =() => (open = !open);
 </script>
 
-{#if enabled}
-	<aside class="top-panel" class:open>
-		<div id={contentId} class="content" hidden={!open}>
-			{@render children?.()}
-		</div>
 
-		<button aria-label={toggleLabel} aria-expanded={open} aria-controls={contentId} onclick={toggle}>
-			<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-				<g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<polyline points="6 9 12 15 18 9" />
-					<polyline points="6 5 12 11 18 5" />
-				</g>
-			</svg>
-		</button>
-	</aside>
-{/if}
+<aside>
+	<div class="content" hidden={!open}>
+		{@render children?.()}
+	</div>
+
+	<button aria-expanded={open} title="toggle_top" onclick={onclick}>
+		<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class:open>
+			<g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<polyline points="6 9 12 15 18 9" />
+				<polyline points="6 5 12 11 18 5" />
+			</g>
+		</svg>
+	</button>
+</aside>
+
 
 <style>
-	.top-panel {
+	aside {
 		background: #f5f5f5;
 		position: sticky;
 		top: 0;
@@ -79,7 +71,7 @@
 		transition: transform 0.18s ease;
 	}
 
-	.top-panel.open button svg {
+	.open {
 		transform: rotate(180deg);
 	}
 

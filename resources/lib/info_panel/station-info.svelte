@@ -4,6 +4,7 @@
 	import LineSchedule from './line-schedule.svelte';
 	import Round_Cross from '$lib/componants/round-cross.svelte';
 	import { goto } from '$app/navigation';
+	import {T} from '$lib/i18n';
 
 	let {
 		station_data,
@@ -15,7 +16,7 @@
 		color_mode?: Color_Map;
 	}>();
 
-	function get_grouped_schedules(): Map<string, (Pattern & { parent?: Line })[]> {
+	function Get_Grouped_chedules(): Map<string, (Pattern & { parent?: Line })[]> {
 		const direction_map = new Map<string, (Pattern & { parent?: Line })[]>();
 
 		station_data.lines.forEach((line_id: string) => {
@@ -43,12 +44,12 @@
 		return direction_map;
 	}
 
-	function get_direction_label(direction_code: string): string {
+	function Get_Direction_Label(direction_code: string): string {
 		const station = network_data.stations[direction_code];
 		return station?.label || direction_code;
 	}
 
-	const grouped_schedules = $derived(get_grouped_schedules());
+	const grouped_schedules = $derived(Get_Grouped_chedules());
 </script>
 
 <div class="station-info">
@@ -63,14 +64,14 @@
 	</header>
 
 	<div class="station-subtitle">
-		Liaisons grandes lignes directes<br />
-		{station_data.label} → Toutes les directions
+		{T('direct_routes')}<br />
+		{station_data.label} → {T('all_directions')}
 	</div>
 
 	<div class="schedules">
 		{#each grouped_schedules.entries() as [direction_code, schedule_group] (direction_code)}
 			<div class="schedule-direction-header">
-				<span class="direction-label">Direction: {get_direction_label(direction_code)}</span>
+				<span class="direction-label">Direction: {Get_Direction_Label(direction_code)}</span>
 			</div>
 			{#each schedule_group as schedule (schedule.id)}
 				<LineSchedule schedule_data={schedule} {network_data} reference_station={station_data.id} {color_mode}/>

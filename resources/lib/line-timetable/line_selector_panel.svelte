@@ -1,51 +1,27 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-
-	interface Line {
-		id: string;
-		label: string;
-		icon: string;
-		color: {
-			default: string;
-			[key: string]: string;
-		};
-	}
-
-	interface Network {
-		lines: Record<string, Line>;
-	}
+	import type { Network, Line } from '$lib/types/network';
 
 	let {
-		network_data = null
+		network_data,
+		On_Line_Selected
 	} = $props<{
-		network_data?: Network | null;
-	}>();
-
-	const dispatch = createEventDispatcher<{
-		line_select: { line: string; network: Network };
+		network_data?: Network ;
+		On_Line_Selected?: (line_id: string) => void;
 	}>();
 
 	// Store references to line icon containers
 	let line_icons = $state<Record<string, HTMLElement>>({});
 
-	function handle_line_click(line_id: string) {
-		if (network_data) {
-			dispatch('line_select', {
-				line: line_id,
-				network: network_data
-			});
-		}
-	}
-
-	function handle_keydown(event: KeyboardEvent, line_id: string) {
+	function Handle_Keydown(event: KeyboardEvent, line_id: string) {
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
-			handle_line_click(line_id);
+			On_Line_Selected(line_id);
 		}
 	}
 
 	// Action to register container references
-	function register_container(element: HTMLElement, line_id: string) {
+	function Register_Container(element: HTMLElement, line_id: string) {
 		line_icons[line_id] = element;
 		return {
 			destroy() {
@@ -60,15 +36,15 @@
 
 		// Wait for DOM to be ready
 		setTimeout(() => {
-			for (const [line_id, line] of Object.entries(network_data.lines)) {
+			for (const [line_id, line] of Object.entries<Line>(network_data.lines)) {
 				const container = line_icons[line_id];
 				if (!container) continue;
 
 				// Find all rect elements in the SVG and update their fill
 				const rects = container.querySelectorAll('rect');
 				rects.forEach(rect => {
-					if (line.color.default) {
-						rect.setAttribute('fill', line.color.default);
+					if (line.color["default"]) {
+						rect.setAttribute('fill', line.color["default"]);
 					}
 				});
 
@@ -79,7 +55,7 @@
 					// Only update if it's white or empty
 					const currentFill = path.getAttribute('fill');
 					if (!currentFill || currentFill === 'white' || currentFill === '#fff') {
-						path.setAttribute('fill', line.color.default);
+						path.setAttribute('fill', line.color["default"]);
 					}
 				});
 			}
@@ -89,22 +65,21 @@
 
 <div class="line-container">
 	{#if network_data}
-		{#each Object.entries(network_data.lines) as [line_id, line] (line_id)}
-			<div
-				class="line-icon"
-				role="button"
-				tabindex="0"
-				on:click={() => handle_line_click(line_id)}
-				on:keydown={(e) => handle_keydown(e, line_id)}
-				use:register_container={line_id}
-			>
+		{#each Object.entries<Line>(network_data.lines) as [line_id, line]}
+			<button class="line-icon" onclick={() => On_Line_Selected(line_id)} onkeydown={(e) => Handle_Keydown(e, line_id)} use:Register_Container={line_id}>
 				{@html line.icon}
-			</div>
+			</button>
 		{/each}
 	{/if}
 </div>
 
 <style>
+	button {
+		border: none;
+		background: none;
+		padding: 0;
+	}
+
 	.line-container {
 		display: flex;
 		flex-wrap: wrap;

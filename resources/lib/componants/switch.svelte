@@ -1,30 +1,30 @@
 <script lang="ts">
 	let {
-		label = '',
-		checked = $bindable(false)
+		label = null,
+		checked = $bindable()
 	} = $props<{
-		label?: string;
+		label?: string | null;
 		checked?: boolean;
 	}>();
 
-	function handleChange(event: Event) {
+	function onchange(event: Event) {
 		const input = event.target as HTMLInputElement;
 		checked = input.checked;
 	}
 </script>
 
-<div class="switch-container">
+<div>
 	{#if label}
 		<span class="switch-label">{label}</span>
 	{/if}
 	<label class="switch">
-		<input type="checkbox" {checked} onchange={handleChange} />
+		<input type="checkbox" {onchange} />
 		<span class="slider"></span>
 	</label>
 </div>
 
 <style>
-	.switch-container {
+	div {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;

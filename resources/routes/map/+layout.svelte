@@ -1,73 +1,61 @@
 <script lang="ts">
-	import { onMount , setContext} from 'svelte';
+	import type { Search_Item } from '$lib/componants/search_bar.svelte';
+	import type { Station, Line} from '$lib/types/network';
+	import type { Color_Map } from '$lib/types/color_map.ts';
+	import { Get_Global_Options } from '$lib/utils/options.svelte.js';
+	import { onMount } from 'svelte';
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { T } from '$lib/i18n';
 	import Network_Map from '$lib/map/network_map.svelte';
-	import SearchBar from '$lib/componants/search_bar.svelte';
+	import Search_Bar from '$lib/componants/search_bar.svelte';
 	import Hamburger from '$lib/componants/hamburger.svelte';
-	import LeftPanel from '$lib/componants/left_panel.svelte';
-	import RightPanel from '$lib/componants/right_panel.svelte';
+	import Left_Panel from '$lib/componants/left_panel.svelte';
+	import Right_Panel from '$lib/componants/right_panel.svelte';
 	import Switch from '$lib/componants/switch.svelte';
 
 	let { data, children } = $props();
 
-	let search_query = $state('');
 	let panel_open = $state(false);
-	let map_options = $state({ easy_color_mode: false });
-	let color_mode = $derived(map_options.easy_color_mode ? 'easy' : 'default');
-	let map: Network_Map | null = null;
+	let global_options = $derived(Get_Global_Options());
+	let color_mode = $derived(global_options.easy_color_mode ? 'easy' : 'default') as Color_Map;
+	let map: Network_Map | null = null; 
+	
 
-	setContext('map_options', map_options);
-
-	const is_viewing_element = $derived(
-		page.url.pathname.match(/^\/map\/[^/]+$/)
+	let is_viewing_element = $derived(
+		page.url.pathname.match(/^\/map\/[^/]+$/) != null
 	);
 
-	const search_items = $derived.by<SearchItem[]>(() => {
-		const stations = Object.entries(data.network_data.stations).map(([id, value]: [string, any]) => ({
-			id,
-			kind: 'station' as const,
-			label: value.label ?? value.name ?? id
+	const search_items = $derived.by<Search_Item[]>(() => {
+		const stations = Object.entries<Station>(data.network_data.stations).map(([id, station]: [string, Station]) => ({
+			id: station.id,
+			label: station.label,
+			type: 'station' as const
 		}));
 
-		const lines = Object.entries(data.network_data.lines).map(([id, value]: [string, any]) => ({
-			id,
-			kind: 'line' as const,
-			label: value.label ?? value.name ?? id
+		const lines = Object.entries<Line>(data.network_data.lines).map(([id, line]: [string, Line]) => ({
+			id: line.id,
+			label: line.label,
+			type: 'line' as const
 		}));
 
 		return [...stations, ...lines].sort((a, b) => a.label.localeCompare(b.label));
 	});
 
-	function normalize(value: string) {
-		return value.trim().toLowerCase();
-	}
+	const Open_Element = (id: string): Promise<void> => goto(`/map/${id}`);
+	const Handle_Map_Select = (id: string): Promise<void> => Open_Element(id);
+	const Handle_Search_Select = (item: Search_Item): Promise<void> => {
+		if(item.type === 'station')
+			map?.Highlight_Station_Lines(item.id);
+		else if(item.type === 'line')
+			map?.Highlight_Line(item.id);
+		return Open_Element(item.id);
+	};
 
-	function find_match(query: string) {
-		const q = normalize(query);
-		if (!q) return null;
-
-		return (
-			search_items.find((item) => normalize(item.label) === q) ??
-			search_items.find((item) => normalize(item.label).startsWith(q)) ??
-			search_items.find((item) => normalize(item.label).includes(q)) ??
-			null
-		);
-	}
-
-	function Open_Element(id: string) {
-		void goto(`/map/${encodeURIComponent(id)}`);
-		search_query = '';
-	}
-
-	function Handle_Search_Select(item: SearchItem) {
-		Open_Element(item.id);
-	}
-
-	function Handle_Map_Select(event: CustomEvent<{ id: string; kind: MapElementKind }>) {
-		Open_Element(event.detail.id);
-	}
+	$effect(() => {
+		if (!is_viewing_element && map !== null)
+			map.Clear_Highlighted_Lines();
+	});
 
 	onMount(() => {
 		// Listen for line-click events from map
@@ -100,22 +88,17 @@
 
 	<header class="topbar">
 		<div class="topbar-left">
-			<Hamburger active={panel_open} onToggle={() => (panel_open = !panel_open)} />
+			<Hamburger bind:active={panel_open} />
 		</div>
 
 		<div class="topbar-center">
-			<SearchBar
-				bind:value={search_query}
-				items={search_items}
-				placeholder={T('search_all')}
-				onSelect={Handle_Search_Select}
-			/>
+			<Search_Bar items={search_items} placeholder={T('search_all')} On_Select={Handle_Search_Select}/>
 		</div>
 
 		<div class="topbar-right"></div>
 	</header>
 
-	<LeftPanel bind:open={panel_open}>
+	<Left_Panel open={panel_open}>
 		<div class="panel-header">
 			<div>
 				<div class="panel-title">{T('direct_routes')}</div>
@@ -125,22 +108,23 @@
 
 		<div class="panel-options">
 			<div class="options-title">{T('options')}:</div>
-			<Switch label={T('easy_color_mode')} bind:checked={map_options.easy_color_mode} />
+			<Switch label={T('easy_color_mode')} bind:checked={global_options.easy_color_mode} />
 		</div>
-	</LeftPanel>
+	</Left_Panel>
 
 	<div class="workspace">
 		<section class="map-pane">
 			<Network_Map bind:this={map}
 				network_data={data.network_data}
-				on:select={Handle_Map_Select}
+				On_Station_Click={Handle_Map_Select}
+				On_Line_Click={Handle_Map_Select}
 				easy_color_mode={color_mode}
 			/>
 		</section>
 
-		<RightPanel open={is_viewing_element}>
+		<Right_Panel open={is_viewing_element}>
 			{@render children()}
-		</RightPanel>
+		</Right_Panel>
 	</div>
 
 	{#if navigating.to}

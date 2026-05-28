@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import {onMount, setContext} from 'svelte';
+	import type { Search_Item } from '$lib/componants/search_bar.svelte';
 	import { T } from '$lib/i18n';
 	import Top_Panel from '$lib/componants/top_panel.svelte';
 	import Line_Selector_Panel from '$lib/line-timetable/line_selector_panel.svelte';
@@ -10,7 +10,7 @@
 	import Hamburger from '$lib/componants/hamburger.svelte';
 	import LeftPanel from '$lib/componants/left_panel.svelte';
 
-	interface PatternScheme {
+	interface Pattern_Scheme {
 		id: string;
 		label: string;
 		is_exceptional: boolean;
@@ -28,31 +28,22 @@
 	let line_selector_open = $state(true);
 	let calendar_pattern = $state('all');
 	let stop_pattern = $state('all');
-	let search_query = $state('');
-	let panel_open = $state(false);
-	let station_timetable_options = $state();
+	let panel_open = $state(true);
 
-	setContext('station_timetable_options', station_timetable_options);
-
-	const is_viewing_element = $derived(
-		page.url.pathname.match(/^\/map\/[^/]+$/)
-	);
-
-	const search_items = $derived.by<SearchItem[]>(() => {
-		const stations = Object.entries(data.network_data.stations).map(([id, value]: [string, any]) => ({
+	const search_items = $derived.by<Search_Item[]>(() => {
+		const lines = Object.entries(data.network_data.lines).map(([id, value]: [string, any]) => ({
 			id,
-			kind: 'station' as const,
-			label: value.label ?? value.name ?? id
+			type: 'line' as const,
+			label: value.label
 		}));
 
-		return [...stations].sort((a, b) => a.label.localeCompare(b.label));
+		return [...lines].sort((a, b) => a.label.localeCompare(b.label));
 	});
 
 	const network_data = $derived(data.network_data as Network);
 
 	// Get calendar patterns with 'all' option
 	let calendar_patterns = $derived.by(() => {
-		if (!network_data?.calendar_patterns) return {};
 		return {
 			all: {
 				id: 'all',
@@ -67,7 +58,6 @@
 
 	// Get stop patterns with 'all' option
 	let stop_patterns = $derived.by(() => {
-		if (!network_data?.stop_patterns) return {};
 		return {
 			all: {
 				id: 'all',
@@ -82,25 +72,16 @@
 		};
 	});
 
-	function Handle_Search_Select(item: SearchItem) {
-		Open_Element(item.id);
-	}
+	const Handle_Search_Select = (item: Search_Item): void => Handle_Line_Select(item.id);
 
-	function handle_line_select(event: CustomEvent<{ line: string; network: Network }>) {
-		const line_id = event.detail.line;
+	const Handle_Line_Select = (line_id: string): void => {
 		void goto(`/line-timetable/${encodeURIComponent(line_id)}`);
 		line_selector_open = false;
-	}
+	};
 
-	function handle_calendar_pattern_change(value: string) {
-		calendar_pattern = value;
-		// Could dispatch event or update UI based on pattern change
-	}
+	const Handle_Calendar_Pattern_Change = (value: string): string => calendar_pattern = value
 
-	function handle_stop_pattern_change(value: string) {
-		stop_pattern = value;
-		// Could dispatch event or update UI based on pattern change
-	}
+	const Handle_Stop_Pattern_Change = (value: string): string => stop_pattern = value;
 </script>
 
 <svelte:head>
@@ -111,16 +92,11 @@
 
 	<header class="topbar">
 		<div class="topbar-left">
-			<Hamburger active={panel_open} onToggle={() => (panel_open = !panel_open)} />
+			<Hamburger bind:active={panel_open}/>
 		</div>
 
 		<div class="topbar-center">
-			<SearchBar
-				bind:value={search_query}
-				items={search_items}
-				placeholder={T('search_station')}
-				onSelect={Handle_Search_Select}
-			/>
+			<SearchBar items={search_items} placeholder={T('search_line')} On_Select={Handle_Search_Select}/>
 		</div>
 
 		<div class="topbar-right"></div>
@@ -128,34 +104,24 @@
 	
 
 	<!-- Top Panel with Line Selector -->
-	<Top_Panel bind:open={line_selector_open} enabled={true}>
-		<Line_Selector_Panel network_data={network_data} on:line_select={handle_line_select}/>
+	<Top_Panel open={line_selector_open}>
+		<Line_Selector_Panel network_data={network_data} On_Line_Selected={Handle_Line_Select}/>
 	</Top_Panel>
 
-	<LeftPanel bind:open={panel_open}>
+	<LeftPanel open={panel_open}>
 	</LeftPanel>
 
 
 	<!-- Pattern Switches -->
 	<div class="patterns-container">
 		<div class="pattern-switch-group">
-			<label for="calendar-pattern-switch">Calendar:</label>
-			<PatternSwitch
-				id="calendar-pattern-switch"
-				choices={calendar_patterns}
-				default_choice="all"
-				onchange={handle_calendar_pattern_change}
-			/>
+			<label for="calendar-pattern-switch">{T("calendar_pattern")}: </label>
+			<PatternSwitch choices={calendar_patterns} default_choice="all" On_Change={Handle_Calendar_Pattern_Change}/>
 		</div>
 
 		<div class="pattern-switch-group">
-			<label for="stop-pattern-switch">Stop Pattern:</label>
-			<PatternSwitch
-				id="stop-pattern-switch"
-				choices={stop_patterns}
-				default_choice="all"
-				onchange={handle_stop_pattern_change}
-			/>
+			<label for="stop-pattern-switch">{T("stop_pattern")}: </label>
+			<PatternSwitch choices={stop_patterns} default_choice="all" On_Change={Handle_Stop_Pattern_Change}/>
 		</div>
 	</div>
 

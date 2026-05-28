@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import {T} from '$lib/i18n';
 
-	interface PatternScheme {
+	interface Pattern_Scheme {
 		id: string;
 		label: string;
 		is_exceptional: boolean;
@@ -14,25 +14,24 @@
 
 	let {
 		choices = {},
-		default_choice = null,
-		onchange = null
+		default_choice,
+		On_Change
 	} = $props<{
-		choices?: Record<string, PatternScheme>;
-		default_choice?: string | null;
-		onchange?: ((value: string) => void) | null;
+		choices?: Record<string, Pattern_Scheme>;
+		default_choice: string;
+		On_Change: ((value: string) => void) | null;
 	}>();
 
 	// State
-	let normal_choices = $state<Record<string, PatternScheme>>({});
-	let special_choices = $state<Record<string, switchPatternScheme>>({});
+	let normal_choices = $state<Record<string, Pattern_Scheme>>({});
+	let special_choices = $state<Record<string, Pattern_Scheme>>({});
 	let current_state = $state<string>('');
 	let dropdown_open = $state(false);
 	let left_buttons = $state<Record<string, HTMLButtonElement>>({});
-	let special_menu: HTMLElement | null = null;
-	let special_toggle: HTMLButtonElement | null = null;
-	let indicator: HTMLElement | null = null;
-	let container: HTMLElement | null = null;
-	let track: HTMLElement | null = null;
+	let special_toggle = $state<HTMLButtonElement | null>(null);
+	let indicator: HTMLElement;
+	let container: HTMLElement;
+	let track: HTMLElement;
 
 	// Derived
 	let all_states = $derived.by(() => {
@@ -43,34 +42,35 @@
 
 	// Initialize on mount and when choices change
 	$effect(() => {
-		const [special, normal] = Object.entries(choices).reduce(
-			([accTrue, accFalse], [key, value]) => {
-				if (value.is_exceptional) {
-					accTrue[key] = value;
-				} else {
-					accFalse[key] = value;
-				}
-				return [accTrue, accFalse];
+		type PartitionedChoices = [
+			Record<string, Pattern_Scheme>,
+			Record<string, Pattern_Scheme>
+		];
+
+		const [special, normal] = (Object.entries(choices) as [string, Pattern_Scheme][]).reduce<PartitionedChoices>(
+			([specialAcc, normalAcc], [key, value]) => {
+				if (value.is_exceptional)
+					specialAcc[key] = value;
+				else
+					normalAcc[key] = value;
+				return [specialAcc, normalAcc];
 			},
-			[
-				{} as Record<string, PatternScheme>,
-				{} as Record<string, PatternScheme>
-			]
+			[{}, {}]
 		);
 
 		normal_choices = normal;
 		special_choices = special;
 
-		if (default_choice && normal[default_choice]) {
+		if (default_choice && normal[default_choice])
 			current_state = normal[default_choice].id;
-		} else {
+		else {
 			const states = all_states;
 			current_state = states.length > 0 ? states[0] : '';
 		}
 	});
 
 	// Event handlers
-	function handle_normal_click(event: MouseEvent) {
+	function On_Normal_Click(event: MouseEvent) {
 		event.stopPropagation();
 		const target = event.currentTarget as HTMLElement;
 		if (!target?.dataset.value) return;
@@ -78,16 +78,16 @@
 		const value = target.dataset.value;
 		current_state = value;
 		dropdown_open = false;
-		onchange?.(value);
+		On_Change(value);
 	}
 
-	function handle_special_toggle(event: MouseEvent) {
+	function Handle_Special_Toggle(event: MouseEvent) {
 		event.stopPropagation();
 		if (Object.keys(special_choices).length === 0) return;
 		dropdown_open = !dropdown_open;
 	}
 
-	function handle_special_choice_click(event: MouseEvent) {
+	function Handle_Special_Choice_Click(event: MouseEvent) {
 		event.stopPropagation();
 		const target = event.currentTarget as HTMLElement;
 		if (!target?.dataset.value) return;
@@ -95,18 +95,18 @@
 		const value = target.dataset.value;
 		current_state = value;
 		dropdown_open = false;
-		onchange?.(value);
+		On_Change(value);
 	}
 
-	function handle_outside_click(event: MouseEvent) {
+	function Handle_Outside_Click(event: MouseEvent) {
 		const path = event.composedPath();
-		if (!path.includes(container)) {
+		if (!path.includes(container))
 			dropdown_open = false;
-		}
 	}
 
-	function update_indicator() {
-		if (!indicator) return;
+	// Update indicator on state/button changes
+	$effect(() => {
+		current_state; // dependency
 
 		let selected_button: HTMLElement | null = null;
 
@@ -133,8 +133,6 @@
 
 		indicator.style.opacity = '1';
 
-		if (!track) return;
-
 		const track_rect = track.getBoundingClientRect();
 		const button_rect = selected_button.getBoundingClientRect();
 
@@ -146,23 +144,8 @@
 		indicator.style.width = `${width}px`;
 		indicator.style.height = `${height}px`;
 		indicator.style.transform = `translate3d(${left}px, ${top}px, 0)`;
-	}
-
-	// Update indicator on state/button changes
-	$effect(() => {
-		current_state; // dependency
-		update_indicator();
 	});
 
-	onMount(() => {
-		document.addEventListener('click', handle_outside_click);
-		window.addEventListener('resize', update_indicator);
-
-		return () => {
-			document.removeEventListener('click', handle_outside_click);
-			window.removeEventListener('resize', update_indicator);
-		};
-	});
 
 	// Get ordered normal entries
 	let ordered_entries = $derived.by(() => {
@@ -179,7 +162,7 @@
 	// Get selected special choice label
 	let selected_special_label = $derived.by(() => {
 		const selected = Object.values(special_choices).find(c => c.id === current_state);
-		return selected ? selected.label : 'More';
+		return selected ? selected.label : T('more');
 	});
 
 	let is_special_selected = $derived(
@@ -187,7 +170,7 @@
 	);
 
 	// Action to register button references
-	function register_button(element: HTMLElement, button_id: string) {
+	function Register_Button(element: HTMLElement, button_id: string) {
 		left_buttons[button_id] = element as HTMLButtonElement;
 		return {
 			destroy() {
@@ -198,21 +181,15 @@
 
 </script>
 
+<svelte:document onclick={Handle_Outside_Click} />
+
 <div class="switch-container" bind:this={container}>
 	<div class="switch-track" bind:this={track}>
 		<span class="switch-indicator" bind:this={indicator}></span>
 
 		<div class="switch-left-group">
 			{#each ordered_entries as [key, value] (key)}
-				<button
-					type="button"
-					class="switch-option switch-normal-option"
-					class:is-selected={value.id === current_state}
-					data-value={value.id}
-					aria-pressed={value.id === current_state}
-					use:register_button={value.id}
-					on:click={handle_normal_click}
-				>
+				<button type="button" class="switch-option switch-normal-option" class:is-selected={value.id === current_state} data-value={value.id} aria-pressed={value.id === current_state} use:Register_Button={value.id} onclick={On_Normal_Click}>
 					{value.label}
 				</button>
 			{/each}
@@ -221,29 +198,14 @@
 		{#if Object.keys(special_choices).length > 0}
 			<div class="switch-special-group">
 				<div class="switch-special-wrapper">
-					<button
-						type="button"
-						class="switch-option switch-special-toggle"
-						class:is-selected={is_special_selected}
-						aria-expanded={dropdown_open}
-						aria-pressed={is_special_selected}
-						bind:this={special_toggle}
-						on:click={handle_special_toggle}
-					>
+					<button type="button" class="switch-option switch-special-toggle" class:is-selected={is_special_selected} aria-expanded={dropdown_open} aria-pressed={is_special_selected} bind:this={special_toggle} onclick={Handle_Special_Toggle}>
 						<span class="switch-special-label">{selected_special_label}</span>
 						<span class="switch-chevron">▾</span>
 					</button>
 
-					<div class="switch-special-menu" class:open={dropdown_open} bind:this={special_menu}>
+					<div class="switch-special-menu" class:open={dropdown_open}>
 						{#each Object.entries(special_choices) as [key, value] (key)}
-							<button
-								type="button"
-								class="switch-special-item"
-								class:is-selected={value.id === current_state}
-								data-value={value.id}
-								aria-pressed={value.id === current_state}
-								on:click={handle_special_choice_click}
-							>
+							<button type="button" class="switch-special-item" class:is-selected={value.id === current_state} data-value={value.id} aria-pressed={value.id === current_state} onclick={Handle_Special_Choice_Click}>
 								{value.label}
 							</button>
 						{/each}

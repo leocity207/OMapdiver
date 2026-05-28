@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
 	import type { Color_Map } from '$lib/types/color_map.ts'
 	import { goto } from '$app/navigation';
-	import type { Network, Line } from '$lib/types/network';
+	import type { Network, Line, Pattern } from '$lib/types/network';
 	import LineSchedule from './line-schedule.svelte';
 	import Round_Cross from '$lib/componants/round-cross.svelte';
+	import {T} from '$lib/i18n';
 
 	let {
 		line_data,
@@ -19,7 +19,7 @@
 
 	let logoEl: HTMLDivElement | null = null;
 	function Get_Patterns() {
-		return line_data.patterns.map(pattern => ({
+		return line_data.patterns.map((pattern: Pattern) => ({
 			...pattern,
 			parent: line_data
 		}));
@@ -40,7 +40,7 @@
 			{@html line_data.icon}
 		</div>
 		<div class="title">
-			Ligne {line_data.label}
+			{T('line')} {line_data.label}
 		</div>
 		<div class="close-button">
 			<Round_Cross onclick={() => goto('../')} />

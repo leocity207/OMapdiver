@@ -9,7 +9,12 @@ const en = {
 	easy_color_mode: 'Simple color',
 	search_all: 'Search a station or a line',
 	search_line: 'Search a line',
-	search_station: 'Search a station'
+	search_station: 'Search a station',
+	all_directions: 'All Directions',
+	line: 'Line',
+	more: 'More',
+	calendar_pattern: 'Calendar pattern',
+	stop_pattern: 'Stop pattern'
 };
 
 export default en;

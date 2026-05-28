@@ -1,18 +1,18 @@
 <script lang="ts">
+
 	let {
-		active = $bindable(false)
-	} = $props<{
-		active?: boolean;
+		active = $bindable(),
+		title = "Fold plus/minus"
+	} = $props<{ 
+		active: boolean;
+		title?: string;
 	}>();
+
+	const onclick =() => (active = !active);
+	
 </script>
 
-<button
-	class="circle"
-	class:active
-	onclick={() => (active = !active)}
-	aria-pressed={active}
-	title="fold/unfold details"
->
+<button {onclick} aria-pressed={active} {title}>
 	<div class={active ? 'minus' : 'plus'}>
 		<div class="horizontal"></div>
 		<div class="vertical"></div>
@@ -20,7 +20,12 @@
 </button>
 
 <style>
-	.circle {
+
+	button:hover {
+		transform: scale(1.1);
+	}
+
+	button {
 		width: 100%;
 		height: 100%;
 		aspect-ratio: 1 / 1;
@@ -29,12 +34,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		cursor: pointer;
 		position: relative;
-		transition: background-color 0.2s ease;
 		background: transparent;
-		padding: 0;
-		appearance: none;
+		cursor: pointer;
 	}
 
 	.horizontal,
@@ -45,7 +47,6 @@
 		background-color: black;
 		transition: transform 0.2s ease, opacity 0.2s ease;
 		translate: -50%;
-		pointer-events: none;
 	}
 
 	.horizontal {
@@ -56,11 +57,8 @@
 		transform: rotate(90deg);
 	}
 
-	.minus > .vertical{
-		transform: rotate(0deg);
-	}
-
-	.minus > .horizontal{
+	.minus > .vertical,
+	.minus > .horizontal {
 		transform: rotate(0deg);
 	}
 </style>
