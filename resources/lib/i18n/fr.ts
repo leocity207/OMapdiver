@@ -5,6 +5,7 @@ const fr = {
 	loading: 'Chargement...',
 	direct_routes: 'Liaisons grandes lignes directes',
 	select_station_or_line: 'Sélectionnez votre ligne/gare de départ sur la carte ou utilisez le champ de saisie',
+	select_line_timetable: 'Sélectionnez une ligne pour afficher son horaire',
 	options: 'Options',
 	easy_color_mode: 'Couleur simple',
 	search_all: 'Rechercher une gare ou une ligne',
@@ -14,7 +15,17 @@ const fr = {
 	line: 'Ligne',
 	more: 'Plus',
 	calendar_pattern: 'Motif de calendrier',
-	stop_pattern: "Motif d'arrêt"
+	stop_pattern: 'Motif d\'arrêt',
+	force_show_all_stations: 'Forcer l\'affichage de toutes les gares',
+	first_last_departure_mode: 'Mode premier/dernier départ',
+	show_arrival_times: 'Afficher les heures d\'arrivée',
+
+	all : 'Tout',
+	week_end: 'Weekend',
+	week: 'Semaine',
+	local: 'Local',
+	express: 'Express',
+	rapid: 'Rapid',
 };
 
 export default fr;

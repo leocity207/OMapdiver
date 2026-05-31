@@ -1,24 +1,20 @@
 <script lang="ts">
 	let {
 		label = null,
-		checked = $bindable()
+		checked = $bindable(false)
 	} = $props<{
 		label?: string | null;
 		checked?: boolean;
 	}>();
-
-	function onchange(event: Event) {
-		const input = event.target as HTMLInputElement;
-		checked = input.checked;
-	}
 </script>
 
 <div>
 	{#if label}
 		<span class="switch-label">{label}</span>
 	{/if}
+
 	<label class="switch">
-		<input type="checkbox" {onchange} />
+		<input type="checkbox" bind:checked />
 		<span class="slider"></span>
 	</label>
 </div>

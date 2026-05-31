@@ -2,17 +2,20 @@
 	import type { Line, Network, Timetable } from '$lib/types/network';
 	import type { Line_Timetable_Options } from '$lib/types/options';
 	import type { Pattern_Scheme } from '$lib/componants/pattern_switch.svelte';
+	import type { Color_Map } from '$lib/types/color_map';
 	import Pattern_Switch from '$lib/componants/pattern_switch.svelte';
 	import Utils from '$lib/utils/utils';
 
 	let {
 		line_data,
 		network_data,
-		options
+		options,
+		color_mode
 	} = $props<{
 		line_data: Line;
 		network_data: Network;
 		options: Line_Timetable_Options;
+		color_mode : Color_Map;
 	}>();
 
 	let line_icon_container = $state<HTMLDivElement>();
@@ -45,9 +48,10 @@
 	const lineTitle = $derived(line_data.label);
 
 	$effect(() => {
+		color_mode;
 		const rect = line_icon_container?.querySelector('rect');
 		if (rect)
-			rect.setAttribute('fill', line_data.color["default"]);
+			rect.setAttribute('fill', line_data.color[color_mode]);
 	});
 
 	const normal_order: Pattern_Scheme = $derived.by(() => ({

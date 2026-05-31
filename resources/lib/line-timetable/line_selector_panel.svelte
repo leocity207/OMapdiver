@@ -1,13 +1,16 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import type { Network, Line } from '$lib/types/network';
+	import type { Color_Map } from '$lib/types/color_map';
 
 	let {
 		network_data,
-		On_Line_Selected
+		On_Line_Selected,
+		color_mode
 	} = $props<{
 		network_data?: Network ;
 		On_Line_Selected?: (line_id: string) => void;
+		color_mode: Color_Map;
 	}>();
 
 	// Store references to line icon containers
@@ -32,6 +35,7 @@
 
 	// Update SVG colors when network_data or line colors change
 	$effect(() => {
+		color_mode;
 		if (!network_data) return;
 
 		// Wait for DOM to be ready
@@ -44,7 +48,7 @@
 				const rects = container.querySelectorAll('rect');
 				rects.forEach(rect => {
 					if (line.color["default"]) {
-						rect.setAttribute('fill', line.color["default"]);
+						rect.setAttribute('fill', line.color[color_mode]);
 					}
 				});
 

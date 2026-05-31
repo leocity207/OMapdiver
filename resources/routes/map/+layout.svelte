@@ -17,10 +17,10 @@
 	let { data, children } = $props();
 
 	let panel_open = $state(false);
-	let global_options = $derived(Get_Global_Options());
+	let global_options = Get_Global_Options();
 	let color_mode = $derived(global_options.easy_color_mode ? 'easy' : 'default') as Color_Map;
 	let map: Network_Map | null = null; 
-	
+
 
 	let is_viewing_element = $derived(
 		page.url.pathname.match(/^\/map\/[^/]+$/) != null
@@ -78,6 +78,7 @@
 			document.removeEventListener('station-click', handle_station_click);
 		};
 	});
+
 </script>
 
 <svelte:head>
