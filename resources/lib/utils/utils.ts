@@ -182,6 +182,19 @@ class Utils {
 		return negative + (h > 0 ? `${h}:${mm}` : `:${mm}`);
 	}
 
+	static Lighten_Color(hex: string, percent: number = 0.85): string {
+		const color = hex.replace('#', '');
+
+		const r = parseInt(color.slice(0, 2), 16);
+		const g = parseInt(color.slice(2, 4), 16);
+		const b = parseInt(color.slice(4, 6), 16);
+
+		const lr = Math.round(r + (255 - r) * percent);
+		const lg = Math.round(g + (255 - g) * percent);
+		const lb = Math.round(b + (255 - b) * percent);
+
+		return `rgb(${lr}, ${lg}, ${lb})`;
+	}
 }
 
 export default Utils

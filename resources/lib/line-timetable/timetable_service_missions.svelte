@@ -20,6 +20,7 @@
 
 	let line_icon_container = $state<HTMLDivElement>();
 	let show_reverse = $state(false);
+	let timetable_root = $state<HTMLDivElement>();
 
 	function Is_Timetable_Visible(t: Timetable): boolean {
 		let is_stopping_pattern_visible: boolean = t.stop_pattern === options.selected_stop_pattern || options.selected_stop_pattern === 'all';
@@ -47,11 +48,13 @@
 	const stationIds = $derived(show_reverse ? line_data.stations.slice().reverse() : line_data.stations);
 	const lineTitle = $derived(line_data.label);
 
+
 	$effect(() => {
-		color_mode;
+		let color = line_data.color[color_mode];
 		const rect = line_icon_container?.querySelector('rect');
 		if (rect)
-			rect.setAttribute('fill', line_data.color[color_mode]);
+			rect.setAttribute('fill', color);
+		timetable_root?.style.setProperty('--line-color-light', Utils.Lighten_Color(color, 0.9));
 	});
 
 	const normal_order: Pattern_Scheme = $derived.by(() => ({
@@ -68,7 +71,7 @@
 </script>
 
 {#if line_data}
-<div class="timetable-root">
+<div class="timetable-root" bind:this={timetable_root}>
 
 	<!-- HEADER -->
 	<div class="timetable-header">
@@ -162,6 +165,21 @@
 {/if}
 
 <style>
+
+	tbody tr:nth-child(even),
+	thead tr {
+		background-color: var(--line-color-light);
+	}
+
+	tbody tr:nth-child(even) .station-cell,
+	.station-header {
+		background-color: var(--line-color-light);
+	}
+
+	tbody tr:nth-child(odd) .station-cell  {
+		background-color: white;
+	}
+
 	.timetable-root {
 		display: flex;
 		flex-direction: column;
@@ -213,7 +231,6 @@
 		text-align: left;
 		position: sticky;
 		left: 0;
-		background: white;
 	}
 
 	.time-content {
