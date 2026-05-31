@@ -4,8 +4,8 @@
 	import { T } from '$lib/i18n';
 	import Top_Panel from '$lib/componants/top_panel.svelte';
 	import Line_Selector_Panel from '$lib/line-timetable/line_selector_panel.svelte';
-	import PatternSwitch from '$lib/componants/pattern_switch.svelte';
-	import type { Network } from '$lib/types/network';
+	import Pattern_Switch from '$lib/componants/pattern_switch.svelte';
+	import type { Calendar_Pattern, Network } from '$lib/types/network';
 	import SearchBar from '$lib/componants/search_bar.svelte';
 	import Hamburger from '$lib/componants/hamburger.svelte';
 	import LeftPanel from '$lib/componants/left_panel.svelte';
@@ -14,7 +14,7 @@
 	let { data, children } = $props();
 
 	let line_selector_open = $state(true);
-	let panel_open = $state(true);
+	let panel_open = $state(false);
 	let options = Get_Line_Timetable_Options();
 
 
@@ -32,22 +32,22 @@
 
 	// Get calendar patterns with 'all' option
 	let calendar_patterns = $derived.by(() => {
-		return {
-			all: {
+		return [
+			{
 				id: 'all',
 				label: 'All',
 				is_exceptional: false,
 				info: null,
 				icon: null
 			},
-			...network_data.calendar_patterns
-		};
+			...Object.values(network_data.calendar_patterns)
+		];
 	});
 
 	// Get stop patterns with 'all' option
 	let stop_patterns = $derived.by(() => {
-		return {
-			all: {
+		return [
+			{
 				id: 'all',
 				label: 'All',
 				is_exceptional: false,
@@ -56,8 +56,8 @@
 				color: '',
 				icon: ''
 			},
-			...network_data.stop_patterns
-		};
+			...Object.values(network_data.stop_patterns)
+		];
 	});
 
 	const Handle_Search_Select = (item: Search_Item): void => Handle_Line_Select(item.id);
@@ -108,12 +108,12 @@
 	<div class="patterns-container">
 		<div class="pattern-switch-group">
 			<label for="calendar-pattern-switch">{T("calendar_pattern")}: </label>
-			<PatternSwitch choices={calendar_patterns} default_choice="all" On_Change={Handle_Calendar_Pattern_Change}/>
+			<Pattern_Switch choices={calendar_patterns} default_choice="all" On_Change={Handle_Calendar_Pattern_Change}/>
 		</div>
 
 		<div class="pattern-switch-group">
 			<label for="stop-pattern-switch">{T("stop_pattern")}: </label>
-			<PatternSwitch choices={stop_patterns} default_choice="all" On_Change={Handle_Stop_Pattern_Change}/>
+			<Pattern_Switch choices={stop_patterns} default_choice="all" On_Change={Handle_Stop_Pattern_Change}/>
 		</div>
 	</div>
 

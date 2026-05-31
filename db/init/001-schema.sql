@@ -95,7 +95,8 @@ CREATE TABLE IF NOT EXISTS timetables (
 	stop_pattern        text NOT NULL REFERENCES stop_patterns(id) ON DELETE RESTRICT,
 	calendar_patterns   text[] NOT NULL,
 	arrival_times       integer[],
-	departure_times     integer[]
+	departure_times     integer[],
+	is_reversed         boolean NOT NULL
 	-- timetable info message (list)
 );
 

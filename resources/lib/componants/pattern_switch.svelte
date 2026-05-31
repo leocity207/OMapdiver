@@ -1,30 +1,25 @@
 <script lang="ts">
 	import {T} from '$lib/i18n';
 
-	interface Pattern_Scheme {
+	export interface Pattern_Scheme {
 		id: string;
 		label: string;
-		is_exceptional: boolean;
-		info?: any;
-		icon?: any;
-		level?: number;
-		variant?: any[];
-		color?: string;
+		is_exceptional?: boolean;
 	}
 
 	let {
-		choices = {},
+		choices,
 		default_choice,
 		On_Change
 	} = $props<{
-		choices?: Record<string, Pattern_Scheme>;
+		choices: Pattern_Scheme[];
 		default_choice: string;
 		On_Change: ((value: string) => void) | null;
 	}>();
 
 	// State
-	let normal_choices = $state<Record<string, Pattern_Scheme>>({});
-	let special_choices = $state<Record<string, Pattern_Scheme>>({});
+	let normal_choices = $derived.by(() => choices.filter((choice: Pattern_Scheme) => !choice.is_exceptional));
+	let special_choices = $derived.by(() => choices.filter((choice: Pattern_Scheme) => choice.is_exceptional));
 	let current_state = $state<string>('');
 	let dropdown_open = $state(false);
 	let left_buttons = $state<Record<string, HTMLButtonElement>>({});
@@ -34,39 +29,15 @@
 	let track: HTMLElement;
 
 	// Derived
-	let all_states = $derived.by(() => {
-		return Object.values(normal_choices)
-			.concat(Object.values(special_choices))
-			.map(v => v.id);
-	});
+	let all_states = $derived.by(() =>
+		choices.map((v: Pattern_Scheme) => v.id)
+	);
 
-	// Initialize on mount and when choices change
 	$effect(() => {
-		type PartitionedChoices = [
-			Record<string, Pattern_Scheme>,
-			Record<string, Pattern_Scheme>
-		];
-
-		const [special, normal] = (Object.entries(choices) as [string, Pattern_Scheme][]).reduce<PartitionedChoices>(
-			([specialAcc, normalAcc], [key, value]) => {
-				if (value.is_exceptional)
-					specialAcc[key] = value;
-				else
-					normalAcc[key] = value;
-				return [specialAcc, normalAcc];
-			},
-			[{}, {}]
-		);
-
-		normal_choices = normal;
-		special_choices = special;
-
-		if (default_choice && normal[default_choice])
-			current_state = normal[default_choice].id;
-		else {
-			const states = all_states;
-			current_state = states.length > 0 ? states[0] : '';
-		}
+		if (default_choice && all_states.includes(default_choice))
+			current_state = default_choice;
+		else
+			current_state = all_states[0] ?? '';
 	});
 
 	// Event handlers
@@ -83,7 +54,7 @@
 
 	function Handle_Special_Toggle(event: MouseEvent) {
 		event.stopPropagation();
-		if (Object.keys(special_choices).length === 0) return;
+		if (special_choices.length === 0) return;
 		dropdown_open = !dropdown_open;
 	}
 
@@ -107,6 +78,7 @@
 	// Update indicator on state/button changes
 	$effect(() => {
 		current_state; // dependency
+		choices;
 
 		let selected_button: HTMLElement | null = null;
 
@@ -120,10 +92,9 @@
 
 		// Find in special toggle
 		if (!selected_button && special_toggle) {
-			const is_special = Object.values(special_choices).some(c => c.id === current_state);
-			if (is_special) {
+			const is_special = special_choices.some(c => c.id === current_state);
+			if (is_special) 
 				selected_button = special_toggle;
-			}
 		}
 
 		if (!selected_button) {
@@ -134,13 +105,12 @@
 		indicator.style.opacity = '1';
 
 		const track_rect = track.getBoundingClientRect();
-		const button_rect = selected_button.getBoundingClientRect();
+		const button_rect = selected_button?.getBoundingClientRect();
 
 		const left = button_rect.left - track_rect.left;
 		const top = button_rect.top - track_rect.top;
 		const width = button_rect.width;
 		const height = button_rect.height;
-
 		indicator.style.width = `${width}px`;
 		indicator.style.height = `${height}px`;
 		indicator.style.transform = `translate3d(${left}px, ${top}px, 0)`;
@@ -149,24 +119,26 @@
 
 	// Get ordered normal entries
 	let ordered_entries = $derived.by(() => {
-		const entries = Object.entries(normal_choices);
-		if (default_choice && normal_choices[default_choice]) {
-			return [
-				[default_choice, normal_choices[default_choice]],
-				...entries.filter(([key]) => key !== default_choice)
-			];
-		}
-		return entries;
+		const default_entry =
+			normal_choices.find((c: Pattern_Scheme) => c.id === default_choice);
+
+		if (!default_entry)
+			return normal_choices;
+
+		return [
+			default_entry,
+			...normal_choices.filter((c: Pattern_Scheme) => c.id !== default_choice)
+		];
 	});
 
 	// Get selected special choice label
 	let selected_special_label = $derived.by(() => {
-		const selected = Object.values(special_choices).find(c => c.id === current_state);
+		const selected = special_choices.find((c: Pattern_Scheme) => c.id === current_state);
 		return selected ? selected.label : T('more');
 	});
 
-	let is_special_selected = $derived(
-		Object.values(special_choices).some(c => c.id === current_state)
+	let is_special_selected = $derived.by(() =>
+		special_choices.some((c: Pattern_Scheme) => c.id === current_state)
 	);
 
 	// Action to register button references
@@ -188,14 +160,14 @@
 		<span class="switch-indicator" bind:this={indicator}></span>
 
 		<div class="switch-left-group">
-			{#each ordered_entries as [key, value] (key)}
+			{#each ordered_entries as value}
 				<button type="button" class="switch-option switch-normal-option" class:is-selected={value.id === current_state} data-value={value.id} aria-pressed={value.id === current_state} use:Register_Button={value.id} onclick={On_Normal_Click}>
 					{value.label}
 				</button>
 			{/each}
 		</div>
 
-		{#if Object.keys(special_choices).length > 0}
+		{#if special_choices.length > 0}
 			<div class="switch-special-group">
 				<div class="switch-special-wrapper">
 					<button type="button" class="switch-option switch-special-toggle" class:is-selected={is_special_selected} aria-expanded={dropdown_open} aria-pressed={is_special_selected} bind:this={special_toggle} onclick={Handle_Special_Toggle}>
@@ -204,7 +176,7 @@
 					</button>
 
 					<div class="switch-special-menu" class:open={dropdown_open}>
-						{#each Object.entries(special_choices) as [key, value] (key)}
+						{#each special_choices as value}
 							<button type="button" class="switch-special-item" class:is-selected={value.id === current_state} data-value={value.id} aria-pressed={value.id === current_state} onclick={Handle_Special_Choice_Click}>
 								{value.label}
 							</button>

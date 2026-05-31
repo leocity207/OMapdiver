@@ -23,7 +23,7 @@ public:
 	QUERY(getStations,              "SELECT id, label, url, lines, CAST(directions AS TEXT) AS directions, have_disabled_equipment, have_bike_parking, have_car_parking, have_car_sharing, opening_time, closing_time FROM stations ORDER BY id;")
 	QUERY(getLines,                 "SELECT id, label, url, icon, stations, CAST(color AS TEXT) AS color FROM lines ORDER BY id;")
 	QUERY(getPatterns,              "SELECT id, label, line_id, interval_time, departure_time, first_departure, last_departure, stop_pattern, is_reversed, arrival_times, departure_times FROM patterns ORDER BY id;")
-	QUERY(getTimetables,            "SELECT id, label, line_id, stop_pattern, calendar_patterns, arrival_times, departure_times FROM timetables ORDER BY id;")
+	QUERY(getTimetables,            "SELECT id, label, line_id, stop_pattern, calendar_patterns, arrival_times, departure_times, is_reversed FROM timetables ORDER BY id;")
 	QUERY(getInfoMessages,          "SELECT info_message_id, line_id, pattern_id, timetable_id, index, level, message FROM info_messages ORDER BY info_message_id;")
 };
 

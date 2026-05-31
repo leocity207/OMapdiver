@@ -68,6 +68,7 @@ export interface Pattern {
 export interface Timetable {
 		id: string,
 		label: string,
+		is_reversed : boolean,
 		stop_pattern: string,
 		calendar_patterns: string[],
 		info_messages: InfoMessage[],

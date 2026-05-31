@@ -131,16 +131,18 @@ def _Load_Timetables(cur: PGCursor, data: dict) -> None:
 				stop_pattern,
 				calendar_patterns,
 				arrival_times,
-				departure_times
+				departure_times,
+				is_reversed
 			)
-			VALUES (%s, %s, %s, %s, %s, %s, %s)
+			VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
 			ON CONFLICT (id) DO UPDATE SET
 				line_id = EXCLUDED.line_id,
 				label = EXCLUDED.label,
 				stop_pattern = EXCLUDED.stop_pattern,
 				calendar_patterns = EXCLUDED.calendar_patterns,
 				arrival_times = EXCLUDED.arrival_times,
-				departure_times = EXCLUDED.departure_times
+				departure_times = EXCLUDED.departure_times,
+				is_reversed = EXCLUDED.is_reversed
 			""",
 			(
 				timetable_id,
@@ -149,7 +151,8 @@ def _Load_Timetables(cur: PGCursor, data: dict) -> None:
 				timetable["stop_pattern"],
 				As_Text_List(timetable["calendar_patterns"]),
 				As_Int_List(timetable["arrival_times"]),
-				As_Int_List(timetable["departure_times"])
+				As_Int_List(timetable["departure_times"]),
+				timetable["is_reversed"]
 			),
 		)
 
