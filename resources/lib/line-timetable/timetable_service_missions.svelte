@@ -116,6 +116,7 @@
 				choices={[normal_order, reversed_order]}
 				default_choice="normal"
 				On_Change={(value: string) => {
+					hidden_rows = {};
 					value === 'normal' ? show_reverse = false : show_reverse = true;
 				}}
 			/>
@@ -141,20 +142,15 @@
 
 			<tbody>
 				{#each stationIds as stationId, i}
-					{@const button_title = Is_Button_Hidden(i) ? 'Show station' : 'Hide station'}
 					{@const is_hidden = ( !options.show_hidden_stations && !Is_Row_Visible(i) ) || ( !options.show_hidden_stations && hidden_rows[i] )}
-					<tr class="station-row" class:hidden={is_hidden}>
+					{#if !is_hidden}
+					<tr class="station-row">
 
 						<th class="station-cell" style:min-width={`${max_station_width + 40}px`}>
 							<div class="station-content">
 								<span class="station-label">{network_data.stations[stationId].label}</span>
-								<button class="station-toggle" title={button_title} onclick={() => Toggle_Row_Hidden(i)} disabled={options.show_hidden_stations}>
-									<!-- barred eye SVG -->
-									{#if Is_Button_Hidden(i)}
-										<img src="/icons/eye.svg" alt="" />
-									{:else}
-										<img src="/icons/eye_crossed.svg" alt="" />
-									{/if}
+								<button class="station-toggle" title="Hide station" onclick={() => Toggle_Row_Hidden(i)} disabled={options.show_hidden_stations}>
+									<img src="/icons/eye_crossed.svg" alt="" />
 								</button>
 							</div>
 						</th>
@@ -196,6 +192,8 @@
 						{/each}
 
 					</tr>
+
+					{/if}
 				{/each}
 			</tbody>
 
