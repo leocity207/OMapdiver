@@ -14,6 +14,10 @@ export function Set_Language(lang: keyof typeof dictionaries) {
 	current_language = lang;
 }
 
+export function Translate_Or_Value(key: string): string {
+	return dictionaries[current_language][key as Translation_Key] ?? key;
+}
+
 export function T(key: Translation_Key): string {
 	return dictionaries[current_language][key];
 }

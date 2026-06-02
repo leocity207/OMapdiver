@@ -45,8 +45,8 @@ export function Get_Line_Timetable_Options(): Line_Timetable_Options {
 		let options2 = $state({
 			selected_calendar_pattern: 'all',
 			selected_stop_pattern: 'all',
-			force_show_all_stations: false,
-			first_last_departure_mode: false,
+			show_hidden_stations: false,
+			first_last_mode: false,
 			show_arrival_times: false
 		});
 		setContext(LINE_TIMETABLE_OPTIONS_KEY, options2);

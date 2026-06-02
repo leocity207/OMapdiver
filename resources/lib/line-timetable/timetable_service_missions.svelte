@@ -20,7 +20,18 @@
 
 	let line_icon_container = $state<HTMLDivElement>();
 	let show_reverse = $state(false);
+	let hidden_rows = $state<Record<number, boolean>>({});
 	let timetable_root = $state<HTMLDivElement>();
+
+	function Toggle_Row_Hidden(idx: number) {
+		if (options.show_hidden_stations) return;
+		hidden_rows = { ...hidden_rows, [idx]: !hidden_rows[idx] };
+	}
+
+	function Is_Button_Hidden(idx: number): boolean {
+		if (options.show_hidden_stations) return false;
+		return hidden_rows[idx] || false;
+	}
 
 	function Is_Timetable_Visible(t: Timetable): boolean {
 		let is_stopping_pattern_visible: boolean = t.stop_pattern === options.selected_stop_pattern || options.selected_stop_pattern === 'all';
@@ -55,6 +66,16 @@
 		if (rect)
 			rect.setAttribute('fill', color);
 		timetable_root?.style.setProperty('--line-color-light', Utils.Lighten_Color(color, 0.9));
+	});
+
+	$effect(() => {
+		line_data;
+		hidden_rows = {};
+	})
+
+	$effect(() => {
+		if (options.show_hidden_stations)
+			hidden_rows = {};
 	});
 
 	const normal_order: Pattern_Scheme = $derived.by(() => ({
@@ -101,26 +122,36 @@
 			<thead>
 				<tr>
 					<th class="station-header">Stations</th>
-					{#each timetables as timetable}
-						{#if Is_Timetable_Visible(timetable)}
-							<th class="timetable-header-cell">
-								{timetable.label}
-							</th>
-						{/if}
-					{/each}
+							{#each timetables as timetable, tindex}
+								{#if Is_Timetable_Visible(timetable) && (!options.first_last_mode || tindex === 0 || tindex === timetables.length - 1)}
+									<th class="timetable-header-cell">
+										{timetable.label}
+									</th>
+								{/if}
+							{/each}
 				</tr>
 			</thead>
 
 			<tbody>
 				{#each stationIds as stationId, i}
-					<tr class="station-row" class:hidden={!options.showHiddenStations && !Is_Row_Visible(i)}>
+					{@const button_title = Is_Button_Hidden(i) ? 'Show station' : 'Hide station'}
+					<tr class="station-row" class:hidden={( !options.show_hidden_stations && !Is_Row_Visible(i) ) || ( !options.show_hidden_stations && hidden_rows[i] )}>
 
 						<th class="station-cell">
-							{network_data.stations[stationId].label}
+							<span class="station-label">{network_data.stations[stationId].label}</span>
+							<button class="station-toggle" title={button_title} onclick={() => Toggle_Row_Hidden(i)} disabled={options.show_hidden_stations}>
+								<!-- barred eye SVG -->
+								{#if Is_Button_Hidden(i)}
+									<img src="/icons/eye.svg" alt="" />
+								{:else}
+									<img src="/icons/eye_crossed.svg" alt="" />
+								{/if}
+							</button>
 						</th>
 
-						{#each timetables as timetable}
-							{#if Is_Timetable_Visible(timetable)}
+						{#each timetables as timetable, tindex}
+							{@const enable_line_first_last_mode = !options.first_last_mode || tindex === 0 || tindex === timetables.length - 1 }
+							{#if Is_Timetable_Visible(timetable) && enable_line_first_last_mode}
 								{@const a = timetable.arrival_times?.[i]}
 								{@const d = timetable.departure_times?.[i]}
 
@@ -129,7 +160,7 @@
 									{#if d != null}
 										<div class="time-content">
 
-											{#if options.showArrivalTimes && a != null}
+											{#if options.show_arrival_times && a != null}
 												<span class="time-arrival">
 													{Utils.Format_Minute(a)}
 												</span>
@@ -253,5 +284,32 @@
 
 	.hidden {
 		display: none;
+	}
+
+	.station-cell {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		min-width: 8rem;
+	}
+
+	.station-label {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.station-toggle {
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		padding: 0.15rem;
+		color: rgba(0,0,0,0.6);
+	}
+
+	.station-toggle[disabled] {
+		opacity: 0.4;
+		cursor: default;
 	}
 </style>

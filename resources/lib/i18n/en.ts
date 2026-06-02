@@ -16,8 +16,8 @@ const en = {
 	more: 'More',
 	calendar_pattern: 'Calendar pattern',
 	stop_pattern: 'Stop pattern',
-	force_show_all_stations: 'Force show all stations',
-	first_last_departure_mode: 'First/Last departure mode',
+	show_hidden_stations: 'Show hidden stations',
+	first_last_mode: 'First/Last departure mode',
 	show_arrival_times: 'Show arrival times',
 
 	all : 'All',

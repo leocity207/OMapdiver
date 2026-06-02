@@ -1,8 +1,9 @@
 <script lang="ts">
 	import type { Search_Item } from '$lib/componants/search_bar.svelte';
 	import type { Network } from '$lib/types/network';
+	import type { Translation_Key } from '$lib/i18n';
 	import { goto } from '$app/navigation';
-	import { T, type Translation_Key } from '$lib/i18n';
+	import { T, Translate_Or_Value } from '$lib/i18n';
 	import { Get_Line_Timetable_Options } from '$lib/utils/options.svelte.js';
 	import { Get_Global_Options } from '$lib/utils/options.svelte.js';
 	import Top_Panel from '$lib/componants/top_panel.svelte';
@@ -45,7 +46,7 @@
 			},
 			...Object.values(network_data.calendar_patterns).map(pattern => ({
 				...pattern,
-				label: T(pattern.label as Translation_Key)
+				label: Translate_Or_Value(pattern.label)
 			}))
 		];
 	});
@@ -64,7 +65,7 @@
 			},
 			...Object.values(network_data.stop_patterns).map(pattern => ({
 				...pattern,
-				label: T(pattern.label as Translation_Key)
+				label: Translate_Or_Value(pattern.label)
 			}))
 		];
 	});
@@ -121,8 +122,8 @@
 			<div class="options-title">{T('options')}:</div>
 			<Switch label={T('easy_color_mode')} bind:checked={global_options.easy_color_mode} />
 			<br/>
-			<Switch label={T('force_show_all_stations')} bind:checked={line_options.force_show_all_stations} />
-			<Switch label={T('first_last_departure_mode')} bind:checked={line_options.first_last_departure_mode} />
+			<Switch label={T('show_hidden_stations')} bind:checked={line_options.show_hidden_stations} />
+			<Switch label={T('first_last_mode')} bind:checked={line_options.first_last_mode} />
 			<Switch label={T('show_arrival_times')} bind:checked={line_options.show_arrival_times} />
 		</div>
 	</LeftPanel>

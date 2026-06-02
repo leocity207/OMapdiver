@@ -9,9 +9,9 @@ export interface Map_Options {
 export interface Line_Timetable_Options {
 	selected_calendar_pattern: 'all' | string;
 	selected_stop_pattern: 'all' | string;
-	force_show_all_stations: boolean;
-	first_last_departure_mode: boolean;
+	first_last_mode: boolean;
 	show_arrival_times: boolean;
+	show_hidden_stations?: boolean;
 }
 
 export interface Station_Timetable_Options {
