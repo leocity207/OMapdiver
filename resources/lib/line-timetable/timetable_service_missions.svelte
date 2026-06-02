@@ -58,6 +58,8 @@
 	const timetables = $derived(line_data.timetables.filter((t: Timetable) => t.is_reversed === show_reverse));
 	const stationIds = $derived(show_reverse ? line_data.stations.slice().reverse() : line_data.stations);
 	const lineTitle = $derived(line_data.label);
+	let main_container = $state<HTMLDivElement>();
+	let max_station_width = $state(0);
 
 
 	$effect(() => {
@@ -71,6 +73,11 @@
 	$effect(() => {
 		line_data;
 		hidden_rows = {};
+		let stations_labels = main_container?.querySelectorAll('.station-label');
+		if (!stations_labels) return;
+		max_station_width = Math.max(
+			...Array.from(stations_labels, el => el.getBoundingClientRect().width)
+		);
 	})
 
 	$effect(() => {
@@ -116,7 +123,7 @@
 	</div>
 
 	<!-- TABLE -->
-	<div class="timetable-scroll">
+	<div class="timetable-scroll" bind:this={main_container}>
 		<table class="timetable-table">
 
 			<thead>
@@ -135,18 +142,21 @@
 			<tbody>
 				{#each stationIds as stationId, i}
 					{@const button_title = Is_Button_Hidden(i) ? 'Show station' : 'Hide station'}
-					<tr class="station-row" class:hidden={( !options.show_hidden_stations && !Is_Row_Visible(i) ) || ( !options.show_hidden_stations && hidden_rows[i] )}>
+					{@const is_hidden = ( !options.show_hidden_stations && !Is_Row_Visible(i) ) || ( !options.show_hidden_stations && hidden_rows[i] )}
+					<tr class="station-row" class:hidden={is_hidden}>
 
-						<th class="station-cell">
-							<span class="station-label">{network_data.stations[stationId].label}</span>
-							<button class="station-toggle" title={button_title} onclick={() => Toggle_Row_Hidden(i)} disabled={options.show_hidden_stations}>
-								<!-- barred eye SVG -->
-								{#if Is_Button_Hidden(i)}
-									<img src="/icons/eye.svg" alt="" />
-								{:else}
-									<img src="/icons/eye_crossed.svg" alt="" />
-								{/if}
-							</button>
+						<th class="station-cell" style:min-width={`${max_station_width + 40}px`}>
+							<div class="station-content">
+								<span class="station-label">{network_data.stations[stationId].label}</span>
+								<button class="station-toggle" title={button_title} onclick={() => Toggle_Row_Hidden(i)} disabled={options.show_hidden_stations}>
+									<!-- barred eye SVG -->
+									{#if Is_Button_Hidden(i)}
+										<img src="/icons/eye.svg" alt="" />
+									{:else}
+										<img src="/icons/eye_crossed.svg" alt="" />
+									{/if}
+								</button>
+							</div>
 						</th>
 
 						{#each timetables as timetable, tindex}
@@ -286,7 +296,7 @@
 		display: none;
 	}
 
-	.station-cell {
+	.station-content {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;

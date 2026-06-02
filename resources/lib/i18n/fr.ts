@@ -17,7 +17,7 @@ const fr = {
 	calendar_pattern: 'Motif de calendrier',
 	stop_pattern: 'Motif d\'arrêt',
 	show_hidden_stations: 'Afficher les gares cachées',
-	first_last_mode: 'Mode premier/dernier départ',
+	first_last_mode: 'Premier/dernier départ',
 	show_arrival_times: 'Afficher les heures d\'arrivée',
 
 	all : 'Tout',

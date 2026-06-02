@@ -3,7 +3,7 @@
 		label = null,
 		checked = $bindable(false)
 	} = $props<{
-		label?: string | null;
+		label: string | null;
 		checked?: boolean;
 	}>();
 </script>
@@ -11,7 +11,10 @@
 <div>
 	{#if label}
 		<span class="switch-label">{label}</span>
+		<div class="space"></div>
 	{/if}
+
+
 
 	<label class="switch">
 		<input type="checkbox" bind:checked />
@@ -24,6 +27,10 @@
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
+	}
+
+	.space {
+		flex-grow: 1;
 	}
 
 	.switch-label {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Search_Item } from '$lib/componants/search_bar.svelte';
 	import type { Network } from '$lib/types/network';
-	import type { Translation_Key } from '$lib/i18n';
+	import type { Color_Map } from '$lib/types/color_map';
 	import { goto } from '$app/navigation';
 	import { T, Translate_Or_Value } from '$lib/i18n';
 	import { Get_Line_Timetable_Options } from '$lib/utils/options.svelte.js';
@@ -70,12 +70,9 @@
 		];
 	});
 
-	const Handle_Search_Select = (item: Search_Item): void => Handle_Line_Select(item.id);
+	const Handle_Search_Select = (item: Search_Item): Promise<void> => Handle_Line_Select(item.id);
 
-	const Handle_Line_Select = (line_id: string): void => {
-		void goto(`/line-timetable/${encodeURIComponent(line_id)}`);
-		line_selector_open = false;
-	};
+	const Handle_Line_Select = (line_id: string): Promise<void> => goto(`/line-timetable/${encodeURIComponent(line_id)}`);
 
 	const Handle_Calendar_Pattern_Change = (value: string): void => {
 		line_options.selected_calendar_pattern = value;
