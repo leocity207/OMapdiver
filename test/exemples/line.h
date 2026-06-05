@@ -52,9 +52,10 @@ struct Line_Exemple
 			{
 				"id": "IC1-1",
 				"label": "100",
-				"calendar_pattern": "weekday",
+				"calendar_patterns": ["weekday","weekend"],
 				"stop_pattern" : "local",
 				"info_messages": [],
+				"is_reversed": false,
 				"arrival_times": [
 					null,
 					15,
@@ -130,8 +131,13 @@ struct Line_Exemple
 
 		OATPP_ASSERT(timetable->id == "IC1-1");
 		OATPP_ASSERT(timetable->label == "100");
-		OATPP_ASSERT(timetable->calendar_pattern == "weekday");
+		OATPP_ASSERT(timetable->calendar_patterns->size() == 2);
+		auto it6 = timetable->calendar_patterns->begin();
+		OATPP_ASSERT(*(it6) == "weekday");
+		OATPP_ASSERT(*(++it6) == "weekend");
+
 		OATPP_ASSERT(timetable->stop_pattern == "local");
+		OATPP_ASSERT(timetable->is_reversed == false);
 
 		OATPP_ASSERT(timetable->info_messages->size() == 0);
 		OATPP_ASSERT(timetable->arrival_times->size() == 3);
@@ -150,7 +156,7 @@ struct Line_Exemple
 		OATPP_ASSERT(timetable->Has_Composition() == false);
 	}
 
-	static inline const std::string serialized = R"({"id":"EXPRESS_1","label":"Express Line 1","url":"\/line\/express1","color":{"default":"#FF0000","night":"#880000"},"icon":"<svg>icon<\/svg>","stations":["s1","s2","s3"],"patterns":[{"id":"IC1_A_15","label":"Nantes - Lyon Perrache","line_id":null,"interval_time":120,"departure_time":15,"first_departure":1,"last_departure":2,"stop_pattern":"local","is_reversed":false,"info_messages":[],"arrival_times":[null,15,45],"departure_times":[257,287,null]}],"timetables":[{"id":"IC1-1","label":"100","line_id":null,"stop_pattern":"local","calendar_pattern":"weekday","info_messages":[],"departure_times":[257,287,null],"arrival_times":[null,15,45],"afluence":null,"composition":null}],"info_messages":null})";
+	static inline const std::string serialized = R"({"id":"EXPRESS_1","label":"Express Line 1","url":"\/line\/express1","color":{"default":"#FF0000","night":"#880000"},"icon":"<svg>icon<\/svg>","stations":["s1","s2","s3"],"patterns":[{"id":"IC1_A_15","label":"Nantes - Lyon Perrache","line_id":null,"interval_time":120,"departure_time":15,"first_departure":1,"last_departure":2,"stop_pattern":"local","is_reversed":false,"info_messages":[],"arrival_times":[null,15,45],"departure_times":[257,287,null]}],"timetables":[{"id":"IC1-1","label":"100","line_id":null,"stop_pattern":"local","is_reversed":false,"calendar_patterns":["weekday","weekend"],"info_messages":[],"departure_times":[257,287,null],"arrival_times":[null,15,45],"afluence":null,"composition":null}],"info_messages":null})";
 
 	static std::string Test_Serialize()
 	{
@@ -180,7 +186,8 @@ struct Line_Exemple
 		auto service_mission = O::DTO::Service_Mission::createShared();
 		service_mission->id = "IC1-1";
 		service_mission->label = "100";
-		service_mission->calendar_pattern = "weekday";
+		service_mission->calendar_patterns = { "weekday", "weekend"};
+		service_mission->is_reversed = false;
 		service_mission->stop_pattern = "local";
 		service_mission->info_messages = {};
 		service_mission->arrival_times = { nullptr, 15, 45 };
