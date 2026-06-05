@@ -28,11 +28,6 @@
 		hidden_rows = { ...hidden_rows, [idx]: !hidden_rows[idx] };
 	}
 
-	function Is_Button_Hidden(idx: number): boolean {
-		if (options.show_hidden_stations) return false;
-		return hidden_rows[idx] || false;
-	}
-
 	function Is_Timetable_Visible(t: Timetable): boolean {
 		let is_stopping_pattern_visible: boolean = t.stop_pattern === options.selected_stop_pattern || options.selected_stop_pattern === 'all';
 		let is_calendar_pattern_visible: boolean = t.calendar_patterns.includes(options.selected_calendar_pattern) || options.selected_calendar_pattern === 'all';
@@ -288,10 +283,6 @@
 
 	.time-terminal {
 		font-style: italic;
-	}
-
-	.hidden {
-		display: none;
 	}
 
 	.station-content {
