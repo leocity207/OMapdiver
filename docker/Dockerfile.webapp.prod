@@ -1,31 +1,25 @@
-# =========================================================
-# Stage 1 — Build
-# =========================================================
 FROM ghcr.io/pnpm/pnpm:11.1.1 AS builder
 RUN pnpm runtime set node 22 -g
 
 WORKDIR /app
 
 # Copy dependency files first for cache efficiency
-COPY package.json pnpm-lock.yaml .npmrc ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml vite.config.js tsconfig.json svelte.config.js ./
 
 # Install all deps (including dev deps for build)
-RUN pnpm ci
+RUN pnpm install --frozen-lockfile
 
 # Copy source
-COPY resources/ .
+COPY resources/ ./resources/
 
 # Build SvelteKit
 RUN pnpm run build
 
 # Remove dev dependencies
-RUN pnpm prune --omit=dev
+RUN pnpm prune --prod
 
 
-# =========================================================
-# Stage 2 — Runtime
-# =========================================================
-FROM pnpm:11.1.1 AS production
+FROM ghcr.io/pnpm/pnpm:11.1.1 AS production
 RUN pnpm runtime set node 22 -g
 RUN pnpm config set ignore-scripts false
 

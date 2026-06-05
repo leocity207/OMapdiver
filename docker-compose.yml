@@ -16,8 +16,6 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.oatpp-orm.prod
-    ports:
-      - "8000:8000"
     restart: unless-stopped
     environment:
       DB_HOST: db

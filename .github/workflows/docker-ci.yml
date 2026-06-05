@@ -23,4 +23,4 @@ jobs:
         run: docker compose version
 
       - name: Build services
-        run: docker compose build server
+        run: docker compose build
