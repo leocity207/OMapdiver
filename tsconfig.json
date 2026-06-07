@@ -7,6 +7,11 @@
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
-		"types": ["vite/client"]
-	}
+		"skipLibCheck": true,
+		"types": ["node", "vite/client"]
+	},
+	"exclude": [
+		"node_modules",
+		".svelte-kit"
+	]
 }

@@ -42,6 +42,7 @@ export default [
 				// functions
 				{
 					selector: 'function',
+					format: null,
 					custom: {
 						regex: '^[A-Z][a-zA-Z0-9]*(_[A-Z][a-zA-Z0-9]*)*$',
 						match: true

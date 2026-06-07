@@ -66,8 +66,6 @@ export function Get_Station_Timetable_Options(): Station_Timetable_Options {
 			selected_calendar_pattern: "all",
 			selected_stop_pattern: "all",
 			show_arrival_times: false,
-			display_mode: "hourly",
-			group_by_direction: false,
 		});
 		setContext(STATION_TIMETABLE_OPTIONS_KEY, option2s);
 		return option2s;

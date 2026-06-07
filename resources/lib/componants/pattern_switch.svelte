@@ -88,7 +88,7 @@
 
 		// Find in special toggle
 		if (!selected_button && special_toggle) {
-			const is_special = special_choices.some((c) => c.id === current_state);
+			const is_special = special_choices.some((c: Pattern_Scheme) => c.id === current_state);
 
 			if (is_special) selected_button = special_toggle;
 		}

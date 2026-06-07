@@ -12,7 +12,6 @@ import {
 	Canvas,
 } from "fabric";
 import { animate, utils } from "animejs";
-import type { HammerInput } from "hammerjs";
 import normalizeWheel from "normalize-wheel";
 import Utils from "../utils/utils";
 import type { Map_Config_Type } from "$lib/types/map_config";
@@ -642,7 +641,7 @@ class SVG_Map {
 	 * @param {Event} event a hammer event
 	 * @private
 	 */
-	_Handle_Pinch_Start = (event: HammerInput): void => {
+	_Handle_Pinch_Start = (event: any): void => {
 		if (this.svg_main_group === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		this.svg_main_group.lockMovementX = true;
 		this.svg_main_group.lockMovementY = true;
@@ -655,7 +654,7 @@ class SVG_Map {
 	 * @param {Event} event a hammer event
 	 * @private
 	 */
-	_Handle_Pinch_End = (event: HammerInput): void => {
+	_Handle_Pinch_End = (event: any): void => {
 		if (this.svg_main_group === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		this.last_scale = event.scale;
 		this.svg_main_group.lockMovementX = false;
@@ -667,7 +666,7 @@ class SVG_Map {
 	 * @param {Event} event a hammer event
 	 * @private
 	 */
-	_Handle_User_Gesture_Zoom = (event: HammerInput): void => {
+	_Handle_User_Gesture_Zoom = (event: any): void => {
 		if (this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		// uses pinch event from hammerjs
 		if (!this.map_animation_run) {
