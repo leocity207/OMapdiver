@@ -9,6 +9,7 @@ services:
     stdin_open: true
     tty: true
     environment:
+      ORM_HOST: oatpp-orm
       CHOKIDAR_USEPOLLING: "true"
       CI: "true"
     volumes:

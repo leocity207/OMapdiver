@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 
+const orm_host = process.env.ORM_HOST ?? '127.0.0.1';
+
+console.log(`Using ORM_HOST: ${orm_host}`);
 export default defineConfig({
 	plugins: [sveltekit()],
 
@@ -13,7 +16,7 @@ export default defineConfig({
 		host: true,
 		proxy: {
 			'/dyn': {
-				target: 'http://oatpp-orm:8000',
+				target: `http://${orm_host}:8000`,
 				changeOrigin: true
 			}
 		}
