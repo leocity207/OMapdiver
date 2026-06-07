@@ -7,7 +7,6 @@
 		is_exceptional?: boolean;
 	}
 
-	 
 	let { choices, default_choice, On_Change } = $props<{
 		choices: Pattern_Scheme[];
 		default_choice: string;

@@ -1,27 +1,47 @@
-stages:
-  - quality
+name: Type Check CI
 
-default:
-  image: node:20-bookworm-slim
-  before_script:
-    - corepack enable
-    - pnpm config set store-dir .pnpm-store
+on:
+  push:
+    branches: [ master ]
+  pull_request:
 
-cache:
-  key:
-    files:
-      - pnpm-lock.yaml
-  paths:
-    - .pnpm-store/
+jobs:
+  quality:
+    runs-on: ubuntu-latest
 
-quality-check:
-  stage: quality
-  script:
-    - pnpm install --frozen-lockfile
-    - pnpm run check:svelte
-    - pnpm run check:lint:dry_run
-    - pnpm run check:prettier:dry_run
-    - git diff --exit-code
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable Corepack + pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@9.12.0 --activate
+          pnpm -v
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Svelte check
+        run: pnpm run check:svelte
+
+      - name: ESLint check
+        run: pnpm run check:lint
+
+      - name: Prettier check
+        run: pnpm run check:prettier

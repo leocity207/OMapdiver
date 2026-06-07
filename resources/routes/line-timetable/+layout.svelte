@@ -23,11 +23,13 @@
 	let line_options = Get_Line_Timetable_Options();
 
 	const search_items = $derived.by<Search_Item[]>(() => {
-		const lines = Object.entries(data.network_data.lines).map(([id, value]: [string, Line]) => ({
-			id,
-			type: "line" as const,
-			label: value.label,
-		}));
+		const lines = Object.entries(data.network_data.lines).map(
+			([id, value]: [string, Line]) => ({
+				id,
+				type: "line" as const,
+				label: value.label,
+			})
+		);
 
 		return [...lines].sort((a, b) => a.label.localeCompare(b.label));
 	});

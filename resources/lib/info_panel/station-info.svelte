@@ -52,7 +52,6 @@
 	}
 
 	const grouped_schedules = $derived(Get_Grouped_Chedules());
-
 </script>
 
 <div class="station-info">
@@ -61,7 +60,7 @@
 			{station_data.label}
 		</div>
 		<div class="close-button">
-			<Round_Cross onclick={() => goto(resolve("/map"))} />
+			<Round_Cross onclick={() => goto(resolve("/map", {}))} />
 		</div>
 	</header>
 

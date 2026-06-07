@@ -9,7 +9,7 @@
 		current_text = $bindable(""),
 		placeholder,
 		items,
-		 
+
 		On_Select,
 	} = $props<{
 		current_text?: string;

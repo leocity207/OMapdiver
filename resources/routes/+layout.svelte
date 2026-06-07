@@ -16,7 +16,7 @@
 <nav class="app-selector">
 	{#if Get_App_Config().HAVE_NETWORK_MAP}
 		<a
-			href={resolve("/map")}
+			href={resolve("/map", {})}
 			data-sveltekit-preload-data
 			class:selected={Is_Active("/map")}
 			aria-label={T("map")}
@@ -30,7 +30,7 @@
 
 	{#if Get_App_Config().HAVE_LINE_TIMETABLE}
 		<a
-			href={resolve("/line-timetable")}
+			href={resolve("/line-timetable", {})}
 			data-sveltekit-preload-data
 			class:selected={Is_Active("/line-timetable")}
 			aria-label={T("timetable_lines")}
@@ -44,7 +44,7 @@
 
 	{#if Get_App_Config().HAVE_STATION_SCHEDULES}
 		<a
-			href={resolve("/station-timetable")}
+			href={resolve("/station-timetable", {})}
 			data-sveltekit-preload-data
 			class:selected={Is_Active("/station-timetable")}
 			aria-label={T("timetable_stations")}

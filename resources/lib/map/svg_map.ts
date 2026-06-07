@@ -675,7 +675,7 @@ class SVG_Map {
 	 * @param {Event} event a hammer event
 	 * @private
 	 */
-	_Handle_User_Gesture_Zoom = (event: { scale: number }): void => {
+	_Handle_User_Gesture_Zoom = (event: { scale: number, center: { x: number, y: number } }): void => {
 		if (this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		// uses pinch event from hammerjs
 		if (!this.map_animation_run) {
@@ -733,7 +733,11 @@ class SVG_Map {
 		let zoom_level = this.fabric_canvas.getZoom() * Math.pow(0.999, normalized.pixelY);
 
 		// Bound the zoom_level within the defined max and min limits
-		zoom_level = Utils.Round_Bound(zoom_level, this.config.MAX_ZOOM_OUT, this.config.MAX_ZOOM_IN);
+		zoom_level = Utils.Round_Bound(
+			zoom_level,
+			this.config.MAX_ZOOM_OUT,
+			this.config.MAX_ZOOM_IN
+		);
 
 		// If the main SVG group exists, apply zoom to the point
 		if (this.svg_main_group !== null) {

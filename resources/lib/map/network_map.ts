@@ -102,7 +102,9 @@ class Network_Map extends SVG_Map {
 			obj.on("mouseout", this._Handle_Mouse_Out_Obj);
 		}
 		// all station labels
-		const station_labels = this._Find_Map_Objs_By_Id(this.network_config.STATION_LABEL_PREFIX_ID);
+		const station_labels = this._Find_Map_Objs_By_Id(
+			this.network_config.STATION_LABEL_PREFIX_ID
+		);
 		for (const obj of station_labels) {
 			if (this.config.DEBUG) console.warn("set handler for station: " + obj.id);
 			obj.on("mouseup", this._Handle_Mouse_Click_Station);

@@ -3,7 +3,7 @@
 	import type { Color_Map } from "$lib/types/color_map.ts";
 	import type { Network, Line, Pattern } from "$lib/types/network";
 	import { goto } from "$app/navigation";
-	import { resolve } from "$app/paths"
+	import { resolve } from "$app/paths";
 	import LineSchedule from "./line-schedule.svelte";
 	import Round_Cross from "$lib/componants/round-cross.svelte";
 	import { T } from "$lib/i18n";
@@ -44,7 +44,7 @@
 			{line_data.label}
 		</div>
 		<div class="close-button">
-			<Round_Cross onclick={() => goto(resolve("/map"))} />
+			<Round_Cross onclick={() => goto(resolve("/map", {}))} />
 		</div>
 	</header>
 
