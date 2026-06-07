@@ -30,6 +30,7 @@
 
 	// Update SVG colors when network_data or line colors change
 	$effect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		color_mode;
 		if (!network_data) return;
 
@@ -52,8 +53,8 @@
 				paths.forEach((path) => {
 					// Don't override path fill if it's explicitly set in the SVG
 					// Only update if it's white or empty
-					const currentFill = path.getAttribute("fill");
-					if (!currentFill || currentFill === "white" || currentFill === "#fff") {
+					const current_fill = path.getAttribute("fill");
+					if (!current_fill || current_fill === "white" || current_fill === "#fff") {
 						path.setAttribute("fill", line.color["default"]);
 					}
 				});
@@ -64,14 +65,14 @@
 
 <div class="line-container">
 	{#if network_data}
-		{#each Object.entries<Line>(network_data.lines) as [line_id, line]}
+		{#each Object.entries<Line>(network_data.lines) as [line_id, line] (line_id)}
 			<button
 				class="line-icon"
 				onclick={() => On_Line_Selected(line_id)}
 				onkeydown={(e) => Handle_Keydown(e, line_id)}
 				use:Register_Container={line_id}
 			>
-				{@html line.icon}
+				{line.icon}
 			</button>
 		{/each}
 	{/if}

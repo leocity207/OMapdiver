@@ -2,8 +2,6 @@ export interface Global_Options {
 	easy_color_mode: boolean;
 }
 
-export interface Map_Options {}
-
 export interface Line_Timetable_Options {
 	selected_calendar_pattern: "all" | string;
 	selected_stop_pattern: "all" | string;

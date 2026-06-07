@@ -31,7 +31,7 @@ export interface Station {
 	have_car_sharing: boolean | undefined;
 	opening_time: number | undefined;
 	closing_time: number | undefined;
-	parent: any;
+	parent: Line | null;
 }
 
 export interface Organiser {
@@ -62,7 +62,7 @@ export interface Pattern {
 	info_messages: InfoMessage[];
 	arrival_times: (number | null)[];
 	departure_times: (number | null)[];
-	parent: any;
+	parent: Line | Station;
 }
 
 export interface Timetable {

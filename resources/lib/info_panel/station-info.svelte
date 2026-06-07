@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Network, Station, Pattern, Line } from "$lib/types/network";
 	import type { Color_Map } from "$lib/types/color_map.ts";
+	import { resolve } from "$app/paths";
 	import LineSchedule from "./line-schedule.svelte";
 	import Round_Cross from "$lib/componants/round-cross.svelte";
 	import { goto } from "$app/navigation";
@@ -16,7 +17,8 @@
 		color_mode?: Color_Map;
 	}>();
 
-	function Get_Grouped_chedules(): Map<string, (Pattern & { parent?: Line })[]> {
+	function Get_Grouped_Chedules(): Map<string, (Pattern & { parent?: Line })[]> {
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity
 		const direction_map = new Map<string, (Pattern & { parent?: Line })[]>();
 
 		station_data.lines.forEach((line_id: string) => {
@@ -49,7 +51,8 @@
 		return station?.label || direction_code;
 	}
 
-	const grouped_schedules = $derived(Get_Grouped_chedules());
+	const grouped_schedules = $derived(Get_Grouped_Chedules());
+
 </script>
 
 <div class="station-info">
@@ -58,7 +61,7 @@
 			{station_data.label}
 		</div>
 		<div class="close-button">
-			<Round_Cross onclick={() => goto("../")} />
+			<Round_Cross onclick={() => goto(resolve("../"))} />
 		</div>
 	</header>
 

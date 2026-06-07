@@ -4,12 +4,12 @@
 		id: string;
 		type: "station" | "line";
 	}
-	[];
 
 	let {
 		current_text = $bindable(""),
 		placeholder,
 		items,
+		 
 		On_Select,
 	} = $props<{
 		current_text?: string;
@@ -105,7 +105,7 @@
 
 	{#if focused && filtered_items.length > 0}
 		<div class="autocomplete-items">
-			{#each filtered_items as item, index}
+			{#each filtered_items as item, index (index)}
 				<div
 					class="autocomplete-item"
 					class:autocomplete-active={index === current_focus}

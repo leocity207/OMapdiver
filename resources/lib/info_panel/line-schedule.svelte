@@ -39,7 +39,6 @@
 		const reference_minute = schedule_data.arrival_times[reference_idx];
 
 		if (reference_idx > 0) {
-			const first_idx = is_reversed ? total_stations - 1 : 0;
 			const first_station_id = is_reversed
 				? line.stations[total_stations - 1]
 				: line.stations[0];
@@ -113,7 +112,7 @@
 		<div class="header-left">
 			<div class="header-left-icon">
 				{#if network_data.stop_patterns[schedule_data.stop_pattern]}
-					{@html network_data.stop_patterns[schedule_data.stop_pattern].icon}
+					{network_data.stop_patterns[schedule_data.stop_pattern].icon}
 				{/if}
 			</div>
 			<div class="header-left-text">{schedule_data.label}</div>

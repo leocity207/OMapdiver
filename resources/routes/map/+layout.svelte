@@ -25,7 +25,7 @@
 
 	const search_items = $derived.by<Search_Item[]>(() => {
 		const stations = Object.entries<Station>(data.network_data.stations).map(
-			([id, station]: [string, Station]) => ({
+			([_, station]: [string, Station]) => ({
 				id: station.id,
 				label: station.label,
 				type: "station" as const,
@@ -33,7 +33,7 @@
 		);
 
 		const lines = Object.entries<Line>(data.network_data.lines).map(
-			([id, line]: [string, Line]) => ({
+			([_, line]: [string, Line]) => ({
 				id: line.id,
 				label: line.label,
 				type: "line" as const,
@@ -57,23 +57,23 @@
 
 	onMount(() => {
 		// Listen for line-click events from map
-		const handle_line_click = (event: Event) => {
+		const Handle_Line_Click = (event: Event) => {
 			const custom_event = event as CustomEvent<string>;
 			Open_Element(custom_event.detail);
 		};
 
 		// Listen for station-click events from map
-		const handle_station_click = (event: Event) => {
+		const Handle_Station_Click = (event: Event) => {
 			const custom_event = event as CustomEvent<string>;
 			Open_Element(custom_event.detail);
 		};
 
-		document.addEventListener("line-click", handle_line_click);
-		document.addEventListener("station-click", handle_station_click);
+		document.addEventListener("line-click", Handle_Line_Click);
+		document.addEventListener("station-click", Handle_Station_Click);
 
 		return () => {
-			document.removeEventListener("line-click", handle_line_click);
-			document.removeEventListener("station-click", handle_station_click);
+			document.removeEventListener("line-click", Handle_Line_Click);
+			document.removeEventListener("station-click", Handle_Station_Click);
 		};
 	});
 </script>

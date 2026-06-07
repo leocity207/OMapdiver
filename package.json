@@ -11,8 +11,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "check:svelte": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:lint": "eslint resources/",
-    "check:lint:fix": "eslint resources/ --fix",
+    "check:lint": "eslint resources/ --fix",
     "check:prettier": "prettier resources/ --write"
   },
   "devDependencies": {

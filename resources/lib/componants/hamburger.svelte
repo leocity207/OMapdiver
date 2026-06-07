@@ -4,6 +4,7 @@
 		title?: string;
 	}>();
 
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const onclick = () => (active = !active);
 </script>
 

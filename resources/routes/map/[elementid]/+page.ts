@@ -1,8 +1,8 @@
 import { error } from "@sveltejs/kit";
 import type { PageLoad } from "./$types";
-import type { Network, Station, Line } from "$lib/types/network";
+import type { Station, Line } from "$lib/types/network";
 
-function toLabel(record: Station | Line | undefined, id: string) {
+function To_Label(record: Station | Line | undefined, id: string) {
 	return record?.label ?? id;
 }
 
@@ -15,7 +15,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 		const element = {
 			id,
 			kind: "station",
-			label: toLabel(station, id),
+			label: To_Label(station, id),
 			raw: station,
 		};
 
@@ -27,7 +27,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 		const element = {
 			id,
 			kind: "line",
-			label: toLabel(line, id),
+			label: To_Label(line, id),
 			raw: line,
 		};
 

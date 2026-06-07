@@ -7,6 +7,7 @@
 		is_exceptional?: boolean;
 	}
 
+	 
 	let { choices, default_choice, On_Change } = $props<{
 		choices: Pattern_Scheme[];
 		default_choice: string;
@@ -73,7 +74,9 @@
 
 	// Update indicator on state/button changes
 	$effect(() => {
-		current_state; // dependency
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		current_state;
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		choices;
 
 		let selected_button: HTMLElement | null = null;
@@ -152,7 +155,7 @@
 		<span class="switch-indicator" bind:this={indicator}></span>
 
 		<div class="switch-left-group">
-			{#each ordered_entries as value}
+			{#each ordered_entries as value (value.id)}
 				<button
 					type="button"
 					class="switch-option switch-normal-option"
@@ -184,7 +187,7 @@
 					</button>
 
 					<div class="switch-special-menu" class:open={dropdown_open}>
-						{#each special_choices as value}
+						{#each special_choices as value (value.id)}
 							<button
 								type="button"
 								class="switch-special-item"

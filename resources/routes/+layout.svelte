@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Global_Options } from "$lib/types/options";
+	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
 	import { Get_App_Config } from "$lib/config/config_loader";
 	import { Set_Global_Options } from "$lib/utils/options.svelte.js";
@@ -15,7 +16,7 @@
 <nav class="app-selector">
 	{#if Get_App_Config().HAVE_NETWORK_MAP}
 		<a
-			href="/map"
+			href={resolve("/map")}
 			data-sveltekit-preload-data
 			class:selected={Is_Active("/map")}
 			aria-label={T("map")}
@@ -29,7 +30,7 @@
 
 	{#if Get_App_Config().HAVE_LINE_TIMETABLE}
 		<a
-			href="/line-timetable"
+			href={resolve("/line-timetable")}
 			data-sveltekit-preload-data
 			class:selected={Is_Active("/line-timetable")}
 			aria-label={T("timetable_lines")}
@@ -43,7 +44,7 @@
 
 	{#if Get_App_Config().HAVE_STATION_SCHEDULES}
 		<a
-			href="/station-timetable"
+			href={resolve("/station-timetable")}
 			data-sveltekit-preload-data
 			class:selected={Is_Active("/station-timetable")}
 			aria-label={T("timetable_stations")}

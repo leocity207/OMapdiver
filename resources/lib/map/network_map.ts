@@ -8,7 +8,7 @@ import { String_Error } from "$lib/utils/constant";
 import Utils from "$lib/utils/utils";
 import SVG_Map from "./svg_map";
 
-interface Custom_Click_event extends CustomEventInit {
+interface Custom_Click_Event extends CustomEventInit {
 	type: string;
 }
 
@@ -75,8 +75,8 @@ class Network_Map extends SVG_Map {
 		this.highlighted_line_codes = Object.keys(lines);
 		this.stations = stations;
 		// all Line
-		let tracks = this._Find_Map_Objs_By_Id(this.network_config.TRACK_PREFIX_ID);
-		for (let obj of tracks) {
+		const tracks = this._Find_Map_Objs_By_Id(this.network_config.TRACK_PREFIX_ID);
+		for (const obj of tracks) {
 			if (this.config.DEBUG) console.warn("set handler for tracks: " + obj.id);
 			obj.set("perPixelTargetFind", true); // if false, the event is triggered on the "bounding" box. We do not want that.
 			obj.on("mouseup", this._Handle_Mouse_Click_Track);
@@ -84,8 +84,8 @@ class Network_Map extends SVG_Map {
 			obj.on("mouseout", this._Handle_Mouse_Out_Obj);
 		}
 		// all Track labels
-		let line_labels = this._Find_Map_Objs_By_Id(this.network_config.LINE_LABEL_PREFIX_ID);
-		for (let obj of line_labels) {
+		const line_labels = this._Find_Map_Objs_By_Id(this.network_config.LINE_LABEL_PREFIX_ID);
+		for (const obj of line_labels) {
 			if (this.config.DEBUG) console.warn("set handler for line label: " + obj.id);
 			obj.set("perPixelTargetFind", true); // if false, the event is triggered on the "bounding" box. We do not want that.
 			obj.on("mouseup", this._Handle_Mouse_Click_Track);
@@ -93,8 +93,8 @@ class Network_Map extends SVG_Map {
 			obj.on("mouseout", this._Handle_Mouse_Out_Obj);
 		}
 		// all station
-		let station_icons = this._Find_Map_Objs_By_Id(this.network_config.STATION_PREFIX_ID);
-		for (let obj of station_icons) {
+		const station_icons = this._Find_Map_Objs_By_Id(this.network_config.STATION_PREFIX_ID);
+		for (const obj of station_icons) {
 			if (this.config.DEBUG) console.warn("set handler for station: " + obj.id);
 			obj.set("perPixelTargetFind", true); // if false, the event is triggered on the "bounding" box. We do not want that.
 			obj.on("mouseup", this._Handle_Mouse_Click_Station);
@@ -102,16 +102,16 @@ class Network_Map extends SVG_Map {
 			obj.on("mouseout", this._Handle_Mouse_Out_Obj);
 		}
 		// all station labels
-		let station_labels = this._Find_Map_Objs_By_Id(this.network_config.STATION_LABEL_PREFIX_ID);
-		for (let obj of station_labels) {
+		const station_labels = this._Find_Map_Objs_By_Id(this.network_config.STATION_LABEL_PREFIX_ID);
+		for (const obj of station_labels) {
 			if (this.config.DEBUG) console.warn("set handler for station: " + obj.id);
 			obj.on("mouseup", this._Handle_Mouse_Click_Station);
 			obj.on("mouseover", this._Handle_Mouse_Over_Obj);
 			obj.on("mouseout", this._Handle_Mouse_Out_Obj);
 		}
 
-		let to_be_deactivated = this.Find_Map_Objs_By_Classname("event-disable");
-		for (let obj of to_be_deactivated) {
+		const to_be_deactivated = this.Find_Map_Objs_By_Classname("event-disable");
+		for (const obj of to_be_deactivated) {
 			obj.evented = false; // Disable events for the object
 		}
 	}
@@ -130,19 +130,19 @@ class Network_Map extends SVG_Map {
 			obj.set(target, color);
 			this.fabric_canvas.requestRenderAll();
 		} else {
-			const fromColor = new Color((obj[target] as string) || "#000");
-			const toColor = new Color(color);
+			const from_color = new Color((obj[target] as string) || "#000");
+			const to_color = new Color(color);
 
-			let animationProgress = { t: 0 };
+			const animation_progress = { t: 0 };
 			util.animate({
 				startValue: 0,
 				endValue: 1,
 				duration: this.network_config.COLOR_ANIMATION_TIME,
 				onChange: (t) => {
 					if (this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
-					animationProgress.t = t;
-					const currentColor = this._Interpolate_Color(fromColor, toColor, t).toRgba();
-					obj.set(target, currentColor);
+					animation_progress.t = t;
+					const current_color = this._Interpolate_Color(from_color, to_color, t).toRgba();
+					obj.set(target, current_color);
 					this.fabric_canvas.requestRenderAll();
 				},
 			});
@@ -183,7 +183,7 @@ class Network_Map extends SVG_Map {
 		if (this.config.DEBUG) console.log("Highlight_Lines called");
 
 		// Prepare sets for objects that need to be highlighted
-		const Tracks_to_higlight = new Set(
+		const tracks_to_higlight = new Set(
 			line_codes.map((code) => `${this.network_config!.TRACK_PREFIX_ID}${code}`)
 		);
 		const labels_to_higlight = new Set(
@@ -210,7 +210,7 @@ class Network_Map extends SVG_Map {
 		tracks.forEach((track) => {
 			if (!track.id) return;
 			const track_id_first_part = Utils.Get_First_Part(track.id);
-			if (Tracks_to_higlight.has(track_id_first_part))
+			if (tracks_to_higlight.has(track_id_first_part))
 				this._Change_Obj_Color(
 					track as Fabric_With_Props,
 					line_colors[track_id_first_part]
@@ -256,7 +256,7 @@ class Network_Map extends SVG_Map {
 	 */
 	Highlight_All_Lines_At_Station = (station_code: string): void => {
 		// get all line names, first in an array, after make a unique set
-		let lines = this.stations[station_code].lines;
+		const lines = this.stations[station_code].lines;
 		this.Highlight_Lines(lines);
 	};
 
@@ -267,7 +267,7 @@ class Network_Map extends SVG_Map {
 	Zoom_Highlighted_Line = (line_code: string): void => {
 		const line_data = this._Find_Line_Data_By_Id(line_code);
 		if (line_data !== undefined && line_data.stations !== undefined) {
-			const station_codes = line_data.stations;
+			//const station_codes = line_data.stations;
 			// this need to be done
 			//this.Zoom_Highlighted_Tracks(station_codes)
 		}
@@ -290,7 +290,7 @@ class Network_Map extends SVG_Map {
 			(x) => x.id === `highlight_pos_${to_station_code}`
 		);
 		if (highlight_pos_from_obj !== undefined && highlight_pos_to_obj !== undefined) {
-			let zoom_box = this.Zoom_Box_For_Objs(highlight_pos_from_obj, highlight_pos_to_obj);
+			const zoom_box = this.Zoom_Box_For_Objs(highlight_pos_from_obj, highlight_pos_to_obj);
 			this.Animated_Pan_Zoom(zoom_box);
 		} else if (this.config.DEBUG)
 			console.warn("Zoom_Highlighted_Stations, cannot find from or to position object");
@@ -309,13 +309,13 @@ class Network_Map extends SVG_Map {
 		let max_y = 0;
 
 		for (const station_code of station_codes) {
-			let highlight_pos_obj = all_highlights.find(
+			const highlight_pos_obj = all_highlights.find(
 				(x) => x.id === `highlight_pos_${station_code}`
 			);
 			if (highlight_pos_obj !== undefined) {
-				let m_obj = highlight_pos_obj.calcTransformMatrix(false);
-				let obj_x = m_obj[4];
-				let obj_y = m_obj[5];
+				const m_obj = highlight_pos_obj.calcTransformMatrix(false);
+				const obj_x = m_obj[4];
+				const obj_y = m_obj[5];
 
 				if (min_x === 0) {
 					min_x = obj_x;
@@ -330,7 +330,7 @@ class Network_Map extends SVG_Map {
 			} else if (this.config.DEBUG)
 				console.log("highlight_pos_obj not found for:", station_code);
 		}
-		let bounds = {
+		const bounds = {
 			left: min_x,
 			top: min_y,
 			width: max_x - min_x,
@@ -352,7 +352,7 @@ class Network_Map extends SVG_Map {
 			(x) => x.id === `highlight_pos_${from_station_code}`
 		);
 		if (highlight_pos_from_obj !== undefined) {
-			let zoom_box = this.Zoom_Box_For_Objs(highlight_pos_from_obj);
+			const zoom_box = this.Zoom_Box_For_Objs(highlight_pos_from_obj);
 			this.Animated_Pan_Zoom(zoom_box);
 		} else if (this.config.DEBUG)
 			console.warn("Zoom_Not_Visible_Station, cannot find from position object");
@@ -369,7 +369,7 @@ class Network_Map extends SVG_Map {
 		const highlight_pos_obj = all_highlights.find(
 			(x) => x.id === `highlight_pos_${station_code}`
 		);
-		let highlight_obj = undefined;
+		let highlight_obj: Map_Fabric_Object | undefined;
 
 		if (station_type === "from")
 			highlight_obj = all_highlights.find((x) => x.id === "highlight_origin");
@@ -412,10 +412,10 @@ class Network_Map extends SVG_Map {
 			(x) => x.id === `highlight_pos_${station_code}`
 		);
 		if (highlight_pos_obj !== undefined) {
-			let vpw = this.fabric_canvas.getWidth();
-			let vph = this.fabric_canvas.getHeight();
-			let m = highlight_pos_obj.calcTransformMatrix();
-			let obj_p = util.transformPoint(
+			const vpw = this.fabric_canvas.getWidth();
+			const vph = this.fabric_canvas.getHeight();
+			const m = highlight_pos_obj.calcTransformMatrix();
+			const obj_p = util.transformPoint(
 				{ x: m[4], y: m[5] },
 				this.fabric_canvas.viewportTransform,
 				false
@@ -474,7 +474,7 @@ class Network_Map extends SVG_Map {
 			new CustomEvent("line-click", {
 				detail: track_code,
 				type: "line",
-			} as Custom_Click_event)
+			} as Custom_Click_Event)
 		);
 	};
 
@@ -499,7 +499,7 @@ class Network_Map extends SVG_Map {
 			new CustomEvent("station-click", {
 				detail: station_code,
 				type: "station",
-			} as Custom_Click_event)
+			} as Custom_Click_Event)
 		);
 	};
 
@@ -513,9 +513,9 @@ class Network_Map extends SVG_Map {
 			id.indexOf(this.network_config.LINE_LABEL_PREFIX_ID) <= -1
 		)
 			throw Error("Line not found");
-		let ID_parts = id.split("-");
-		if (ID_parts.length < 2) throw Error("Line id length too short, Id was : " + id);
-		return ID_parts[1];
+		const id_parts = id.split("-");
+		if (id_parts.length < 2) throw Error("Line id length too short, Id was : " + id);
+		return id_parts[1];
 	};
 
 	/**
@@ -528,9 +528,9 @@ class Network_Map extends SVG_Map {
 			id.indexOf(this.network_config.STATION_PREFIX_ID) <= -1
 		)
 			throw Error("Station not found");
-		let ID_parts = id.split("-");
-		if (ID_parts.length < 2) throw Error("Station id length too short, Id was : " + id);
-		return ID_parts[1];
+		const id_parts = id.split("-");
+		if (id_parts.length < 2) throw Error("Station id length too short, Id was : " + id);
+		return id_parts[1];
 	}
 
 	/**

@@ -25,7 +25,8 @@
 	let map = $state<Network_Map | null>(null);
 	let ready = $state(false);
 
-	let detachListeners = () => {};
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	let Detach_Listeners = () => {};
 	let resize_observer: ResizeObserver | null = null;
 
 	export function Highlight_Line(line_id: string): void {
@@ -86,7 +87,7 @@
 			document.addEventListener("station-click", On_Map_Station_Click as EventListener);
 			document.addEventListener("line-click", On_Map_Line_Click as EventListener);
 
-			detachListeners = () => {
+			Detach_Listeners = () => {
 				document.removeEventListener(
 					"station-click",
 					On_Map_Station_Click as EventListener
@@ -101,7 +102,7 @@
 
 		return () => {
 			destroyed = true;
-			detachListeners();
+			Detach_Listeners();
 			resize_observer?.disconnect();
 			resize_observer = null;
 			map = null;

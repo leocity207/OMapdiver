@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { Color_Map } from "$lib/types/color_map.ts";
-	import { goto } from "$app/navigation";
 	import type { Network, Line, Pattern } from "$lib/types/network";
+	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths"
 	import LineSchedule from "./line-schedule.svelte";
 	import Round_Cross from "$lib/componants/round-cross.svelte";
 	import { T } from "$lib/i18n";
@@ -16,7 +17,7 @@
 		color_mode?: Color_Map;
 	}>();
 
-	let logoEl: HTMLDivElement | null = null;
+	let logo_element: HTMLDivElement | null = null;
 	function Get_Patterns() {
 		return line_data.patterns.map((pattern: Pattern) => ({
 			...pattern,
@@ -25,8 +26,8 @@
 	}
 
 	$effect(() => {
-		if (logoEl) {
-			const rect = logoEl.querySelector("rect");
+		if (logo_element) {
+			const rect = logo_element.querySelector("rect");
 			if (rect) rect.setAttribute("fill", line_data.color[color_mode]);
 		}
 	});
@@ -34,21 +35,21 @@
 
 <div class="line-info">
 	<header>
-		<div class="logo" bind:this={logoEl}>
-			{@html line_data.icon}
+		<div class="logo" bind:this={logo_element}>
+			{line_data.icon}
 		</div>
 		<div class="title">
 			{T("line")}
 			{line_data.label}
 		</div>
 		<div class="close-button">
-			<Round_Cross onclick={() => goto("../")} />
+			<Round_Cross onclick={() => goto(resolve("../"))} />
 		</div>
 	</header>
 
 	{#if line_data.info_messages?.length}
 		<div class="line-infomessages">
-			{#each line_data.info_messages as message}
+			{#each line_data.info_messages as message (message.id)}
 				<p class="infomessage">{message.message}</p>
 			{/each}
 		</div>

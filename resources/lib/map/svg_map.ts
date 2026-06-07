@@ -166,8 +166,8 @@ class SVG_Map {
 		// load map from public folder
 		try {
 			const { objects, options } = await loadSVGFromURL(this.filename);
-			const validObjects = objects.filter((o): o is NonNullable<typeof o> => o !== null);
-			const obj = util.groupSVGElements(validObjects, options) as fabric.Group;
+			const valid_objects = objects.filter((o): o is NonNullable<typeof o> => o !== null);
+			const obj = util.groupSVGElements(valid_objects, options) as fabric.Group;
 			obj.forEachObject((o) => {
 				o.set({
 					objectCaching: false,
@@ -188,8 +188,8 @@ class SVG_Map {
 			this.fabric_canvas.add(obj);
 			this.svg_main_group = obj;
 
-			const initialZoom = this._Best_Initial_Zoom();
-			if (initialZoom) this.fabric_canvas.setZoom(initialZoom);
+			const initial_zoom = this._Best_Initial_Zoom();
+			if (initial_zoom) this.fabric_canvas.setZoom(initial_zoom);
 			this.fabric_canvas.viewportCenterObject(obj);
 			this.fabric_canvas.requestRenderAll();
 
@@ -200,7 +200,7 @@ class SVG_Map {
 				bottom: obj.top,
 			};
 		} catch (err) {
-			throw Error("Failed to load SVG:");
+			throw Error("Failed to load SVG:", { cause: err });
 		}
 	};
 
@@ -213,10 +213,11 @@ class SVG_Map {
 
 		// gesture is not well handled with fabricjs, use hammerjs
 		// Dynamically import Hammer to avoid SSR issues (window is not defined on server)
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const Hammer = (await import("hammerjs")).default;
-		let hammer = new Hammer.Manager(this.fabric_canvas!.upperCanvasEl); // Initialize hammer
-		let pinch = new Hammer.Pinch({ threshold: 0.2 }); // Initialize pinch
-		let tap = new Hammer.Tap();
+		const hammer = new Hammer.Manager(this.fabric_canvas!.upperCanvasEl); // Initialize hammer
+		const pinch = new Hammer.Pinch({ threshold: 0.2 }); // Initialize pinch
+		const tap = new Hammer.Tap();
 
 		hammer.add([pinch, tap]);
 		hammer.on("pinch", this._Handle_User_Gesture_Zoom);
@@ -236,8 +237,8 @@ class SVG_Map {
 	Find_Map_Objs_By_Classname = (
 		class_name: string,
 		obj_type: string | undefined = undefined
-	): any[] => {
-		let result_list: any[] = [];
+	): FabricObject[] => {
+		const result_list: FabricObject[] = [];
 		this._Traverse_All_Canvas_Objects(
 			this.fabric_canvas!.getObjects(),
 			"class",
@@ -245,7 +246,7 @@ class SVG_Map {
 			result_list
 		);
 		if (obj_type !== undefined) {
-			let typed_result_list: any[] = [];
+			const typed_result_list: FabricObject[] = [];
 			this._Traverse_All_Canvas_Objects(result_list, "type", obj_type, typed_result_list);
 			return typed_result_list;
 		}
@@ -294,8 +295,10 @@ class SVG_Map {
 			target_y > this.move_zoom_animation_obj.y
 				? target_y - this.move_zoom_animation_obj.y
 				: this.move_zoom_animation_obj.y - target_y;
+		// eslint-disable-next-line unused-imports/no-unused-vars
 		const point_diff_distance = move_x > move_y ? move_x : move_y;
 		// find the zoom difference
+		// eslint-disable-next-line unused-imports/no-unused-vars
 		const zoom_diff_distance =
 			zoom_box.zoom_level > orig_zoom
 				? zoom_box.zoom_level - orig_zoom
@@ -427,8 +430,8 @@ class SVG_Map {
 		bounds.height = Math.max(obj_1_bottom, obj_2_bottom ?? obj_1_bottom) - bounds.top;
 
 		// add extra space if only a second ovject is present
-		const extraSpace = obj2 === undefined;
-		bounds = this._Optimize_Zoom_Box_For_Viewport(bounds, extraSpace);
+		const extra_space = obj2 === undefined;
+		bounds = this._Optimize_Zoom_Box_For_Viewport(bounds, extra_space);
 		return bounds;
 	}
 
@@ -439,12 +442,12 @@ class SVG_Map {
 	 */
 	_GetObjectBounds(object: FabricObject) {
 		const matrix = object.calcTransformMatrix(false);
-		const xLeft = matrix[4] - object.width / 2;
-		const xRight = matrix[4] + object.width / 2;
-		const yTop = matrix[5] - object.height / 2;
-		const yBottom = matrix[5] + object.height / 2;
+		const x_left = matrix[4] - object.width / 2;
+		const x_right = matrix[4] + object.width / 2;
+		const y_top = matrix[5] - object.height / 2;
+		const y_bottom = matrix[5] + object.height / 2;
 
-		return { left: xLeft, right: xRight, top: yTop, bottom: yBottom };
+		return { left: x_left, right: x_right, top: y_top, bottom: y_bottom };
 	}
 
 	//////////////////////
@@ -472,33 +475,33 @@ class SVG_Map {
 	/**
 	 * Find objects by complete id, and optional type
 	 * @param {string}  id          The id to match exactly
-	 * @param {Boolean} exact_Match If true the id must exactly match otherwise its partial ID
+	 * @param {Boolean} exact_match If true the id must exactly match otherwise its partial ID
 	 * @param {string}  obj_type    The type of svg object
 	 * @returns {fabric.Object[]}  The list of objects that match the conditions
 	 * @protected
 	 */
 	_Find_Map_Objs_By_Id(
 		id: string,
-		exact_Match: boolean = false,
+		exact_match: boolean = false,
 		obj_type: string | null = null
 	): Map_Fabric_Object[] {
 		if (!this.fabric_canvas) throw Error(String_Error.NULL_FABRIC_CANVAS);
-		let result_list: Map_Fabric_Object[] = [];
+		const result_list: Map_Fabric_Object[] = [];
 		this._Traverse_All_Canvas_Objects(
 			this.fabric_canvas.getObjects(),
 			"id",
 			id,
 			result_list,
-			exact_Match
+			exact_match
 		);
 		if (obj_type !== null) {
-			let typed_result_list: Map_Fabric_Object[] = [];
+			const typed_result_list: Map_Fabric_Object[] = [];
 			this._Traverse_All_Canvas_Objects(
 				result_list,
 				"type",
 				obj_type,
 				typed_result_list,
-				exact_Match
+				exact_match
 			);
 			return typed_result_list;
 		}
@@ -527,17 +530,21 @@ class SVG_Map {
 		// Depending on the client type (mobile or desktop) we need to adjust the top and the viewport size
 		if (this.client_type === "mobile") {
 			// We add the header height and the detail space to the top
+			// eslint-disable-next-line no-var
 			var additional_bounding_zoom_space = extra_space
 				? this.config.ADDITIONAL_SINGLE_BOUND_ZOOM_SPACE_MOBILE
 				: this.config.ADDITIONAL_BOUND_ZOOM_SPACE_MOBILE;
 			bounds.center_top = bounds.top + bounds.height / 2 + this.panel_header_height / 2;
 
 			// We substract the detail space and the header height from the viewport height
+			// eslint-disable-next-line no-var
 			var viewport_width = this.fabric_canvas.getWidth();
+			// eslint-disable-next-line no-var
 			var viewport_height =
 				this.fabric_canvas.getHeight() - this.panel_detail_space - this.panel_header_height;
 		} else {
 			// We substract the header height and the detail space from the top
+			// eslint-disable-next-line no-var
 			var additional_bounding_zoom_space = extra_space
 				? this.config.ADDITIONAL_SINGLE_BOUND_ZOOM_SPACE_DESKTOP
 				: this.config.ADDITIONAL_BOUND_ZOOM_SPACE_DESKTOP;
@@ -547,15 +554,17 @@ class SVG_Map {
 				(this.panel_header_height + this.panel_detail_space) / 2;
 
 			// We substract the detail space from the viewport width
+			// eslint-disable-next-line no-var
 			var viewport_width = this.fabric_canvas.getWidth() - this.panel_detail_space;
+			// eslint-disable-next-line no-var
 			var viewport_height = this.fabric_canvas.getHeight();
 		}
 
 		// Compute the zoom level
-		const zoomWidth = viewport_width / (bounds.width + additional_bounding_zoom_space);
-		const zoomHeight = viewport_height / (bounds.height + additional_bounding_zoom_space);
-		const zoomLevel = Math.min(zoomWidth, zoomHeight);
-		bounds.zoom_level = Math.min(this.config.MAX_ZOOM_IN, zoomLevel);
+		const zoom_width = viewport_width / (bounds.width + additional_bounding_zoom_space);
+		const zoom_height = viewport_height / (bounds.height + additional_bounding_zoom_space);
+		const zoom_level = Math.min(zoom_width, zoom_height);
+		bounds.zoom_level = Math.min(this.config.MAX_ZOOM_IN, zoom_level);
 
 		return bounds;
 	}
@@ -567,11 +576,11 @@ class SVG_Map {
 	 * @protected
 	 */
 	_Check_Pointer_In_Range(pointer: { x: number; y: number }) {
-		let diff_x =
+		const diff_x =
 			this.last_pointer.x > pointer.x
 				? this.last_pointer.x - pointer.x
 				: pointer.x - this.last_pointer.x;
-		let diff_y =
+		const diff_y =
 			this.last_pointer.y > pointer.y
 				? this.last_pointer.y - pointer.y
 				: pointer.y - this.last_pointer.y;
@@ -641,7 +650,7 @@ class SVG_Map {
 	 * @param {Event} event a hammer event
 	 * @private
 	 */
-	_Handle_Pinch_Start = (event: any): void => {
+	_Handle_Pinch_Start = (event: { scale: number }): void => {
 		if (this.svg_main_group === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		this.svg_main_group.lockMovementX = true;
 		this.svg_main_group.lockMovementY = true;
@@ -654,7 +663,7 @@ class SVG_Map {
 	 * @param {Event} event a hammer event
 	 * @private
 	 */
-	_Handle_Pinch_End = (event: any): void => {
+	_Handle_Pinch_End = (event: { scale: number }): void => {
 		if (this.svg_main_group === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		this.last_scale = event.scale;
 		this.svg_main_group.lockMovementX = false;
@@ -666,7 +675,7 @@ class SVG_Map {
 	 * @param {Event} event a hammer event
 	 * @private
 	 */
-	_Handle_User_Gesture_Zoom = (event: any): void => {
+	_Handle_User_Gesture_Zoom = (event: { scale: number }): void => {
 		if (this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		// uses pinch event from hammerjs
 		if (!this.map_animation_run) {
@@ -721,16 +730,16 @@ class SVG_Map {
 
 		// Get the current viewport transform and calculate the new zoom level
 		const current_viewport_transform = this.fabric_canvas.viewportTransform;
-		let zoomLevel = this.fabric_canvas.getZoom() * Math.pow(0.999, normalized.pixelY);
+		let zoom_level = this.fabric_canvas.getZoom() * Math.pow(0.999, normalized.pixelY);
 
-		// Bound the zoomLevel within the defined max and min limits
-		zoomLevel = Utils.Round_Bound(zoomLevel, this.config.MAX_ZOOM_OUT, this.config.MAX_ZOOM_IN);
+		// Bound the zoom_level within the defined max and min limits
+		zoom_level = Utils.Round_Bound(zoom_level, this.config.MAX_ZOOM_OUT, this.config.MAX_ZOOM_IN);
 
 		// If the main SVG group exists, apply zoom to the point
 		if (this.svg_main_group !== null) {
 			this.fabric_canvas.zoomToPoint(
 				new fabric.Point(event.e.offsetX, event.e.offsetY),
-				zoomLevel
+				zoom_level
 			);
 			const bounding_rect = this.svg_main_group.getBoundingRect();
 
@@ -823,7 +832,7 @@ class SVG_Map {
 		const viewport_height = this.fabric_canvas.getHeight();
 
 		// Determine additional bound space based on client type
-		const additionalBoundSpace =
+		const additional_bound_space =
 			this.client_type === "mobile"
 				? this.config.INITIAL_ADDITIONAL_BOUND_ZOOM_SPACE_MOBILE
 				: this.config.INITIAL_ADDITIONAL_BOUND_ZOOM_SPACE_DESKTOP;
@@ -837,16 +846,16 @@ class SVG_Map {
 
 			// Adjust zoom width if centering object width exceeds viewport
 			if (centering_object.width >= viewport_width)
-				zoom_width = viewport_width / (centering_object.width + additionalBoundSpace);
+				zoom_width = viewport_width / (centering_object.width + additional_bound_space);
 
 			// Adjust zoom height if centering object height exceeds viewport
 			if (centering_object.height >= viewport_height)
-				zoom_height = viewport_height / (centering_object.height + additionalBoundSpace);
+				zoom_height = viewport_height / (centering_object.height + additional_bound_space);
 
 			calculated_zoom = Math.max(zoom_width, zoom_height);
 		} else {
-			zoom_width = viewport_width / (centering_object.width + additionalBoundSpace);
-			zoom_height = viewport_height / (centering_object.height + additionalBoundSpace);
+			zoom_width = viewport_width / (centering_object.width + additional_bound_space);
+			zoom_height = viewport_height / (centering_object.height + additional_bound_space);
 
 			calculated_zoom = Math.min(zoom_width, zoom_height);
 
@@ -883,35 +892,35 @@ class SVG_Map {
 	 * Recursively traverse through all objects, find attribute with value
 	 *
 	 * @param {Array<FabricObject>} objects         An array of objects where we will look for
-	 * @param {string}   attributeName   The attribute we are checking of the objects
-	 * @param {string}   attributeValue  The value of the attribute we are looking for
-	 * @param {Array<FabricObject>} result          The result list that will contain all the objects that match the attributeValue for this attributeName
-	 * @param {boolean}  fullMatch       If true, the attributeValue should be exactly equal to the object's attribute value. If false, the attributeValue should be a substring of the object's attribute value
+	 * @param {string}   attribute_name   The attribute we are checking of the objects
+	 * @param {string}   attribute_value  The value of the attribute we are looking for
+	 * @param {Array<FabricObject>} result          The result list that will contain all the objects that match the attribute_value for this attribute_name
+	 * @param {boolean}  full_match       If true, the attribute_value should be exactly equal to the object's attribute value. If false, the attribute_value should be a substring of the object's attribute value
 	 */
 	_Traverse_All_Canvas_Objects = (
 		objects: FabricObject[],
-		attributeName: string,
-		attributeValue: string | null,
+		attribute_name: string,
+		attribute_value: string | null,
 		result: FabricObject[],
-		fullMatch: boolean = true
+		full_match: boolean = true
 	): void => {
 		for (const obj of objects) {
 			if (obj.type.includes("group")) {
 				const group = obj as fabric.Group;
 				this._Traverse_All_Canvas_Objects(
 					group.getObjects(),
-					attributeName,
-					attributeValue,
+					attribute_name,
+					attribute_value,
 					result,
-					fullMatch
+					full_match
 				);
 			} else {
-				const value = (obj as Fabric_With_Props)[attributeName];
+				const value = (obj as Fabric_With_Props)[attribute_name];
 				if (typeof value !== "string") continue;
-				if (fullMatch) {
-					if (value === attributeValue) result.push(obj);
+				if (full_match) {
+					if (value === attribute_value) result.push(obj);
 				} else {
-					if (attributeValue && value.includes(attributeValue)) result.push(obj);
+					if (attribute_value && value.includes(attribute_value)) result.push(obj);
 				}
 			}
 		}
@@ -932,10 +941,10 @@ class SVG_Map {
 			FabricObject.customProperties.push("class");
 		}
 
-		[Path, Line, Text, Rect, Circle, Polygon].forEach((Klass) => {
-			Klass.ATTRIBUTE_NAMES = Klass.ATTRIBUTE_NAMES || [];
-			if (!Klass.ATTRIBUTE_NAMES.includes("class")) {
-				Klass.ATTRIBUTE_NAMES.push("class");
+		[Path, Line, Text, Rect, Circle, Polygon].forEach((klass) => {
+			klass.ATTRIBUTE_NAMES = klass.ATTRIBUTE_NAMES || [];
+			if (!klass.ATTRIBUTE_NAMES.includes("class")) {
+				klass.ATTRIBUTE_NAMES.push("class");
 			}
 		});
 	}
@@ -950,9 +959,9 @@ class SVG_Map {
 
 		const dim: fabric.TSize = { width: map_container_width, height: map_container_height };
 
-		//@ts-ignore
+		//@ts-expect-error this is acceptable in fabric
 		const option: fabric.TCanvasSizeOptions = { cssOnly: false, backstoreOnly: false };
-		//@ts-ignore
+		//@ts-expect-error this is acceptable in fabric
 		this.fabric_canvas.setDimensions(dim, option);
 
 		// recalcul des offsets (DOM)

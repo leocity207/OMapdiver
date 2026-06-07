@@ -9,10 +9,10 @@ class Utils {
 	 * @param {Boolean} with_alpha if there are digit for the alpha canal and if it should be transcribed
 	 * @returns {String} the hex string of the color
 	 */
-	static Rgba_To_Hex = (rgba: String, with_alpha: boolean = false): String => {
+	static Rgba_To_Hex = (rgba: string): string => {
 		if (rgba.indexOf("#") !== -1) return rgba;
 
-		let rgb = rgba.match(
+		const rgb = rgba.match(
 			/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i
 		);
 
@@ -49,7 +49,7 @@ class Utils {
 	 * @returns a promise resoved when the timout ends
 	 */
 	static Wait = async (t: number): Promise<void> => {
-		return new Promise((resolve, reject) => setTimeout(resolve, t));
+		return new Promise((resolve, _) => setTimeout(resolve, t));
 	};
 
 	/**

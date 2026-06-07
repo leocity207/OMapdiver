@@ -6,6 +6,7 @@
 		children: Snippet;
 	}>();
 
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const onclick = () => (open = !open);
 </script>
 

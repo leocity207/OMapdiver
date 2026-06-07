@@ -40,22 +40,22 @@
 		return a != null || d != null;
 	}
 
-	function Is_Row_Visible(stationIndex: number): boolean {
+	function Is_Row_Visible(station_index: number): boolean {
 		if (!line_data?.timetables) return false;
 
 		return line_data.timetables.some((timetable: Timetable) => {
 			if (!Is_Timetable_Visible(timetable)) return false;
-			return Has_Cell(timetable, stationIndex);
+			return Has_Cell(timetable, station_index);
 		});
 	}
 
 	const timetables = $derived(
 		line_data.timetables.filter((t: Timetable) => t.is_reversed === show_reverse)
 	);
-	const stationIds = $derived(
+	const station_ids = $derived(
 		show_reverse ? line_data.stations.slice().reverse() : line_data.stations
 	);
-	const lineTitle = $derived(line_data.label);
+	const line_title = $derived(line_data.label);
 	let main_container = $state<HTMLDivElement>();
 	let max_station_width = $state(0);
 
@@ -67,6 +67,7 @@
 	});
 
 	$effect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		line_data;
 		hidden_rows = {};
 		let stations_labels = main_container?.querySelectorAll(".station-label");
@@ -102,11 +103,11 @@
 		<!-- HEADER -->
 		<div class="timetable-header">
 			<div class="line-icon" bind:this={line_icon_container}>
-				{@html line_data.icon}
+				{line_data.icon}
 			</div>
 
 			<div class="line-text">
-				<div class="line-title">{lineTitle}</div>
+				<div class="line-title">{line_title}</div>
 			</div>
 
 			<div class="order-switch">
@@ -115,7 +116,7 @@
 					default_choice="normal"
 					On_Change={(value: string) => {
 						hidden_rows = {};
-						value === "normal" ? (show_reverse = false) : (show_reverse = true);
+						show_reverse = value === "normal" ? false : true;
 					}}
 				/>
 			</div>
@@ -127,7 +128,7 @@
 				<thead>
 					<tr>
 						<th class="station-header">Stations</th>
-						{#each timetables as timetable, tindex}
+						{#each timetables as timetable, tindex (tindex)}
 							{#if Is_Timetable_Visible(timetable) && (!options.first_last_mode || tindex === 0 || tindex === timetables.length - 1)}
 								<th class="timetable-header-cell">
 									{timetable.label}
@@ -138,7 +139,7 @@
 				</thead>
 
 				<tbody>
-					{#each stationIds as stationId, i}
+					{#each station_ids as stationId, i (i)}
 						{@const is_hidden =
 							(!options.show_hidden_stations && !Is_Row_Visible(i)) ||
 							(!options.show_hidden_stations && hidden_rows[i])}
@@ -163,7 +164,7 @@
 									</div>
 								</th>
 
-								{#each timetables as timetable, tindex}
+								{#each timetables as timetable, tindex (tindex)}
 									{@const enable_line_first_last_mode =
 										!options.first_last_mode ||
 										tindex === 0 ||

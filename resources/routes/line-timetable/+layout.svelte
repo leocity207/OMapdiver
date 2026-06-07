@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Search_Item } from "$lib/componants/search_bar.svelte";
-	import type { Network } from "$lib/types/network";
+	import type { Network, Line } from "$lib/types/network";
 	import type { Color_Map } from "$lib/types/color_map";
 	import { goto } from "$app/navigation";
 	import { T, Translate_Or_Value } from "$lib/i18n";
@@ -23,7 +23,7 @@
 	let line_options = Get_Line_Timetable_Options();
 
 	const search_items = $derived.by<Search_Item[]>(() => {
-		const lines = Object.entries(data.network_data.lines).map(([id, value]: [string, any]) => ({
+		const lines = Object.entries(data.network_data.lines).map(([id, value]: [string, Line]) => ({
 			id,
 			type: "line" as const,
 			label: value.label,
