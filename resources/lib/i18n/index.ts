@@ -1,14 +1,14 @@
-import en from './en';
-import fr from './fr';
+import en from "./en";
+import fr from "./fr";
 
 const dictionaries = {
 	en,
-	fr
+	fr,
 };
 
 export type Translation_Key = keyof typeof en;
 
-let current_language: keyof typeof dictionaries = 'fr';
+let current_language: keyof typeof dictionaries = "fr";
 
 export function Set_Language(lang: keyof typeof dictionaries) {
 	current_language = lang;

@@ -1,17 +1,11 @@
 <script lang="ts">
+	import type { Snippet } from "svelte";
 
-	import type { Snippet } from 'svelte';
-
-	let {
-		open = $bindable(),
-		children
-	} = $props<{
+	let { open = $bindable(), children } = $props<{
 		open: boolean;
 		children?: Snippet;
 	}>();
-	
 </script>
-
 
 <aside class:open>
 	<div hidden={!open}>
@@ -19,10 +13,7 @@
 	</div>
 </aside>
 
-
 <style>
-
-
 	aside {
 		height: 100%;
 		width: 18.75rem;

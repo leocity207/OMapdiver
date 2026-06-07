@@ -1,15 +1,15 @@
 <script lang="ts">
-	import type { Network, Pattern, Line } from '$lib/types/network';
-	import type { Color_Map } from '$lib/types/color_map.ts'
-	import LineStation from './line-station.svelte';
-	import FoldPlusMinus from '$lib/componants/fold_plus_minus.svelte';
-	import Utils from '$lib/utils/utils';
+	import type { Network, Pattern, Line } from "$lib/types/network";
+	import type { Color_Map } from "$lib/types/color_map.ts";
+	import LineStation from "./line-station.svelte";
+	import FoldPlusMinus from "$lib/componants/fold_plus_minus.svelte";
+	import Utils from "$lib/utils/utils";
 
 	let {
 		schedule_data,
 		network_data,
 		reference_station = null,
-		color_mode = $bindable("default")
+		color_mode = $bindable("default"),
 	} = $props<{
 		schedule_data: Pattern & { parent?: Line };
 		network_data: Network;
@@ -27,28 +27,29 @@
 		const line = schedule_data.parent as Line;
 		const total_stations = line.stations.length;
 		const is_reversed = schedule_data.is_reversed;
-		
+
 		// Find reference station index in original line.stations
 		let reference_idx = reference_station ? line.stations.indexOf(reference_station) : 0;
-		
+
 		// If pattern is reversed, adjust the index to pattern's perspective
-		if (is_reversed && reference_station !== null) {
+		if (is_reversed && reference_station !== null)
 			reference_idx = total_stations - 1 - reference_idx;
-		}
-		
+
 		const stations = [];
 		const reference_minute = schedule_data.arrival_times[reference_idx];
 
 		if (reference_idx > 0) {
 			const first_idx = is_reversed ? total_stations - 1 : 0;
-			const first_station_id = is_reversed ? line.stations[total_stations - 1] : line.stations[0];
+			const first_station_id = is_reversed
+				? line.stations[total_stations - 1]
+				: line.stations[0];
 			stations.push({
 				arrival_minute: schedule_data.arrival_times[0],
 				departure_time: schedule_data.departure_times[0],
 				station_id: first_station_id,
 				reference_minute: reference_minute,
-				property: 'gray',
-				parent: schedule_data
+				property: "gray",
+				parent: schedule_data,
 			});
 		}
 
@@ -58,20 +59,22 @@
 				departure_time: null,
 				station_id: null,
 				reference_minute: reference_minute,
-				property: 'blank',
-				parent: schedule_data
+				property: "blank",
+				parent: schedule_data,
 			});
 		}
 
 		// Reference station
-		let ref_station_id = reference_station || (is_reversed ? line.stations[total_stations - 1] : line.stations[0]);
+		let ref_station_id =
+			reference_station ||
+			(is_reversed ? line.stations[total_stations - 1] : line.stations[0]);
 		stations.push({
 			arrival_minute: schedule_data.arrival_times[reference_idx],
 			departure_time: schedule_data.departure_times[reference_idx],
 			station_id: ref_station_id,
 			reference_minute: reference_minute,
-			property: reference_idx > 0 ? 'half-grayed' : null,
-			parent: schedule_data
+			property: reference_idx > 0 ? "half-grayed" : null,
+			parent: schedule_data,
 		});
 
 		// Add remaining stations
@@ -84,7 +87,7 @@
 					station_id: line.stations[total_stations - 1 - i],
 					reference_minute: reference_minute,
 					property: null,
-					parent: schedule_data
+					parent: schedule_data,
 				});
 			}
 		} else {
@@ -96,7 +99,7 @@
 					station_id: line.stations[i],
 					reference_minute: reference_minute,
 					property: null,
-					parent: schedule_data
+					parent: schedule_data,
 				});
 			}
 		}
@@ -133,7 +136,7 @@
 
 	{#if details_open}
 		<div class="schedule-details open">
-			{#each Get_Stations() as station (station.station_id ?? 'blank')}
+			{#each Get_Stations() as station (station.station_id ?? "blank")}
 				<LineStation station_data={station} {network_data} {color_mode} />
 			{/each}
 		</div>
@@ -173,7 +176,7 @@
 		flex-direction: column;
 		align-items: flex-start;
 		width: 100%;
-		height :100%;
+		height: 100%;
 	}
 
 	.header-right {

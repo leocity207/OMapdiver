@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import Network_Map from './network_map';
-	import { Get_Map_Config, Get_Network_Config } from '$lib/config/config_loader';
-	import type { Network } from '$lib/types/network';
-	import type { Color_Map } from '$lib/types/color_map.ts'
+	import { onMount } from "svelte";
+	import Network_Map from "./network_map";
+	import { Get_Map_Config, Get_Network_Config } from "$lib/config/config_loader";
+	import type { Network } from "$lib/types/network";
+	import type { Color_Map } from "$lib/types/color_map.ts";
 
 	type Props = {
 		network_data: Network;
@@ -40,7 +40,7 @@
 		map?.Reset_Line_Highlight();
 	}
 
-	onMount(() =>  {
+	onMount(() => {
 		let destroyed = false;
 
 		const On_Map_Station_Click = (event: Event) => {
@@ -69,8 +69,8 @@
 
 		(async () => {
 			const map_instance = new Network_Map(
-				'Desktop',
-				'/customization/image/map.svg',
+				"Desktop",
+				"/customization/image/map.svg",
 				Get_Map_Config(),
 				Get_Network_Config()
 			);
@@ -81,17 +81,17 @@
 
 			map = map_instance;
 
-			await map.Setup_Mouse_Handlers_With_Data(
-				network_data.lines,
-				network_data.stations
-			);
+			await map.Setup_Mouse_Handlers_With_Data(network_data.lines, network_data.stations);
 
-			document.addEventListener('station-click', On_Map_Station_Click as EventListener);
-			document.addEventListener('line-click', On_Map_Line_Click as EventListener);
+			document.addEventListener("station-click", On_Map_Station_Click as EventListener);
+			document.addEventListener("line-click", On_Map_Line_Click as EventListener);
 
 			detachListeners = () => {
-				document.removeEventListener('station-click', On_Map_Station_Click as EventListener);
-				document.removeEventListener('line-click', On_Map_Line_Click as EventListener);
+				document.removeEventListener(
+					"station-click",
+					On_Map_Station_Click as EventListener
+				);
+				document.removeEventListener("line-click", On_Map_Line_Click as EventListener);
 			};
 
 			ready = true;

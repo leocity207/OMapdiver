@@ -1,20 +1,26 @@
 <script lang="ts">
-	import type { Global_Options } from '$lib/types/options';
-	import { page } from '$app/state';
-	import { Get_App_Config } from '$lib/config/config_loader';
-	import { Set_Global_Options } from '$lib/utils/options.svelte.js';
-	import { T } from '$lib/i18n';
+	import type { Global_Options } from "$lib/types/options";
+	import { page } from "$app/state";
+	import { Get_App_Config } from "$lib/config/config_loader";
+	import { Set_Global_Options } from "$lib/utils/options.svelte.js";
+	import { T } from "$lib/i18n";
 
 	let { children } = $props();
 	let global_options: Global_Options = $state({ easy_color_mode: false });
 	Set_Global_Options(global_options);
-	
+
 	const Is_Active = (path: string) => page.url.pathname.startsWith(path);
 </script>
 
 <nav class="app-selector">
 	{#if Get_App_Config().HAVE_NETWORK_MAP}
-		<a href="/map"data-sveltekit-preload-data class:selected={Is_Active('/map')} aria-label={T('map')} title={T('map')}>
+		<a
+			href="/map"
+			data-sveltekit-preload-data
+			class:selected={Is_Active("/map")}
+			aria-label={T("map")}
+			title={T("map")}
+		>
 			<div class="icon">
 				<img src="/icons/map.svg" alt="" />
 			</div>
@@ -22,7 +28,13 @@
 	{/if}
 
 	{#if Get_App_Config().HAVE_LINE_TIMETABLE}
-		<a href="/line-timetable" data-sveltekit-preload-data class:selected={Is_Active('/line-timetable')} aria-label={T('timetable_lines')} title={T('timetable_lines')}>
+		<a
+			href="/line-timetable"
+			data-sveltekit-preload-data
+			class:selected={Is_Active("/line-timetable")}
+			aria-label={T("timetable_lines")}
+			title={T("timetable_lines")}
+		>
 			<div class="icon">
 				<img src="/icons/line_timetable.svg" alt="" />
 			</div>
@@ -30,7 +42,13 @@
 	{/if}
 
 	{#if Get_App_Config().HAVE_STATION_SCHEDULES}
-		<a href="/station-timetable" data-sveltekit-preload-data class:selected={Is_Active('/station-timetable')} aria-label={T('timetable_stations')} title={T('timetable_stations')}>
+		<a
+			href="/station-timetable"
+			data-sveltekit-preload-data
+			class:selected={Is_Active("/station-timetable")}
+			aria-label={T("timetable_stations")}
+			title={T("timetable_stations")}
+		>
 			<div class="icon">
 				<img src="/icons/station_timetable.svg" alt="" />
 			</div>
@@ -47,7 +65,6 @@
 </div>
 
 <style>
-
 	.app-window {
 		height: 100%;
 		width: 100%;
@@ -80,7 +97,7 @@
 		padding-right: 2vh;
 	}
 
-	.logo> img {
+	.logo > img {
 		height: 2rem;
 		width: auto;
 	}

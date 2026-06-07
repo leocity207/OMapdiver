@@ -1,31 +1,31 @@
 <script lang="ts">
-	import { setContext} from 'svelte';
-	import { navigating, page } from '$app/state';
-	import { goto } from '$app/navigation';
-	import { T } from '$lib/i18n';
-	import SearchBar from '$lib/componants/search_bar.svelte';
-	import Hamburger from '$lib/componants/hamburger.svelte';
-	import LeftPanel from '$lib/componants/left_panel.svelte';
-	import Switch from '$lib/componants/switch.svelte';
+	import { setContext } from "svelte";
+	import { navigating, page } from "$app/state";
+	import { goto } from "$app/navigation";
+	import { T } from "$lib/i18n";
+	import SearchBar from "$lib/componants/search_bar.svelte";
+	import Hamburger from "$lib/componants/hamburger.svelte";
+	import LeftPanel from "$lib/componants/left_panel.svelte";
+	import Switch from "$lib/componants/switch.svelte";
 
 	let { data, children } = $props();
 
-	let search_query = $state('');
+	let search_query = $state("");
 	let panel_open = $state(false);
 	let station_timetable_options = $state();
 
-	setContext('station_timetable_options', station_timetable_options);
+	setContext("station_timetable_options", station_timetable_options);
 
-	const is_viewing_element = $derived(
-		page.url.pathname.match(/^\/map\/[^/]+$/)
-	);
+	const is_viewing_element = $derived(page.url.pathname.match(/^\/map\/[^/]+$/));
 
 	const search_items = $derived.by<SearchItem[]>(() => {
-		const stations = Object.entries(data.network_data.stations).map(([id, value]: [string, any]) => ({
-			id,
-			kind: 'station' as const,
-			label: value.label ?? value.name ?? id
-		}));
+		const stations = Object.entries(data.network_data.stations).map(
+			([id, value]: [string, any]) => ({
+				id,
+				kind: "station" as const,
+				label: value.label ?? value.name ?? id,
+			})
+		);
 
 		return [...stations].sort((a, b) => a.label.localeCompare(b.label));
 	});
@@ -48,7 +48,7 @@
 
 	function Open_Element(id: string) {
 		void goto(`/map/${encodeURIComponent(id)}`);
-		search_query = '';
+		search_query = "";
 	}
 
 	function Handle_Search_Select(item: SearchItem) {
@@ -58,7 +58,6 @@
 	function Handle_Map_Select(event: CustomEvent<{ id: string; kind: MapElementKind }>) {
 		Open_Element(event.detail.id);
 	}
-
 </script>
 
 <svelte:head>
@@ -66,7 +65,6 @@
 </svelte:head>
 
 <div class="shell">
-
 	<header class="topbar">
 		<div class="topbar-left">
 			<Hamburger active={panel_open} onToggle={() => (panel_open = !panel_open)} />
@@ -76,14 +74,13 @@
 			<SearchBar
 				bind:value={search_query}
 				items={search_items}
-				placeholder={T('search_station')}
+				placeholder={T("search_station")}
 				onSelect={Handle_Search_Select}
 			/>
 		</div>
 	</header>
 
-	<LeftPanel bind:open={panel_open}>
-	</LeftPanel>
+	<LeftPanel bind:open={panel_open}></LeftPanel>
 
 	{#if navigating.to}
 		<div class="route-loading">Loading…</div>
@@ -91,7 +88,6 @@
 </div>
 
 <style>
-
 	.topbar {
 		width: 100%;
 		display: flex;

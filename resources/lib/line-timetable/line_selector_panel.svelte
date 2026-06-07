@@ -1,14 +1,9 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	import type { Network, Line } from '$lib/types/network';
-	import type { Color_Map } from '$lib/types/color_map';
+	import type { Network, Line } from "$lib/types/network";
+	import type { Color_Map } from "$lib/types/color_map";
 
-	let {
-		network_data,
-		On_Line_Selected,
-		color_mode
-	} = $props<{
-		network_data?: Network ;
+	let { network_data, On_Line_Selected, color_mode } = $props<{
+		network_data?: Network;
 		On_Line_Selected?: (line_id: string) => void;
 		color_mode: Color_Map;
 	}>();
@@ -17,7 +12,7 @@
 	let line_icons = $state<Record<string, HTMLElement>>({});
 
 	function Handle_Keydown(event: KeyboardEvent, line_id: string) {
-		if (event.key === 'Enter' || event.key === ' ') {
+		if (event.key === "Enter" || event.key === " ") {
 			event.preventDefault();
 			On_Line_Selected(line_id);
 		}
@@ -29,7 +24,7 @@
 		return {
 			destroy() {
 				delete line_icons[line_id];
-			}
+			},
 		};
 	}
 
@@ -45,21 +40,21 @@
 				if (!container) continue;
 
 				// Find all rect elements in the SVG and update their fill
-				const rects = container.querySelectorAll('rect');
-				rects.forEach(rect => {
+				const rects = container.querySelectorAll("rect");
+				rects.forEach((rect) => {
 					if (line.color["default"]) {
-						rect.setAttribute('fill', line.color[color_mode]);
+						rect.setAttribute("fill", line.color[color_mode]);
 					}
 				});
 
 				// Also update all paths (in case the SVG uses paths for the icon)
-				const paths = container.querySelectorAll('path');
-				paths.forEach(path => {
+				const paths = container.querySelectorAll("path");
+				paths.forEach((path) => {
 					// Don't override path fill if it's explicitly set in the SVG
 					// Only update if it's white or empty
-					const currentFill = path.getAttribute('fill');
-					if (!currentFill || currentFill === 'white' || currentFill === '#fff') {
-						path.setAttribute('fill', line.color["default"]);
+					const currentFill = path.getAttribute("fill");
+					if (!currentFill || currentFill === "white" || currentFill === "#fff") {
+						path.setAttribute("fill", line.color["default"]);
 					}
 				});
 			}
@@ -70,7 +65,12 @@
 <div class="line-container">
 	{#if network_data}
 		{#each Object.entries<Line>(network_data.lines) as [line_id, line]}
-			<button class="line-icon" onclick={() => On_Line_Selected(line_id)} onkeydown={(e) => Handle_Keydown(e, line_id)} use:Register_Container={line_id}>
+			<button
+				class="line-icon"
+				onclick={() => On_Line_Selected(line_id)}
+				onkeydown={(e) => Handle_Keydown(e, line_id)}
+				use:Register_Container={line_id}
+			>
 				{@html line.icon}
 			</button>
 		{/each}

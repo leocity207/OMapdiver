@@ -1,33 +1,34 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+	import type { Snippet } from "svelte";
 
-	let {
-		open = $bindable(),
-		children
-	} = $props<{
+	let { open = $bindable(), children } = $props<{
 		open: boolean;
 		children: Snippet;
 	}>();
 
-	const onclick =() => (open = !open);
+	const onclick = () => (open = !open);
 </script>
-
 
 <aside>
 	<div class="content" hidden={!open}>
 		{@render children?.()}
 	</div>
 
-	<button aria-expanded={open} title="toggle_top" onclick={onclick}>
+	<button aria-expanded={open} title="toggle_top" {onclick}>
 		<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class:open>
-			<g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<g
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
 				<polyline points="6 9 12 15 18 9" />
 				<polyline points="6 5 12 11 18 5" />
 			</g>
 		</svg>
 	</button>
 </aside>
-
 
 <style>
 	aside {
@@ -74,5 +75,4 @@
 	.open {
 		transform: rotate(180deg);
 	}
-
 </style>

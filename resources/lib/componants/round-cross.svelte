@@ -1,14 +1,11 @@
 <script lang="ts">
-	let {
-		onclick = undefined,
-		title = "round cross"
-	} = $props<{
+	let { onclick = undefined, title = "round cross" } = $props<{
 		onclick?: () => void;
 		title?: string;
 	}>();
 </script>
 
-<button {onclick} aria-label="Close" title={title}>
+<button {onclick} aria-label="Close" {title}>
 	<div class="circle">
 		<div class="left"></div>
 		<div class="right"></div>
