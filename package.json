@@ -42,6 +42,7 @@
     "hammerjs": "^2.0.8",
     "normalize-wheel": "^1.0.1",
     "pg": "^8.21.0",
+    "prettier-plugin-svelte": "^4.1.0",
     "rxjs": "^7.8.2"
   }
 }
