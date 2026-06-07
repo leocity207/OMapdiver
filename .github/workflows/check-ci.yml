@@ -12,8 +12,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -41,7 +39,7 @@ jobs:
         run: pnpm run check:svelte
 
       - name: ESLint check
-        run: pnpm run check:lint
+        run: pnpm run check:lint:dry_run
 
       - name: Prettier check
-        run: pnpm run check:prettier
+        run: pnpm run check:prettier:dry_run
