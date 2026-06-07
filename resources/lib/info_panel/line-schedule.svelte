@@ -1,4 +1,5 @@
 <script lang="ts">
+	/* eslint-disable svelte/no-at-html-tags */
 	import type { Network, Pattern, Line } from "$lib/types/network";
 	import type { Color_Map } from "$lib/types/color_map.ts";
 	import LineStation from "./line-station.svelte";
@@ -112,7 +113,7 @@
 		<div class="header-left">
 			<div class="header-left-icon">
 				{#if network_data.stop_patterns[schedule_data.stop_pattern]}
-					{network_data.stop_patterns[schedule_data.stop_pattern].icon}
+					{@html network_data.stop_patterns[schedule_data.stop_pattern].icon}
 				{/if}
 			</div>
 			<div class="header-left-text">{schedule_data.label}</div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	/* eslint-disable svelte/no-at-html-tags */
 	import type { Color_Map } from "$lib/types/color_map.ts";
 	import type { Network, Line, Pattern } from "$lib/types/network";
 	import { goto } from "$app/navigation";
@@ -36,14 +37,14 @@
 <div class="line-info">
 	<header>
 		<div class="logo" bind:this={logo_element}>
-			{line_data.icon}
+			{@html line_data.icon}
 		</div>
 		<div class="title">
 			{T("line")}
 			{line_data.label}
 		</div>
 		<div class="close-button">
-			<Round_Cross onclick={() => goto(resolve("../"))} />
+			<Round_Cross onclick={() => goto(resolve("/map"))} />
 		</div>
 	</header>
 

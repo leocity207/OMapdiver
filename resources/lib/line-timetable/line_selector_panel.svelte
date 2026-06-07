@@ -1,4 +1,5 @@
 <script lang="ts">
+	/* eslint-disable svelte/no-at-html-tags */
 	import type { Network, Line } from "$lib/types/network";
 	import type { Color_Map } from "$lib/types/color_map";
 
@@ -72,7 +73,7 @@
 				onkeydown={(e) => Handle_Keydown(e, line_id)}
 				use:Register_Container={line_id}
 			>
-				{line.icon}
+				{@html line.icon}
 			</button>
 		{/each}
 	{/if}

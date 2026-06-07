@@ -61,7 +61,7 @@
 			{station_data.label}
 		</div>
 		<div class="close-button">
-			<Round_Cross onclick={() => goto(resolve("../"))} />
+			<Round_Cross onclick={() => goto(resolve("/map"))} />
 		</div>
 	</header>
 
