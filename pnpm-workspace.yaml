@@ -1,3 +1,12 @@
 allowBuilds:
   esbuild: true
   canvas: true
+minimumReleaseAgeExclude:
+  - cookie@0.7.0
+  - tar@7.5.7
+  - tar@7.5.3
+  - fabric@7.2.0
+  - tar@7.5.8
+  - tar@7.5.10
+  - tar@7.5.11
+  - tar@7.5.4
