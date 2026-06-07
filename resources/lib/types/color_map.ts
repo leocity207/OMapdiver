@@ -1,0 +1,1 @@
+export type Color_Map = 'default' | 'easy';

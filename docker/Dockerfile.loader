@@ -11,4 +11,4 @@ RUN pip install psycopg2-binary
 COPY db/loader /app/loader
 
 # Copy the JSON data into the image
-COPY resources/resources-config/data /app/data
+COPY resources/static/customization/data /app/data

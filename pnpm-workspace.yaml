@@ -1,2 +1,3 @@
-ignoredBuiltDependencies:
-  - canvas
+allowBuilds:
+  esbuild: true
+  canvas: true

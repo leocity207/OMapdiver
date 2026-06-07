@@ -1,4 +1,3 @@
-#include "src/controller/static_file_handler.h"
 #include "src/controller/network_data_handler.h"
 #include "src/AppComponent.h"
 #include "config.h"
@@ -6,11 +5,7 @@
 #include <oatpp/network/Server.hpp>
 
 #include <iostream>
-#include <cxxopts.hpp>
-#include <iostream>
 
-std::string g_argument_resource_path = "";
-std::string g_argument_doc_path = "";
 void run() {
 
 	/* Register Components in scope of run() method */
@@ -19,7 +14,6 @@ void run() {
 	//Create Rooter and add componant
 	OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
 	router->addController(std::make_shared<O::Controller::Network_Data_Handler>());
-	router->addController(std::make_shared<Static_File_Manager>());
 
 	// Create the server
 	OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, connectionHandler);
@@ -28,6 +22,12 @@ void run() {
 
 	/* Print info about server port */
 	OATPP_LOGi("[Info]", "Server running on port {}", connectionProvider->getProperty("port").toString());
+	OATPP_LOGi("[Info]", "Server running on port {}", connectionProvider->getProperty("port").toString());
+	OATPP_LOGi("[Info]", "DB_HOST     {}", DB_HOST());
+	OATPP_LOGi("[Info]", "DB_PORT     {}", DB_PORT());
+	OATPP_LOGi("[Info]", "DB_NAME     {}", DB_NAME());
+	OATPP_LOGi("[Info]", "DB_USER     {}", DB_USER());
+	OATPP_LOGi("[Info]", "DB_PASSWORD {}", DB_PASSWORD());
 
 	server.run();
 
@@ -35,26 +35,6 @@ void run() {
 
 
 int main(int argc, const char * argv[]) {
-
-	cxxopts::Options options("WebsiteR2R", "Backend server");
-
-	options.add_options()
-	("r,path-to-resource", "Path to resource folder", cxxopts::value<std::string>())
-	("d,path-to-doc",      "Path to documentation folder", cxxopts::value<std::string>())
-	("h,help",             "Print help");
-
-	auto result = options.parse(argc, argv);
-
-	if (result.count("help")) {
-		std::cout << options.help() << "\n";
-		return 0;
-	}
-
-	if (result.count("path-to-resource")) 
-		g_argument_resource_path = result["path-to-resource"].as<std::string>();
-
-	if (result.count("path-to-doc"))
-		g_argument_doc_path = result["path-to-doc"].as<std::string>();
 
 	oatpp::Environment::init();
 

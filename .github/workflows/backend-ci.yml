@@ -3,6 +3,7 @@ name: Backend CI (CMake)
 on:
   push:
     branches: [ master ]
+  pull_request:
 
 jobs:
   build-and-test:

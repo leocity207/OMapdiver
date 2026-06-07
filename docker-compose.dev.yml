@@ -1,11 +1,25 @@
 services:
-  server_dev:
+  webapp:
     build:
       context: .
-      dockerfile: docker/Dockerfile.dev
+      dockerfile: docker/Dockerfile.webapp.dev
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+      CI: "true"
+    volumes:
+      - ./resources:/app/resources
+
+  oatpp-orm:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.oatpp-orm.dev
     ports:
       - "8000:8000"
-    command: /app/dev.sh
     stdin_open: true
     tty: true
     environment:
@@ -22,12 +36,6 @@ services:
         - action: sync
           path: ./src
           target: /app/src
-        - action: sync
-          path: ./resources
-          target: /app/resources
-    depends_on:
-      db:
-        condition: service_healthy
 
   db:
     image: postgres:${POSTGRES_VERSION:-17}-alpine
@@ -38,11 +46,6 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./db/init:/docker-entrypoint-initdb.d:ro
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-appuser} -d ${POSTGRES_DB:-appdb}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     ports:
       - "5432:5432"
 
@@ -55,7 +58,7 @@ services:
       db:
         condition: service_healthy
     command: >
-      python transport_loader/main.py
+      python /app/loader/main.py
       --host db
       --port 5432
       --dbname ${POSTGRES_DB:-appdb}
