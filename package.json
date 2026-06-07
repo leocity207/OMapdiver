@@ -12,7 +12,9 @@
     "preview": "vite preview",
     "check:svelte": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:lint": "eslint resources/ --fix",
-    "check:prettier": "prettier resources/ --write"
+    "check:lint:dry_run": "eslint resources/",
+    "check:prettier": "prettier resources/ --write",
+    "check:prettier:dry_run": "prettier resources/ --check"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
