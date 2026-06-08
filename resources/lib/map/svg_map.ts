@@ -675,7 +675,10 @@ class SVG_Map {
 	 * @param {Event} event a hammer event
 	 * @private
 	 */
-	_Handle_User_Gesture_Zoom = (event: { scale: number, center: { x: number, y: number } }): void => {
+	_Handle_User_Gesture_Zoom = (event: {
+		scale: number;
+		center: { x: number; y: number };
+	}): void => {
 		if (this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		// uses pinch event from hammerjs
 		if (!this.map_animation_run) {
