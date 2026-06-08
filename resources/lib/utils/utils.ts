@@ -1,9 +1,7 @@
-
 /**
  * General Scope for utilitary function
  */
 class Utils {
-
 	/**
 	 * Transform a RGBA color into a HexString
 	 *
@@ -11,20 +9,26 @@ class Utils {
 	 * @param {Boolean} with_alpha if there are digit for the alpha canal and if it should be transcribed
 	 * @returns {String} the hex string of the color
 	 */
-	static Rgba_To_Hex = (rgba: String, with_alpha: boolean = false): String => {
-		if(rgba.indexOf('#') !== -1) return rgba;
+	static Rgba_To_Hex = (rgba: string): string => {
+		if (rgba.indexOf("#") !== -1) return rgba;
 
-		let rgb = rgba.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
+		const rgb = rgba.match(
+			/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i
+		);
 
-		if (!rgb) return '';
+		if (!rgb) return "";
 		const r = parseInt(rgb[1], 10);
 		const g = parseInt(rgb[2], 10);
 		const b = parseInt(rgb[3], 10);
 
-		const hex ='#' + r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + b.toString(16).padStart(2, '0');
+		const hex =
+			"#" +
+			r.toString(16).padStart(2, "0") +
+			g.toString(16).padStart(2, "0") +
+			b.toString(16).padStart(2, "0");
 
 		return hex.toUpperCase();
-	}
+	};
 
 	/**
 	 * check the bound of the value and put it in bound if needed
@@ -36,7 +40,7 @@ class Utils {
 	 */
 	static Round_Bound = (value: number, min: number, max: number): number => {
 		return Math.min(Math.max(value, min), max);
-	}
+	};
 
 	/**
 	 * Timout function to create delay
@@ -45,23 +49,23 @@ class Utils {
 	 * @returns a promise resoved when the timout ends
 	 */
 	static Wait = async (t: number): Promise<void> => {
-		return new Promise((resolve, reject) => setTimeout(resolve, t))
-	}
+		return new Promise((resolve, _) => setTimeout(resolve, t));
+	};
 
 	/**
 	 * Fetches JSON data from the given endpoint.
 	 * @param {string} endpoint - The API endpoint to fetch data from.
 	 * @returns {Promise<object>} - A promise that resolves to the JSON data.
 	 * @throws {Error} - Throws an error if the fetch fails or the response is invalid.
-	*/
+	 */
 	static async Fetch_Resource<T = unknown>(endpoint: string): Promise<T> {
 		try {
 			const response = await fetch(endpoint, {
 				method: "GET", // Explicitly specifying GET for clarity
 				headers: {
 					"Content-Type": "application/json", // Ensures the server understands JSON
-					"Accept": "application/json" // Requests JSON response
-				}
+					Accept: "application/json", // Requests JSON response
+				},
 			});
 
 			// Check if the response status is OK (200-299)
@@ -96,27 +100,31 @@ class Utils {
 	 * getFirstPart("single-part");
 	 * // Returns: "single-part"
 	 */
-	static Get_First_Part = function(input: string): string {
+	static Get_First_Part = function (input: string): string {
 		const match = input.match(/^([^-]+-[^-]+)/);
 		return match ? match[0] : input;
-	}
+	};
 
 	/**
 	 * Creation a `link` element and add it to the `node`
 	 * @param {Node} node the node where we will add the link element
 	 * @param {String} href the hyper-ref relative to server root of the CSS file
 	 */
-	static Add_Stylesheet = function(node: Document | ShadowRoot, href: string): void {
-		if (window.CSSStyleSheet && 'replaceSync' in CSSStyleSheet.prototype && node.adoptedStyleSheets !== undefined) {
+	static Add_Stylesheet = function (node: Document | ShadowRoot, href: string): void {
+		if (
+			window.CSSStyleSheet &&
+			"replaceSync" in CSSStyleSheet.prototype &&
+			node.adoptedStyleSheets !== undefined
+		) {
 			const sheet = new CSSStyleSheet();
 			sheet.replaceSync(href);
 			node.adoptedStyleSheets = [...node.adoptedStyleSheets, sheet];
 		} else {
-			const style = document.createElement('style');
+			const style = document.createElement("style");
 			style.textContent = href;
 			node.appendChild(style);
 		}
-	}
+	};
 
 	/**
 	 * Create a element of type `tag` and add it the class `class_name`
@@ -124,7 +132,10 @@ class Utils {
 	 * @param {String} class_name class of the element
 	 * @returns A node element of type `tag` with class `class_name`
 	 */
-	static Create_Element_With_Class<K extends keyof HTMLElementTagNameMap>(tag:  K, class_name: string): HTMLElementTagNameMap[K] {
+	static Create_Element_With_Class<K extends keyof HTMLElementTagNameMap>(
+		tag: K,
+		class_name: string
+	): HTMLElementTagNameMap[K] {
 		const node = document.createElement(tag);
 		node.classList.add(class_name);
 		return node;
@@ -138,8 +149,7 @@ class Utils {
 	 */
 	static Get_Subnode<T extends Element>(parent_node: ParentNode, selector: string): T {
 		const node = parent_node.querySelector(selector);
-		if (!node)
-			throw new Error(`Subnode not found for selector: '${selector}'`);
+		if (!node) throw new Error(`Subnode not found for selector: '${selector}'`);
 		return node as T;
 	}
 
@@ -148,8 +158,7 @@ class Utils {
 	 * @param {Node} node the node where we will whipe all the children
 	 */
 	static Empty_Node(node: Node) {
-		while (node.firstChild)
-			node.removeChild(node.firstChild);
+		while (node.firstChild) node.removeChild(node.firstChild);
 	}
 
 	/**
@@ -163,27 +172,27 @@ class Utils {
 		const copy = clone.firstElementChild as T;
 		target.appendChild(clone);
 		return copy;
-	};
+	}
 
 	/**
 	 * Format minutes as H:MM or :MM
 	 * @param {int} total_seconds an integer representing elapsed minutes
 	 */
 	static Format_Minute(total_seconds: number): string {
-		let negative = '';
+		let negative = "";
 		let total_minutes = total_seconds / 60;
-		if(total_minutes < 0) {
-			negative = '-';
+		if (total_minutes < 0) {
+			negative = "-";
 			total_minutes = -total_minutes;
 		}
 		const h = Math.floor(total_minutes / 60);
 		const m = total_minutes % 60;
-		const mm = m.toString().padStart(2, '0');
+		const mm = m.toString().padStart(2, "0");
 		return negative + (h > 0 ? `${h}:${mm}` : `:${mm}`);
 	}
 
 	static Lighten_Color(hex: string, percent: number = 0.85): string {
-		const color = hex.replace('#', '');
+		const color = hex.replace("#", "");
 
 		const r = parseInt(color.slice(0, 2), 16);
 		const g = parseInt(color.slice(2, 4), 16);
@@ -197,4 +206,4 @@ class Utils {
 	}
 }
 
-export default Utils
+export default Utils;

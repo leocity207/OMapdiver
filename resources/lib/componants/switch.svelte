@@ -1,8 +1,5 @@
 <script lang="ts">
-	let {
-		label = null,
-		checked = $bindable(false)
-	} = $props<{
+	let { label = null, checked = $bindable(false) } = $props<{
 		label: string | null;
 		checked?: boolean;
 	}>();
@@ -13,8 +10,6 @@
 		<span class="switch-label">{label}</span>
 		<div class="space"></div>
 	{/if}
-
-
 
 	<label class="switch">
 		<input type="checkbox" bind:checked />

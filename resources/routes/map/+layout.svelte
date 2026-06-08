@@ -1,43 +1,44 @@
 <script lang="ts">
-	import type { Search_Item } from '$lib/componants/search_bar.svelte';
-	import type { Station, Line} from '$lib/types/network';
-	import type { Color_Map } from '$lib/types/color_map.ts';
-	import { Get_Global_Options } from '$lib/utils/options.svelte.js';
-	import { onMount } from 'svelte';
-	import { navigating, page } from '$app/state';
-	import { goto } from '$app/navigation';
-	import { T } from '$lib/i18n';
-	import Network_Map from '$lib/map/network_map.svelte';
-	import Search_Bar from '$lib/componants/search_bar.svelte';
-	import Hamburger from '$lib/componants/hamburger.svelte';
-	import Left_Panel from '$lib/componants/left_panel.svelte';
-	import Right_Panel from '$lib/componants/right_panel.svelte';
-	import Switch from '$lib/componants/switch.svelte';
+	import type { Search_Item } from "$lib/componants/search_bar.svelte";
+	import type { Station, Line } from "$lib/types/network";
+	import type { Color_Map } from "$lib/types/color_map.ts";
+	import { Get_Global_Options } from "$lib/utils/options.svelte.js";
+	import { onMount } from "svelte";
+	import { navigating, page } from "$app/state";
+	import { goto } from "$app/navigation";
+	import { T } from "$lib/i18n";
+	import Network_Map from "$lib/map/network_map.svelte";
+	import Search_Bar from "$lib/componants/search_bar.svelte";
+	import Hamburger from "$lib/componants/hamburger.svelte";
+	import Left_Panel from "$lib/componants/left_panel.svelte";
+	import Right_Panel from "$lib/componants/right_panel.svelte";
+	import Switch from "$lib/componants/switch.svelte";
 
 	let { data, children } = $props();
 
 	let panel_open = $state(false);
 	let global_options = Get_Global_Options();
-	let color_mode = $derived(global_options.easy_color_mode ? 'easy' : 'default') as Color_Map;
-	let map: Network_Map | null = null; 
+	let color_mode = $derived(global_options.easy_color_mode ? "easy" : "default") as Color_Map;
+	let map: Network_Map | null = null;
 
-
-	let is_viewing_element = $derived(
-		page.url.pathname.match(/^\/map\/[^/]+$/) != null
-	);
+	let is_viewing_element = $derived(page.url.pathname.match(/^\/map\/[^/]+$/) != null);
 
 	const search_items = $derived.by<Search_Item[]>(() => {
-		const stations = Object.entries<Station>(data.network_data.stations).map(([id, station]: [string, Station]) => ({
-			id: station.id,
-			label: station.label,
-			type: 'station' as const
-		}));
+		const stations = Object.entries<Station>(data.network_data.stations).map(
+			([_, station]: [string, Station]) => ({
+				id: station.id,
+				label: station.label,
+				type: "station" as const,
+			})
+		);
 
-		const lines = Object.entries<Line>(data.network_data.lines).map(([id, line]: [string, Line]) => ({
-			id: line.id,
-			label: line.label,
-			type: 'line' as const
-		}));
+		const lines = Object.entries<Line>(data.network_data.lines).map(
+			([_, line]: [string, Line]) => ({
+				id: line.id,
+				label: line.label,
+				type: "line" as const,
+			})
+		);
 
 		return [...stations, ...lines].sort((a, b) => a.label.localeCompare(b.label));
 	});
@@ -45,40 +46,36 @@
 	const Open_Element = (id: string): Promise<void> => goto(`/map/${id}`);
 	const Handle_Map_Select = (id: string): Promise<void> => Open_Element(id);
 	const Handle_Search_Select = (item: Search_Item): Promise<void> => {
-		if(item.type === 'station')
-			map?.Highlight_Station_Lines(item.id);
-		else if(item.type === 'line')
-			map?.Highlight_Line(item.id);
+		if (item.type === "station") map?.Highlight_Station_Lines(item.id);
+		else if (item.type === "line") map?.Highlight_Line(item.id);
 		return Open_Element(item.id);
 	};
 
 	$effect(() => {
-		if (!is_viewing_element && map !== null)
-			map.Clear_Highlighted_Lines();
+		if (!is_viewing_element && map !== null) map.Clear_Highlighted_Lines();
 	});
 
 	onMount(() => {
 		// Listen for line-click events from map
-		const handle_line_click = (event: Event) => {
+		const Handle_Line_Click = (event: Event) => {
 			const custom_event = event as CustomEvent<string>;
 			Open_Element(custom_event.detail);
 		};
 
 		// Listen for station-click events from map
-		const handle_station_click = (event: Event) => {
+		const Handle_Station_Click = (event: Event) => {
 			const custom_event = event as CustomEvent<string>;
 			Open_Element(custom_event.detail);
 		};
 
-		document.addEventListener('line-click', handle_line_click);
-		document.addEventListener('station-click', handle_station_click);
+		document.addEventListener("line-click", Handle_Line_Click);
+		document.addEventListener("station-click", Handle_Station_Click);
 
 		return () => {
-			document.removeEventListener('line-click', handle_line_click);
-			document.removeEventListener('station-click', handle_station_click);
+			document.removeEventListener("line-click", Handle_Line_Click);
+			document.removeEventListener("station-click", Handle_Station_Click);
 		};
 	});
-
 </script>
 
 <svelte:head>
@@ -86,14 +83,17 @@
 </svelte:head>
 
 <div class="shell">
-
 	<header class="topbar">
 		<div class="topbar-left">
 			<Hamburger bind:active={panel_open} />
 		</div>
 
 		<div class="topbar-center">
-			<Search_Bar items={search_items} placeholder={T('search_all')} On_Select={Handle_Search_Select}/>
+			<Search_Bar
+				items={search_items}
+				placeholder={T("search_all")}
+				On_Select={Handle_Search_Select}
+			/>
 		</div>
 
 		<div class="topbar-right"></div>
@@ -102,20 +102,21 @@
 	<Left_Panel open={panel_open}>
 		<div class="panel-header">
 			<div>
-				<div class="panel-title">{T('direct_routes')}</div>
-				<div class="panel-subtitle">{T('select_station_or_line')}</div>
+				<div class="panel-title">{T("direct_routes")}</div>
+				<div class="panel-subtitle">{T("select_station_or_line")}</div>
 			</div>
 		</div>
 
 		<div class="panel-options">
-			<div class="options-title">{T('options')}:</div>
-			<Switch label={T('easy_color_mode')} bind:checked={global_options.easy_color_mode} />
+			<div class="options-title">{T("options")}:</div>
+			<Switch label={T("easy_color_mode")} bind:checked={global_options.easy_color_mode} />
 		</div>
 	</Left_Panel>
 
 	<div class="workspace">
 		<section class="map-pane">
-			<Network_Map bind:this={map}
+			<Network_Map
+				bind:this={map}
 				network_data={data.network_data}
 				On_Station_Click={Handle_Map_Select}
 				On_Line_Click={Handle_Map_Select}
@@ -134,7 +135,6 @@
 </div>
 
 <style>
-
 	.topbar {
 		width: 100%;
 		display: flex;
@@ -178,7 +178,7 @@
 	}
 
 	.workspace {
-		position:absolute;
+		position: absolute;
 		flex: 1 1 auto;
 		min-height: 0;
 		display: grid;

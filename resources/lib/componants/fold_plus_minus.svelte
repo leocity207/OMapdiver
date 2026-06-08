@@ -1,26 +1,21 @@
 <script lang="ts">
-
-	let {
-		active = $bindable(),
-		title = "Fold plus/minus"
-	} = $props<{ 
+	let { active = $bindable(), title = "Fold plus/minus" } = $props<{
 		active: boolean;
 		title?: string;
 	}>();
 
-	const onclick =() => (active = !active);
-	
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	const onclick = () => (active = !active);
 </script>
 
 <button {onclick} aria-pressed={active} {title}>
-	<div class={active ? 'minus' : 'plus'}>
+	<div class={active ? "minus" : "plus"}>
 		<div class="horizontal"></div>
 		<div class="vertical"></div>
 	</div>
 </button>
 
 <style>
-
 	button:hover {
 		transform: scale(1.1);
 	}
@@ -45,7 +40,9 @@
 		width: 75%;
 		height: 5%;
 		background-color: black;
-		transition: transform 0.2s ease, opacity 0.2s ease;
+		transition:
+			transform 0.2s ease,
+			opacity 0.2s ease;
 		translate: -50%;
 	}
 
