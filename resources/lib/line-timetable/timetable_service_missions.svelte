@@ -1,4 +1,5 @@
 <script lang="ts">
+	/* eslint-disable svelte/no-at-html-tags */
 	import type { Line, Network, Timetable } from "$lib/types/network";
 	import type { Line_Timetable_Options } from "$lib/types/options";
 	import type { Pattern_Scheme } from "$lib/componants/pattern_switch.svelte";
@@ -103,7 +104,7 @@
 		<!-- HEADER -->
 		<div class="timetable-header">
 			<div class="line-icon" bind:this={line_icon_container}>
-				{line_data.icon}
+				{@html line_data.icon}
 			</div>
 
 			<div class="line-text">
