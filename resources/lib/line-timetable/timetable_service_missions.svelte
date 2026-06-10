@@ -2,9 +2,9 @@
 	/* eslint-disable svelte/no-at-html-tags */
 	import type { Line, Network, Timetable } from "$lib/types/network";
 	import type { Line_Timetable_Options } from "$lib/types/options";
-	import type { Pattern_Scheme } from "$lib/componants/pattern_switch.svelte";
+	import type { Extended_Switch_Choice } from "$lib/componants/extended_switch_dropdown.svelte";
 	import type { Color_Map } from "$lib/types/color_map";
-	import Pattern_Switch from "$lib/componants/pattern_switch.svelte";
+	import Extended_Switch_Dropdown from "$lib/componants/extended_switch_dropdown.svelte";
 	import Utils from "$lib/utils/utils";
 
 	let { line_data, network_data, options, color_mode } = $props<{
@@ -82,7 +82,7 @@
 		if (options.show_hidden_stations) hidden_rows = {};
 	});
 
-	const normal_order: Pattern_Scheme = $derived.by(() => ({
+	const normal_order: Extended_Switch_Choice = $derived.by(() => ({
 		id: "normal",
 		label:
 			network_data.stations[line_data.stations[0]].label +
@@ -90,7 +90,7 @@
 			network_data.stations[line_data.stations[line_data.stations.length - 1]].label,
 	}));
 
-	const reversed_order: Pattern_Scheme = $derived.by(() => ({
+	const reversed_order: Extended_Switch_Choice = $derived.by(() => ({
 		id: "reversed",
 		label:
 			network_data.stations[line_data.stations[line_data.stations.length - 1]].label +
@@ -112,7 +112,7 @@
 			</div>
 
 			<div class="order-switch">
-				<Pattern_Switch
+				<Extended_Switch_Dropdown
 					choices={[normal_order, reversed_order]}
 					default_choice="normal"
 					On_Change={(value: string) => {

@@ -10,8 +10,7 @@
 	import Network_Map from "$lib/map/network_map.svelte";
 	import Search_Bar from "$lib/componants/search_bar.svelte";
 	import Hamburger from "$lib/componants/hamburger.svelte";
-	import Left_Panel from "$lib/componants/left_panel.svelte";
-	import Right_Panel from "$lib/componants/right_panel.svelte";
+	import Side_Panel from "$lib/componants/side_panel.svelte";
 	import Switch from "$lib/componants/switch.svelte";
 
 	let { data, children } = $props();
@@ -99,7 +98,7 @@
 		<div class="topbar-right"></div>
 	</header>
 
-	<Left_Panel open={panel_open}>
+	<Side_Panel side="left" open={panel_open}>
 		<div class="panel-header">
 			<div>
 				<div class="panel-title">{T("direct_routes")}</div>
@@ -111,7 +110,7 @@
 			<div class="options-title">{T("options")}:</div>
 			<Switch label={T("easy_color_mode")} bind:checked={global_options.easy_color_mode} />
 		</div>
-	</Left_Panel>
+	</Side_Panel>
 
 	<div class="workspace">
 		<section class="map-pane">
@@ -124,9 +123,9 @@
 			/>
 		</section>
 
-		<Right_Panel open={is_viewing_element}>
+		<Side_Panel side="right" open={is_viewing_element}>
 			{@render children()}
-		</Right_Panel>
+		</Side_Panel>
 	</div>
 
 	{#if navigating.to}
