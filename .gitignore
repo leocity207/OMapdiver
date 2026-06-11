@@ -75,3 +75,5 @@ out/*
 resources/tsbuild/*
 .svelte-kit/*
 coverage/*
+playwright-report/
+test-results/
