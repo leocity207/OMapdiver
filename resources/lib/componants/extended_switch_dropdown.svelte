@@ -86,7 +86,11 @@
 		}
 
 		// Find in special toggle
-		if (!selected_button && special_toggle && special_choices.some((c: Extended_Switch_Choice) => c.id === current_state)) {
+		if (
+			!selected_button &&
+			special_toggle &&
+			special_choices.some((c: Extended_Switch_Choice) => c.id === current_state)
+		) {
 			selected_button = special_toggle;
 		}
 
@@ -111,7 +115,9 @@
 
 	// Get ordered normal entries
 	let ordered_entries = $derived.by(() => {
-		const default_entry = normal_choices.find((c: Extended_Switch_Choice) => c.id === default_choice);
+		const default_entry = normal_choices.find(
+			(c: Extended_Switch_Choice) => c.id === default_choice
+		);
 
 		if (!default_entry) return normal_choices;
 
@@ -123,7 +129,9 @@
 
 	// Get selected special choice label
 	let selected_special_label = $derived.by(() => {
-		const selected = special_choices.find((c: Extended_Switch_Choice) => c.id === current_state);
+		const selected = special_choices.find(
+			(c: Extended_Switch_Choice) => c.id === current_state
+		);
 		return selected ? selected.label : T("more");
 	});
 
