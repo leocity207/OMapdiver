@@ -9,6 +9,7 @@ services:
     environment:
       ORM_HOST: oatpp-orm
       NODE_ENV: production
+      ORIGIN: http://localhost:3000
     depends_on:
       oatpp-orm:
         condition: service_healthy

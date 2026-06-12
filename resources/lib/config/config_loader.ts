@@ -19,16 +19,14 @@ async function Load_JSON<T>(fetch_fn: typeof fetch, path: string): Promise<T> {
 export async function Init_Config(fetch_fn: typeof fetch) {
 	if (initialized) return;
 
-	const [app, base, network] = await Promise.all([
+	const [app, map, network] = await Promise.all([
 		Load_JSON<App_Config_Type>(fetch_fn, "/customization/app_config.json"),
-
 		Load_JSON<Map_Config_Type>(fetch_fn, "/customization/map_config.json"),
-
 		Load_JSON<Network_Config_Type>(fetch_fn, "/customization/network_config.json"),
 	]);
 
 	app_config = app;
-	map_config = base;
+	map_config = map;
 	network_config = network;
 
 	initialized = true;
