@@ -36,7 +36,10 @@ export default defineConfig({
 				branches: 100,
 				statements: 100
 			}
-		}
+		},
+		include: [
+			'resources/**/*.test.ts'
+		]
 	},
 
 	build: {
