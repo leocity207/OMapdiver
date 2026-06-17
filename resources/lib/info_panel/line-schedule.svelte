@@ -3,7 +3,7 @@
 	import type { Network, Pattern, Line } from "$lib/types/network";
 	import type { Color_Map } from "$lib/types/color_map.ts";
 	import LineStation from "./line-station.svelte";
-	import FoldPlusMinus from "$lib/componants/fold_plus_minus.svelte";
+	import Expand_Button from "$lib/componants/expand_button.svelte";
 	import Utils from "$lib/utils/utils";
 
 	let {
@@ -129,7 +129,7 @@
 				</div>
 			{/if}
 			<div class="fold-icon">
-				<FoldPlusMinus bind:active={details_open} />
+				<Expand_Button bind:active={details_open} />
 			</div>
 		</div>
 	</button>

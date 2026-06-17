@@ -1,24 +1,24 @@
 <script lang="ts">
 	import { T } from "$lib/i18n";
 
-	export interface Pattern_Scheme {
+	export interface Extended_Switch_Choice {
 		id: string;
 		label: string;
 		is_exceptional?: boolean;
 	}
 
 	let { choices, default_choice, On_Change } = $props<{
-		choices: Pattern_Scheme[];
+		choices: Extended_Switch_Choice[];
 		default_choice: string;
 		On_Change: ((value: string) => void) | null;
 	}>();
 
 	// State
 	let normal_choices = $derived.by(() =>
-		choices.filter((choice: Pattern_Scheme) => !choice.is_exceptional)
+		choices.filter((choice: Extended_Switch_Choice) => !choice.is_exceptional)
 	);
 	let special_choices = $derived.by(() =>
-		choices.filter((choice: Pattern_Scheme) => choice.is_exceptional)
+		choices.filter((choice: Extended_Switch_Choice) => choice.is_exceptional)
 	);
 	let current_state = $state<string>("");
 	let dropdown_open = $state(false);
@@ -29,7 +29,7 @@
 	let track: HTMLElement;
 
 	// Derived
-	let all_states = $derived.by(() => choices.map((v: Pattern_Scheme) => v.id));
+	let all_states = $derived.by(() => choices.map((v: Extended_Switch_Choice) => v.id));
 
 	$effect(() => {
 		if (default_choice && all_states.includes(default_choice)) current_state = default_choice;
@@ -40,9 +40,8 @@
 	function On_Normal_Click(event: MouseEvent) {
 		event.stopPropagation();
 		const target = event.currentTarget as HTMLElement;
-		if (!target?.dataset.value) return;
+		const value = target.dataset.value!;
 
-		const value = target.dataset.value;
 		current_state = value;
 		dropdown_open = false;
 		On_Change(value);
@@ -50,16 +49,14 @@
 
 	function Handle_Special_Toggle(event: MouseEvent) {
 		event.stopPropagation();
-		if (special_choices.length === 0) return;
 		dropdown_open = !dropdown_open;
 	}
 
 	function Handle_Special_Choice_Click(event: MouseEvent) {
 		event.stopPropagation();
 		const target = event.currentTarget as HTMLElement;
-		if (!target?.dataset.value) return;
+		const value = target.dataset.value!;
 
-		const value = target.dataset.value;
 		current_state = value;
 		dropdown_open = false;
 		On_Change(value);
@@ -89,10 +86,12 @@
 		}
 
 		// Find in special toggle
-		if (!selected_button && special_toggle) {
-			const is_special = special_choices.some((c: Pattern_Scheme) => c.id === current_state);
-
-			if (is_special) selected_button = special_toggle;
+		if (
+			!selected_button &&
+			special_toggle &&
+			special_choices.some((c: Extended_Switch_Choice) => c.id === current_state)
+		) {
+			selected_button = special_toggle;
 		}
 
 		if (!selected_button) {
@@ -116,24 +115,28 @@
 
 	// Get ordered normal entries
 	let ordered_entries = $derived.by(() => {
-		const default_entry = normal_choices.find((c: Pattern_Scheme) => c.id === default_choice);
+		const default_entry = normal_choices.find(
+			(c: Extended_Switch_Choice) => c.id === default_choice
+		);
 
 		if (!default_entry) return normal_choices;
 
 		return [
 			default_entry,
-			...normal_choices.filter((c: Pattern_Scheme) => c.id !== default_choice),
+			...normal_choices.filter((c: Extended_Switch_Choice) => c.id !== default_choice),
 		];
 	});
 
 	// Get selected special choice label
 	let selected_special_label = $derived.by(() => {
-		const selected = special_choices.find((c: Pattern_Scheme) => c.id === current_state);
+		const selected = special_choices.find(
+			(c: Extended_Switch_Choice) => c.id === current_state
+		);
 		return selected ? selected.label : T("more");
 	});
 
 	let is_special_selected = $derived.by(() =>
-		special_choices.some((c: Pattern_Scheme) => c.id === current_state)
+		special_choices.some((c: Extended_Switch_Choice) => c.id === current_state)
 	);
 
 	// Action to register button references

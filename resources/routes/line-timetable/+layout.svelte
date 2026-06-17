@@ -8,10 +8,10 @@
 	import { Get_Global_Options } from "$lib/utils/options.svelte.js";
 	import Top_Panel from "$lib/componants/top_panel.svelte";
 	import Line_Selector_Panel from "$lib/line-timetable/line_selector_panel.svelte";
-	import Pattern_Switch from "$lib/componants/pattern_switch.svelte";
+	import Extended_Switch_Dropdown from "$lib/componants/extended_switch_dropdown.svelte";
 	import SearchBar from "$lib/componants/search_bar.svelte";
 	import Hamburger from "$lib/componants/hamburger.svelte";
-	import LeftPanel from "$lib/componants/left_panel.svelte";
+	import Side_Panel from "$lib/componants/side_panel.svelte";
 	import Switch from "$lib/componants/switch.svelte";
 
 	let { data, children } = $props();
@@ -112,7 +112,7 @@
 		<Line_Selector_Panel {network_data} On_Line_Selected={Handle_Line_Select} {color_mode} />
 	</Top_Panel>
 
-	<LeftPanel open={panel_open}>
+	<Side_Panel side="left" open={panel_open}>
 		<div class="panel-header">
 			<div>
 				<div class="panel-title">{T("timetable_lines")}</div>
@@ -134,13 +134,13 @@
 				bind:checked={line_options.show_arrival_times}
 			/>
 		</div>
-	</LeftPanel>
+	</Side_Panel>
 
 	<!-- Pattern Switches -->
 	<div class="patterns-container">
 		<div class="pattern-switch-group">
 			<label for="calendar-pattern-switch">{T("calendar_pattern")}: </label>
-			<Pattern_Switch
+			<Extended_Switch_Dropdown
 				choices={calendar_patterns}
 				default_choice="all"
 				On_Change={Handle_Calendar_Pattern_Change}
@@ -149,7 +149,7 @@
 
 		<div class="pattern-switch-group">
 			<label for="stop-pattern-switch">{T("stop_pattern")}: </label>
-			<Pattern_Switch
+			<Extended_Switch_Dropdown
 				choices={stop_patterns}
 				default_choice="all"
 				On_Change={Handle_Stop_Pattern_Change}

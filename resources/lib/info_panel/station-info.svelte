@@ -3,7 +3,7 @@
 	import type { Color_Map } from "$lib/types/color_map.ts";
 	import { resolve } from "$app/paths";
 	import LineSchedule from "./line-schedule.svelte";
-	import Round_Cross from "$lib/componants/round-cross.svelte";
+	import Cross_Button from "$lib/componants/cross_button.svelte";
 	import { goto } from "$app/navigation";
 	import { T } from "$lib/i18n";
 
@@ -60,7 +60,7 @@
 			{station_data.label}
 		</div>
 		<div class="close-button">
-			<Round_Cross onclick={() => goto(resolve("/map", {}))} />
+			<Cross_Button onclick={() => goto(resolve("/map", {}))} />
 		</div>
 	</header>
 

@@ -1,11 +1,13 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { svelteTesting } from '@testing-library/svelte/vite';
 
 const orm_host = process.env.ORM_HOST ?? '127.0.0.1';
 
 console.log(`Using ORM_HOST: ${orm_host}`);
+
 export default defineConfig({
-	plugins: [sveltekit()],
+	plugins: [sveltekit(), svelteTesting()],
 
 	optimizeDeps: {
 		include: ['fabric', 'animejs', 'hammerjs', 'normalize-wheel', 'rxjs']
@@ -20,6 +22,24 @@ export default defineConfig({
 				changeOrigin: true
 			}
 		}
+	},
+
+	test: {
+		environment: 'jsdom',
+
+		coverage: {
+			provider: 'v8',
+			reporter: ['text', 'html'],
+			thresholds: {
+				lines: 100,
+				functions: 100,
+				branches: 100,
+				statements: 100
+			}
+		},
+		include: [
+			'resources/**/*.test.ts'
+		]
 	},
 
 	build: {

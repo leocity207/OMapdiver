@@ -74,3 +74,6 @@ node/cache/network_data_cache.json
 out/*
 resources/tsbuild/*
 .svelte-kit/*
+coverage/*
+playwright-report/
+test-results/

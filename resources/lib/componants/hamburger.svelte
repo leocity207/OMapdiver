@@ -1,5 +1,5 @@
 <script lang="ts">
-	let { active = $bindable(), title = "Fold plus/minus" } = $props<{
+	let { active = $bindable(), title = "Hamburger" } = $props<{
 		active: boolean;
 		title?: string;
 	}>();
