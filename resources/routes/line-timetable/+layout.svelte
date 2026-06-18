@@ -1,11 +1,12 @@
 <script lang="ts">
-	import type { Search_Item } from "$lib/componants/search_bar.svelte";
-	import type { Network, Line } from "$lib/types/network";
+	import type { Network } from "$lib/types/network";
 	import type { Color_Map } from "$lib/types/color_map";
+	import type { Search_Item } from "$lib/types/search_items.ts";
 	import { goto } from "$app/navigation";
 	import { T, Translate_Or_Value } from "$lib/i18n";
 	import { Get_Line_Timetable_Options } from "$lib/utils/options.svelte.js";
 	import { Get_Global_Options } from "$lib/utils/options.svelte.js";
+	import { Get_Line_Search_Items } from "$lib/utils/search_items";
 	import Top_Panel from "$lib/componants/top_panel.svelte";
 	import Line_Selector_Panel from "$lib/line-timetable/line_selector_panel.svelte";
 	import Extended_Switch_Dropdown from "$lib/componants/extended_switch_dropdown.svelte";
@@ -21,17 +22,7 @@
 	let color_mode = $derived(global_options.easy_color_mode ? "easy" : "default") as Color_Map;
 	let line_options = Get_Line_Timetable_Options();
 
-	const search_items = $derived.by<Search_Item[]>(() => {
-		const lines = Object.entries(data.network_data.lines).map(
-			([id, value]: [string, Line]) => ({
-				id,
-				type: "line" as const,
-				label: value.label,
-			})
-		);
-
-		return [...lines].sort((a, b) => a.label.localeCompare(b.label));
-	});
+	const search_items = $derived.by(() => Get_Line_Search_Items(data.network_data.lines));
 
 	const network_data = $derived(data.network_data as Network);
 

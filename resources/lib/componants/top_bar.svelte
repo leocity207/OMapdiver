@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Hamburger from "$lib/componants/hamburger.svelte";
 	import SearchBar from "$lib/componants/search_bar.svelte";
-	import type { Search_Item } from "$lib/componants/search_bar.svelte";
+	import type { Search_Item } from "$lib/types/search_items.ts";
 
 	let {
 		panel_open = $bindable(false),

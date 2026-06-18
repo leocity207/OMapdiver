@@ -1,12 +1,12 @@
 <script lang="ts">
-	import type { Search_Item } from "$lib/componants/search_bar.svelte";
-	import type { Station, Line } from "$lib/types/network";
 	import type { Color_Map } from "$lib/types/color_map.ts";
+	import type { Search_Item } from "$lib/types/search_items.ts";
 	import { Get_Global_Options } from "$lib/utils/options.svelte.js";
 	import { onMount } from "svelte";
 	import { navigating, page } from "$app/state";
 	import { goto } from "$app/navigation";
 	import { T } from "$lib/i18n";
+	import { Get_All_Search_Items } from "$lib/utils/search_items";
 	import Network_Map from "$lib/map/network_map.svelte";
 	import Top_Bar from "$lib/componants/top_bar.svelte";
 	import Side_Panel from "$lib/componants/side_panel.svelte";
@@ -21,25 +21,7 @@
 
 	let is_viewing_element = $derived(page.url.pathname.match(/^\/map\/[^/]+$/) != null);
 
-	const search_items = $derived.by<Search_Item[]>(() => {
-		const stations = Object.entries<Station>(data.network_data.stations).map(
-			([_, station]: [string, Station]) => ({
-				id: station.id,
-				label: station.label,
-				type: "station" as const,
-			})
-		);
-
-		const lines = Object.entries<Line>(data.network_data.lines).map(
-			([_, line]: [string, Line]) => ({
-				id: line.id,
-				label: line.label,
-				type: "line" as const,
-			})
-		);
-
-		return [...stations, ...lines].sort((a, b) => a.label.localeCompare(b.label));
-	});
+	const search_items = $derived.by(() => Get_All_Search_Items(data.network_data));
 
 	const Open_Element = (id: string): Promise<void> => goto(`/map/${id}`);
 	const Handle_Map_Select = (id: string): Promise<void> => Open_Element(id);

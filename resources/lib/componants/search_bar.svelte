@@ -1,15 +1,10 @@
 <script lang="ts">
-	export interface Search_Item {
-		label: string;
-		id: string;
-		type: "station" | "line";
-	}
+	import type { Search_Item } from "$lib/types/search_items.ts";
 
 	let {
 		current_text = $bindable(""),
 		placeholder,
 		items,
-
 		On_Select,
 	} = $props<{
 		current_text?: string;
