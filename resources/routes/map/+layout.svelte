@@ -1,15 +1,14 @@
 <script lang="ts">
-	import type { Search_Item } from "$lib/componants/search_bar.svelte";
-	import type { Station, Line } from "$lib/types/network";
 	import type { Color_Map } from "$lib/types/color_map.ts";
+	import type { Search_Item } from "$lib/types/search_items.ts";
 	import { Get_Global_Options } from "$lib/utils/options.svelte.js";
 	import { onMount } from "svelte";
 	import { navigating, page } from "$app/state";
 	import { goto } from "$app/navigation";
 	import { T } from "$lib/i18n";
+	import { Get_All_Search_Items } from "$lib/utils/search_items";
 	import Network_Map from "$lib/map/network_map.svelte";
-	import Search_Bar from "$lib/componants/search_bar.svelte";
-	import Hamburger from "$lib/componants/hamburger.svelte";
+	import Top_Bar from "$lib/componants/top_bar.svelte";
 	import Side_Panel from "$lib/componants/side_panel.svelte";
 	import Switch from "$lib/componants/switch.svelte";
 
@@ -22,25 +21,7 @@
 
 	let is_viewing_element = $derived(page.url.pathname.match(/^\/map\/[^/]+$/) != null);
 
-	const search_items = $derived.by<Search_Item[]>(() => {
-		const stations = Object.entries<Station>(data.network_data.stations).map(
-			([_, station]: [string, Station]) => ({
-				id: station.id,
-				label: station.label,
-				type: "station" as const,
-			})
-		);
-
-		const lines = Object.entries<Line>(data.network_data.lines).map(
-			([_, line]: [string, Line]) => ({
-				id: line.id,
-				label: line.label,
-				type: "line" as const,
-			})
-		);
-
-		return [...stations, ...lines].sort((a, b) => a.label.localeCompare(b.label));
-	});
+	const search_items = $derived.by(() => Get_All_Search_Items(data.network_data));
 
 	const Open_Element = (id: string): Promise<void> => goto(`/map/${id}`);
 	const Handle_Map_Select = (id: string): Promise<void> => Open_Element(id);
@@ -82,21 +63,12 @@
 </svelte:head>
 
 <div class="shell">
-	<header class="topbar">
-		<div class="topbar-left">
-			<Hamburger bind:active={panel_open} />
-		</div>
-
-		<div class="topbar-center">
-			<Search_Bar
-				items={search_items}
-				placeholder={T("search_all")}
-				On_Select={Handle_Search_Select}
-			/>
-		</div>
-
-		<div class="topbar-right"></div>
-	</header>
+	<Top_Bar
+		bind:panel_open
+		{search_items}
+		search_placeholder={T("search_all")}
+		on_search_select={Handle_Search_Select}
+	/>
 
 	<Side_Panel side="left" open={panel_open}>
 		<div class="panel-header">
@@ -134,19 +106,6 @@
 </div>
 
 <style>
-	.topbar {
-		width: 100%;
-		display: flex;
-		padding-top: 0.5em;
-		padding-bottom: 0.5em;
-		position: relative;
-		z-index: 1000;
-		background-color: #f5f5f5;
-		border-bottom-style: solid;
-		border-bottom-color: #9b9b9b;
-		border-bottom-width: 1px;
-	}
-
 	.shell {
 		height: 100dvh;
 		min-height: 0;
@@ -157,23 +116,6 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 1rem;
-	}
-
-	.topbar-left {
-		flex: 0 0 auto;
-		display: flex;
-		align-items: center;
-		padding-left: 0.5em;
-	}
-
-	.topbar-center {
-		flex: 1 0 auto;
-		display: flex;
-		justify-content: center;
-	}
-
-	.topbar-right {
-		flex: 0 0 auto;
 	}
 
 	.workspace {

@@ -1,16 +1,16 @@
 <script lang="ts">
-	import type { Search_Item } from "$lib/componants/search_bar.svelte";
-	import type { Network, Line } from "$lib/types/network";
+	import type { Network } from "$lib/types/network";
 	import type { Color_Map } from "$lib/types/color_map";
+	import type { Search_Item } from "$lib/types/search_items.ts";
 	import { goto } from "$app/navigation";
 	import { T, Translate_Or_Value } from "$lib/i18n";
 	import { Get_Line_Timetable_Options } from "$lib/utils/options.svelte.js";
 	import { Get_Global_Options } from "$lib/utils/options.svelte.js";
+	import { Get_Line_Search_Items } from "$lib/utils/search_items";
 	import Top_Panel from "$lib/componants/top_panel.svelte";
 	import Line_Selector_Panel from "$lib/line-timetable/line_selector_panel.svelte";
 	import Extended_Switch_Dropdown from "$lib/componants/extended_switch_dropdown.svelte";
-	import SearchBar from "$lib/componants/search_bar.svelte";
-	import Hamburger from "$lib/componants/hamburger.svelte";
+	import Top_Bar from "$lib/componants/top_bar.svelte";
 	import Side_Panel from "$lib/componants/side_panel.svelte";
 	import Switch from "$lib/componants/switch.svelte";
 
@@ -22,17 +22,7 @@
 	let color_mode = $derived(global_options.easy_color_mode ? "easy" : "default") as Color_Map;
 	let line_options = Get_Line_Timetable_Options();
 
-	const search_items = $derived.by<Search_Item[]>(() => {
-		const lines = Object.entries(data.network_data.lines).map(
-			([id, value]: [string, Line]) => ({
-				id,
-				type: "line" as const,
-				label: value.label,
-			})
-		);
-
-		return [...lines].sort((a, b) => a.label.localeCompare(b.label));
-	});
+	const search_items = $derived.by(() => Get_Line_Search_Items(data.network_data.lines));
 
 	const network_data = $derived(data.network_data as Network);
 
@@ -91,21 +81,12 @@
 </svelte:head>
 
 <div class="line-timetable-container">
-	<header class="topbar">
-		<div class="topbar-left">
-			<Hamburger bind:active={panel_open} />
-		</div>
-
-		<div class="topbar-center">
-			<SearchBar
-				items={search_items}
-				placeholder={T("search_line")}
-				On_Select={Handle_Search_Select}
-			/>
-		</div>
-
-		<div class="topbar-right"></div>
-	</header>
+	<Top_Bar
+		bind:panel_open
+		{search_items}
+		search_placeholder={T("search_line")}
+		on_search_select={Handle_Search_Select}
+	/>
 
 	<!-- Top Panel with Line Selector -->
 	<Top_Panel open={line_selector_open}>
@@ -164,33 +145,6 @@
 </div>
 
 <style>
-	.topbar {
-		width: 100%;
-		display: flex;
-		padding-top: 0.5em;
-		padding-bottom: 0.5em;
-		position: relative;
-		z-index: 1000;
-		background-color: #f5f5f5;
-	}
-
-	.topbar-left {
-		flex: 0 0 auto;
-		display: flex;
-		align-items: center;
-		padding-left: 0.5em;
-	}
-
-	.topbar-center {
-		flex: 1 0 auto;
-		display: flex;
-		justify-content: center;
-	}
-
-	.topbar-right {
-		flex: 0 0 auto;
-	}
-
 	.line-timetable-container {
 		display: flex;
 		flex-direction: column;

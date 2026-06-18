@@ -1,6 +1,6 @@
-﻿import { describe, expect, it, vi } from "vitest";
+﻿import type { Search_Item } from "$lib/types/search_items.ts";
+import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render } from "@testing-library/svelte";
-import type { Search_Item } from "$lib/componants/search_bar.svelte";
 import Search_Bar from "$lib/componants/search_bar.svelte";
 
 const items = [
