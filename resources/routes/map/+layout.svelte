@@ -8,8 +8,7 @@
 	import { goto } from "$app/navigation";
 	import { T } from "$lib/i18n";
 	import Network_Map from "$lib/map/network_map.svelte";
-	import Search_Bar from "$lib/componants/search_bar.svelte";
-	import Hamburger from "$lib/componants/hamburger.svelte";
+	import Top_Bar from "$lib/componants/top_bar.svelte";
 	import Side_Panel from "$lib/componants/side_panel.svelte";
 	import Switch from "$lib/componants/switch.svelte";
 
@@ -82,21 +81,12 @@
 </svelte:head>
 
 <div class="shell">
-	<header class="topbar">
-		<div class="topbar-left">
-			<Hamburger bind:active={panel_open} />
-		</div>
-
-		<div class="topbar-center">
-			<Search_Bar
-				items={search_items}
-				placeholder={T("search_all")}
-				On_Select={Handle_Search_Select}
-			/>
-		</div>
-
-		<div class="topbar-right"></div>
-	</header>
+	<Top_Bar
+		bind:panel_open
+		{search_items}
+		search_placeholder={T("search_all")}
+		on_search_select={Handle_Search_Select}
+	/>
 
 	<Side_Panel side="left" open={panel_open}>
 		<div class="panel-header">
@@ -134,19 +124,6 @@
 </div>
 
 <style>
-	.topbar {
-		width: 100%;
-		display: flex;
-		padding-top: 0.5em;
-		padding-bottom: 0.5em;
-		position: relative;
-		z-index: 1000;
-		background-color: #f5f5f5;
-		border-bottom-style: solid;
-		border-bottom-color: #9b9b9b;
-		border-bottom-width: 1px;
-	}
-
 	.shell {
 		height: 100dvh;
 		min-height: 0;
@@ -157,23 +134,6 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 1rem;
-	}
-
-	.topbar-left {
-		flex: 0 0 auto;
-		display: flex;
-		align-items: center;
-		padding-left: 0.5em;
-	}
-
-	.topbar-center {
-		flex: 1 0 auto;
-		display: flex;
-		justify-content: center;
-	}
-
-	.topbar-right {
-		flex: 0 0 auto;
 	}
 
 	.workspace {
