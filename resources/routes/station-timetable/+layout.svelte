@@ -57,10 +57,6 @@
 		on_search_select={Handle_Search_Select}
 	/>
 
-	<!-- Top Panel with Line Selector -->
-	<Top_Panel open={station_selector_open}>
-	</Top_Panel>
-
 	<Side_Panel side="left" open={panel_open}>
 		<div class="panel-header">
 			<div>
