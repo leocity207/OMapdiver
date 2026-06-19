@@ -1,12 +1,13 @@
 const fr = {
 	map: "Carte interactive",
-	timetable_lines: "Horaires des lignes",
-	timetable_stations: "Horaires en gares",
+	lines_timetable: "Horaires des lignes",
+	stations_timetable: "Horaires en gares",
 	loading: "Chargement...",
 	direct_routes: "Liaisons grandes lignes directes",
 	select_station_or_line:
 		"Sélectionnez votre ligne/gare de départ sur la carte ou utilisez le champ de saisie",
 	select_line_timetable: "Sélectionnez une ligne pour afficher sa fiche horaire",
+	select_station_timetable: "Sélectionnez une gare pour afficher sa fiche horaire",
 	options: "Options",
 	easy_color_mode: "Couleur simple",
 	search_all: "Rechercher une gare ou une ligne",

@@ -96,7 +96,7 @@
 	<Side_Panel side="left" open={panel_open}>
 		<div class="panel-header">
 			<div>
-				<div class="panel-title">{T("timetable_lines")}</div>
+				<div class="panel-title">{T("lines_timetable")}</div>
 				<div class="panel-subtitle">{T("select_line_timetable")}</div>
 			</div>
 		</div>

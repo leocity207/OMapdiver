@@ -4,8 +4,8 @@
 
 <div class="empty-state">
 	<div class="empty-state-content">
-		<h1>{T("timetable_stations")}</h1>
-		<p>Select a line from the list above to view its timetable.</p>
+		<h1>{T("lines_timetable")}</h1>
+		<p>{T("select_line_timetable")}</p>
 	</div>
 </div>
 
