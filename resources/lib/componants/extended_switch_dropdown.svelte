@@ -1,11 +1,6 @@
 <script lang="ts">
 	import { T } from "$lib/i18n";
-
-	export interface Extended_Switch_Choice {
-		id: string;
-		label: string;
-		is_exceptional?: boolean;
-	}
+	import type { Extended_Switch_Choice } from "$lib/types/switch.ts";
 
 	let { choices, default_choice, On_Change } = $props<{
 		choices: Extended_Switch_Choice[];

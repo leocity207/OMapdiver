@@ -3,10 +3,11 @@
 	import type { Color_Map } from "$lib/types/color_map";
 	import type { Search_Item } from "$lib/types/search_items.ts";
 	import { goto } from "$app/navigation";
-	import { T, Translate_Or_Value } from "$lib/i18n";
+	import { T } from "$lib/i18n";
 	import { Get_Line_Timetable_Options } from "$lib/utils/options.svelte.js";
 	import { Get_Global_Options } from "$lib/utils/options.svelte.js";
 	import { Get_Line_Search_Items } from "$lib/utils/search_items";
+	import { Get_Choices_For_Calendar_Patterns, Get_Choices_For_Stop_Patterns } from "$lib/utils/patterns_creator";
 	import Top_Panel from "$lib/componants/top_panel.svelte";
 	import Line_Selector_Panel from "$lib/line-timetable/line_selector_panel.svelte";
 	import Extended_Switch_Dropdown from "$lib/componants/extended_switch_dropdown.svelte";
@@ -26,41 +27,10 @@
 
 	const network_data = $derived(data.network_data as Network);
 
-	// Get calendar patterns with 'all' option
-	let calendar_patterns = $derived.by(() => {
-		return [
-			{
-				id: "all",
-				label: T("all"),
-				is_exceptional: false,
-				info: null,
-				icon: null,
-			},
-			...Object.values(network_data.calendar_patterns).map((pattern) => ({
-				...pattern,
-				label: Translate_Or_Value(pattern.label),
-			})),
-		];
-	});
+	let calendar_patterns = $derived.by(() => Get_Choices_For_Calendar_Patterns(network_data.calendar_patterns));
 
-	// Get stop patterns with 'all' option
-	let stop_patterns = $derived.by(() => {
-		return [
-			{
-				id: "all",
-				label: T("all"),
-				is_exceptional: false,
-				level: 0,
-				variant: [],
-				color: "",
-				icon: "",
-			},
-			...Object.values(network_data.stop_patterns).map((pattern) => ({
-				...pattern,
-				label: Translate_Or_Value(pattern.label),
-			})),
-		];
-	});
+	let stop_patterns = $derived.by(() => Get_Choices_For_Stop_Patterns(network_data.stop_patterns));
+
 
 	const Handle_Search_Select = (item: Search_Item): Promise<void> => Handle_Line_Select(item.id);
 
