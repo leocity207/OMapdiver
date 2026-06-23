@@ -10,7 +10,6 @@
 		On_Change: ((value: string) => void) | null;
 	}>();
 
-	// — Derived choices ————————————————————————————————
 	let normal_choices = $derived.by(() =>
 		choices.filter((c: Extended_Switch_Choice) => !c.is_exceptional)
 	);
@@ -19,7 +18,6 @@
 	);
 	let all_states = $derived.by(() => choices.map((v: Extended_Switch_Choice) => v.id));
 
-	// — State ——————————————————————————————————————————
 	let current_state = $state<string>("");
 	let search_open = $state(false);
 	let left_buttons = $state<Record<string, HTMLButtonElement>>({});
@@ -29,17 +27,14 @@
 	let container: HTMLElement;
 	let track: HTMLElement;
 
-	// — Search ——————————————————————————————————————————
 	const search = create_search_state(() => special_choices);
 
-	// — Init ———————————————————————————————————————————
 	$effect(() => {
 		if (default_choice && all_states.includes(default_choice))
 			current_state = default_choice;
 		else current_state = all_states[0] ?? "";
 	});
 
-	// — Ordered normal entries —————————————————————————
 	let ordered_entries = $derived.by(() => {
 		const default_entry = normal_choices.find(
 			(c: Extended_Switch_Choice) => c.id === default_choice
@@ -51,7 +46,6 @@
 		];
 	});
 
-	// — Special state labels ———————————————————————————
 	let is_special_selected = $derived.by(() =>
 		special_choices.some((c: Extended_Switch_Choice) => c.id === current_state)
 	);
@@ -60,10 +54,9 @@
 		const selected = special_choices.find(
 			(c: Extended_Switch_Choice) => c.id === current_state
 		);
-		return selected ? selected.label : T("others");
+		return selected ? selected.label : T("other");
 	});
 
-	// — Indicator animation ————————————————————————————
 	$effect(() => {
 		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		current_state;

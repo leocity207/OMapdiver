@@ -33,7 +33,8 @@
 <div class="station-timetable">
 
 	<div class="station-header">
-		<label for="station_direction_switch">{station.label}</label>
+		<div class="station-name">{station.label}</div>
+		<label for="station_direction_switch">{T("direction")}</label>
 		<Station_Direction_Switch
             {station}
             {network}
@@ -71,9 +72,10 @@
 		padding: 0.75rem 1rem;
 	}
 
-	.station-header > label {
+	.station-header > .station-name {
 		font-size: larger;
 		font-weight: bold;
+		padding-right: 5rem;
 	}
 
 	.station-timetable {

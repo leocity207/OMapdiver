@@ -14,6 +14,7 @@ const fr = {
 	search_station: "Rechercher une gare",
 	search_line: "Rechercher une ligne",
 	all_directions: "Toutes les directions",
+	direction: "direction",
 	line: "Ligne",
 	more: "Plus",
 	calendar_pattern: "Motif de calendrier",

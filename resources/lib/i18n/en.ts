@@ -13,6 +13,7 @@ const en = {
 	search_line: "Search a line",
 	search_station: "Search a station",
 	all_directions: "All Directions",
+	direction: "Direction",
 	line: "Line",
 	more: "More",
 	calendar_pattern: "Calendar pattern",
