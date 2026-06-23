@@ -8,7 +8,6 @@
 	import { Get_Global_Options } from "$lib/utils/options.svelte.js";
 	import { Get_Station_Search_Items } from "$lib/utils/search_items";
 	import { Get_Choices_For_Calendar_Patterns, Get_Choices_For_Stop_Patterns } from "$lib/utils/patterns_creator";
-	import Top_Panel from "$lib/componants/top_panel.svelte";
 	import Extended_Switch_Dropdown from "$lib/componants/extended_switch_dropdown.svelte";
 	import Top_Bar from "$lib/componants/top_bar.svelte";
 	import Side_Panel from "$lib/componants/side_panel.svelte";

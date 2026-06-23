@@ -40,6 +40,7 @@
 		z-index: 1000;
 		background-color: #f5f5f5;
 	}
+	
 	.topbar-side {
 		flex: 0 0 auto;
 		display: flex;

@@ -21,7 +21,11 @@ const fr = {
 	show_hidden_stations: "Afficher les gares cachées",
 	first_last_mode: "Premier/dernier départ",
 	show_arrival_times: "Afficher les heures d'arrivée",
-
+	no_results: "Aucun résultat",
+	other: "Autre",
+	no_departure: "Aucun depart pour cette station",
+	platform: "quai",
+	
 	all: "Tout",
 	week_end: "Weekend",
 	week: "Semaine",

@@ -1,5 +1,8 @@
 <script lang="ts">
-	import type { Search_Item } from "$lib/types/search_items.ts";
+	import { create_search_state } from "$lib/utils/search_logic.svelte";
+	import SearchResults from "$lib/componants/search_results.svelte";
+	import type { Search_Item } from "$lib/types/search_items";
+	import { T } from "$lib/i18n"
 
 	let {
 		current_text = $bindable(""),
@@ -13,107 +16,35 @@
 		On_Select: (item: Search_Item) => void;
 	}>();
 
-	let focused = $state(false);
-	let current_focus = $state(-1);
+	const search = create_search_state(() => items);
 
-	let filtered_items = $derived.by(() => {
-		if (!current_text.trim()) return [];
-		const query = current_text.toLowerCase();
-		return items.filter((item: Search_Item) => item.label.toLowerCase().includes(query));
-	});
-
-	function Handle_Select(item: Search_Item) {
+	function on_select(item: Search_Item) {
 		current_text = item.label;
-		On_Select(item);
-		focused = false;
-		current_focus = -1;
-	}
-
-	function Handle_Key_Down(e: KeyboardEvent) {
-		if (!focused || filtered_items.length === 0) {
-			if (e.key === "Enter") {
-				e.preventDefault();
-				focused = true;
-			}
-			return;
-		}
-
-		switch (e.key) {
-			case "ArrowDown":
-				e.preventDefault();
-				current_focus = (current_focus + 1) % filtered_items.length;
-				break;
-
-			case "ArrowUp":
-				e.preventDefault();
-				current_focus = (current_focus - 1 + filtered_items.length) % filtered_items.length;
-				break;
-
-			case "Enter":
-				e.preventDefault();
-				if (current_focus >= 0 && current_focus < filtered_items.length)
-					Handle_Select(filtered_items[current_focus]);
-				break;
-
-			case "Escape":
-				e.preventDefault();
-				focused = false;
-				current_focus = -1;
-				break;
-
-			case "Tab":
-				focused = false;
-				current_focus = -1;
-				break;
-		}
-	}
-
-	function Handle_Input() {
-		focused = true;
-		current_focus = -1;
-	}
-
-	function Handle_Focus() {
-		focused = true;
-	}
-
-	function Handle_Blur() {
-		// Small delay to allow click on autocomplete item
-		setTimeout(() => {
-			focused = false;
-			current_focus = -1;
-		}, 100);
+		search.handle_select(item, On_Select);
 	}
 </script>
 
 <div class="search-bar-wrapper">
 	<input
 		class="search-input"
-		bind:value={current_text}
+		bind:value={search.search_text}
 		{placeholder}
-		onfocus={Handle_Focus}
-		onblur={Handle_Blur}
-		oninput={Handle_Input}
-		onkeydown={Handle_Key_Down}
+		onfocus={search.handle_focus}
+		onblur={search.handle_blur}
+		oninput={search.handle_input}
+		onkeydown={(e) => search.handle_key_down(e, on_select)}
 		autocomplete="off"
 	/>
-
-	{#if focused && filtered_items.length > 0}
+	{#if search.focused && search.filtered.length > 0}
 		<div class="autocomplete-items">
-			{#each filtered_items as item, index (index)}
-				<div
-					class="autocomplete-item"
-					class:autocomplete-active={index === current_focus}
-					onclick={() => Handle_Select(item)}
-					onkeydown={Handle_Key_Down}
-					role="option"
-					tabindex={index}
-					aria-selected={index === current_focus}
-				>
-					<strong>{item.label.substring(0, current_text.length)}</strong
-					>{item.label.substring(current_text.length)}
-				</div>
-			{/each}
+			<SearchResults
+				items={search.filtered}
+				current_focus={search.current_focus}
+				search_text={search.search_text}
+				on_select={on_select}
+				on_keydown={(e) => search.handle_key_down(e, on_select)}
+				empty_label={T("no_results")}
+			/>
 		</div>
 	{/if}
 </div>
@@ -123,7 +54,6 @@
 		position: relative;
 		flex: 0 0 auto;
 	}
-
 	.search-input {
 		width: 10rem;
 		height: 2rem;
@@ -134,13 +64,11 @@
 		font: inherit;
 		outline: none;
 		font-size: 1rem;
-	}
 
-	.search-input:focus {
-		border-color: #b3b3b3;
-		outline: none;
+		&:focus {
+			border-color: #b3b3b3;
+		}
 	}
-
 	.autocomplete-items {
 		position: absolute;
 		border: 1px solid #ccc;
@@ -151,27 +79,8 @@
 		overflow-y: auto;
 		width: calc(10rem + 5px);
 	}
-
-	.autocomplete-item {
-		padding: 5px;
-		cursor: pointer;
-		border-bottom-width: 0.5px;
-		border-bottom-style: solid;
-		border-bottom-color: #aaaaaa;
-	}
-
-	.autocomplete-item:hover,
-	.autocomplete-active {
-		background-color: #e9e9e9;
-	}
-
 	@media (max-width: 900px) {
-		.search-input {
-			width: 8rem;
-		}
-
-		.autocomplete-items {
-			width: calc(8rem + 5px);
-		}
+		.search-input { width: 8rem; }
+		.autocomplete-items { width: calc(8rem + 5px); }
 	}
 </style>

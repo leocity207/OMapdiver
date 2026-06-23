@@ -20,6 +20,10 @@ const en = {
 	show_hidden_stations: "Show hidden stations",
 	first_last_mode: "First/Last departure mode",
 	show_arrival_times: "Show arrival times",
+	no_results: "No results",
+	other: "Other",
+	no_departure: "No departures for this station.",
+	platform: "platform",
 
 	all: "All",
 	week_end: "Weekend",
