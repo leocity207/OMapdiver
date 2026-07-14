@@ -1,10 +1,9 @@
 <script lang="ts">
 	import type { Network } from "$lib/types/network";
-	import type { Color_Map } from "$lib/types/color_map";
 	import type { Search_Item } from "$lib/types/search_items.ts";
 	import { goto } from "$app/navigation";
 	import { T } from "$lib/i18n";
-	import { Get_Line_Timetable_Options } from "$lib/utils/options.svelte.js";
+	import { Get_Station_Timetable_Options } from "$lib/utils/options.svelte.js";
 	import { Get_Global_Options } from "$lib/utils/options.svelte.js";
 	import { Get_Station_Search_Items } from "$lib/utils/search_items";
 	import { Get_Choices_For_Calendar_Patterns, Get_Choices_For_Stop_Patterns } from "$lib/utils/patterns_creator";
@@ -15,11 +14,9 @@
 
 	let { data, children } = $props();
 
-	let station_selector_open = $state(true);
 	let panel_open = $state(false);
 	let global_options = Get_Global_Options();
-	let color_mode = $derived(global_options.easy_color_mode ? "easy" : "default") as Color_Map;
-	let line_options = Get_Line_Timetable_Options();
+	let station_options = Get_Station_Timetable_Options();
 
 	const search_items = $derived.by(() => Get_Station_Search_Items(data.network_data.stations));
 
@@ -36,11 +33,11 @@
 		goto(`/station-timetable/${encodeURIComponent(station_id)}`);
 
 	const Handle_Calendar_Pattern_Change = (value: string): void => {
-		line_options.selected_calendar_pattern = value;
+		station_options.selected_calendar_pattern = value;
 	};
 
 	const Handle_Stop_Pattern_Change = (value: string): void => {
-		line_options.selected_stop_pattern = value;
+		station_options.selected_stop_pattern = value;
 	};
 </script>
 
@@ -71,7 +68,6 @@
 		</div>
 	</Side_Panel>
 
-	<!-- Pattern Switches -->
 	<div class="patterns-container">
 		<div class="pattern-switch-group">
 			<label for="calendar-pattern-switch">{T("calendar_pattern")}: </label>
@@ -92,7 +88,6 @@
 		</div>
 	</div>
 
-	<!-- Main Content Area -->
 	<div class="content-area">
 		{@render children()}
 	</div>

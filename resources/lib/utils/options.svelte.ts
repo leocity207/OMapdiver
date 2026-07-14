@@ -55,6 +55,7 @@ export function Get_Station_Timetable_Options(): Station_Timetable_Options {
 		const option2s = $state({
 			selected_calendar_pattern: "all",
 			selected_stop_pattern: "all",
+			direction: "all",
 			show_arrival_times: false,
 		});
 		setContext(STATION_TIMETABLE_OPTIONS_KEY, option2s);
