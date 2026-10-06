@@ -9,13 +9,23 @@
 		entry,
 		show_arrival,
 		on_expand,
-		color_mode
+		color_mode,
+		selected_direction
 	} = $props<{
 		entry: Timetable_Entry;
 		show_arrival: boolean;
 		on_expand: (entry: Timetable_Entry) => void;
 		color_mode: Color_Map;
+		selected_direction: string;
 	}>();
+
+	const is_visible = $derived.by(() => {
+		if (!selected_direction || selected_direction === "all") {
+			return true;
+		}
+
+		return entry.line.stations.includes(selected_direction);
+	});
 
 	let expanded = $state(false);
 	let line_icon_container = $state<HTMLDivElement>();
@@ -32,6 +42,7 @@
 	});
 </script>
 
+{#if is_visible}
 <div class="timetable-row">
 	<!-- Warning -->
 	<div class="col-warning">
@@ -76,6 +87,7 @@
 		<ExpandButton bind:active={expanded} onclick={Handle_Expand} />
 	</div>
 </div>
+{/if}
 
 <style>
 	.timetable-row {

@@ -112,6 +112,7 @@ class Network_Map extends SVG_Map {
 			obj.on("mouseout", this._Handle_Mouse_Out_Obj);
 		}
 
+		// this is done for disabling event for other object especially on line labels
 		const to_be_deactivated = this.Find_Map_Objs_By_Classname("event-disable");
 		for (const obj of to_be_deactivated) {
 			obj.evented = false; // Disable events for the object
@@ -229,17 +230,30 @@ class Network_Map extends SVG_Map {
 			if (!label.id) return;
 			const label_id_first_part = Utils.Get_First_Part(label.id);
 			if (labels_to_higlight.has(label_id_first_part))
+			{
 				this._Change_Obj_Color(
 					label as Fabric_With_Props,
 					line_colors[label_id_first_part],
 					"fill"
 				);
+				this._Change_Obj_Color(
+					label as Fabric_With_Props,
+					line_colors[label_id_first_part],
+				);
+			}
 			else
+			{
 				this._Change_Obj_Color(
 					label as Fabric_With_Props,
 					this.network_config!.DISABLE_ELEMENT_COLOR,
 					"fill"
 				);
+				this._Change_Obj_Color(
+					label as Fabric_With_Props,
+					this.network_config!.DISABLE_ELEMENT_COLOR,
+					"stroke"
+				);
+			}
 		});
 
 		this.fabric_canvas.requestRenderAll();

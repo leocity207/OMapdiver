@@ -3,7 +3,7 @@
 	import type { Timetable_Entry } from "$lib/utils/station_timetable";
 	import type { Station_Timetable_Options } from "$lib/types/options.ts";
 	import type { Color_Map } from "$lib/types/color_map";
-	import { Build_Station_Timetable } from "$lib/utils/station_timetable";
+	import { Build_Station_Timetable, Filter_Station_Timetable_Groups } from "$lib/utils/station_timetable";
 	import { T } from "$lib/i18n"
 	import Station_Timetable_Hour from "$lib/station-timetable/station_timetable_hour.svelte";
 	import Station_Direction_Switch from "$lib/station-timetable/station_direction_switch.svelte";
@@ -23,8 +23,22 @@
 		color_mode: Color_Map;
 	}>();
 
-	let hour_groups = $derived.by(() =>
-		Build_Station_Timetable(station, network, options)
+	const base_hour_groups = $derived.by(() =>
+		Build_Station_Timetable(
+			station,
+			network,
+			{
+				selected_calendar_pattern: "all",
+				selected_stop_pattern: "all",
+				direction: "all",
+				show_arrival_times: false,
+			},
+			false
+		)
+	);
+
+	const hour_groups = $derived.by(() =>
+		Filter_Station_Timetable_Groups(base_hour_groups, options)
 	);
 
 	const On_Direction_Change = (station_id: string) => options.direction = station_id;
@@ -52,6 +66,7 @@
 					show_arrival={options.show_arrival_times}
 					on_expand={On_Train_Selected}
 					{color_mode}
+					selected_direction={options.direction}
 				/>
 			{/each}
 		{/if}

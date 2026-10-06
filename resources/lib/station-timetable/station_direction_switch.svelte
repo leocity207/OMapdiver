@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Network, Station } from "$lib/types/network";
-	import { Get_Direction_Choices } from "$lib/utils/directions";
+	import { Get_Choices_For_Directions } from "$lib/utils/patterns_creator";
 	import ExtendedSwitchSearchbar from "$lib/componants/extended_switch_searchbar.svelte";
 
 	let {
@@ -13,8 +13,10 @@
 		On_Change: ((station_id: string) => void) | null;
 	}>();
 
-	let choices = $derived.by(() => Get_Direction_Choices(station, network));
-	let default_choice = $derived.by(() => choices.find((c) => !c.is_exceptional)?.id ?? "");
+	let choices = $derived.by(() => Get_Choices_For_Directions(station, network));
+	let default_choice = $derived.by(() =>
+		choices.find((c) => c.id === "all")?.id ?? choices.find((c) => !c.is_exceptional)?.id ?? ""
+	);
 </script>
 
 <ExtendedSwitchSearchbar

@@ -106,8 +106,6 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		max-height: 1.5em;
-		border-radius: 4px;
 	}
 
 	.line-icon:hover {

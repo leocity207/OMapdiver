@@ -8,15 +8,28 @@
 		group,
 		show_arrival,
 		on_expand,
-		color_mode
+		color_mode,
+		selected_direction
 	} = $props<{
 		group: Hour_Group;
 		show_arrival: boolean;
 		on_expand: (entry: Timetable_Entry) => void;
 		color_mode: Color_Map;
+		selected_direction: string;
 	}>();
+
+	const visible_entries = $derived.by(() => {
+		if (!selected_direction || selected_direction === "all") {
+			return group.entries;
+		}
+
+		return group.entries.filter((entry: Timetable_Entry) =>
+			entry.line.stations.includes(selected_direction)
+		);
+	});
 </script>
 
+{#if visible_entries.length > 0}
 <div class="hour-group">
 	<div class="hour-header">
 		<span class="hour-label">
@@ -29,16 +42,18 @@
 	</div>
 
 	<div class="hour-rows">
-		{#each group.entries as entry (entry.timetable.id + entry.departure_seconds)}
+		{#each visible_entries as entry (entry.timetable.id + entry.departure_seconds)}
 			<StationTimetableRow
 				{entry}
 				{show_arrival}
 				{on_expand}
 				{color_mode}
+				selected_direction={selected_direction}
 			/>
 		{/each}
 	</div>
 </div>
+{/if}
 
 <style>
 	.hour-group {

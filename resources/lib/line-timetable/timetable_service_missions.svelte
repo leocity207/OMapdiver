@@ -207,6 +207,13 @@
 {/if}
 
 <style>
+	.timetable-header-cell
+	{
+		max-width: 3rem;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+
 	tbody tr:nth-child(even),
 	thead tr {
 		background-color: var(--line-color-light);
