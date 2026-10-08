@@ -7,7 +7,10 @@
 	import { Get_Line_Timetable_Options } from "$lib/utils/options.svelte.js";
 	import { Get_Global_Options } from "$lib/utils/options.svelte.js";
 	import { Get_Line_Search_Items } from "$lib/utils/search_items";
-	import { Get_Choices_For_Calendar_Patterns, Get_Choices_For_Stop_Patterns } from "$lib/utils/patterns_creator";
+	import {
+		Get_Choices_For_Calendar_Patterns,
+		Get_Choices_For_Stop_Patterns,
+	} from "$lib/utils/patterns_creator";
 	import Top_Panel from "$lib/componants/top_panel.svelte";
 	import Line_Selector_Panel from "$lib/line-timetable/line_selector_panel.svelte";
 	import Extended_Switch_Dropdown from "$lib/componants/extended_switch_dropdown.svelte";
@@ -27,10 +30,13 @@
 
 	const network_data = $derived(data.network_data as Network);
 
-	let calendar_patterns = $derived.by(() => Get_Choices_For_Calendar_Patterns(network_data.calendar_patterns));
+	let calendar_patterns = $derived.by(() =>
+		Get_Choices_For_Calendar_Patterns(network_data.calendar_patterns)
+	);
 
-	let stop_patterns = $derived.by(() => Get_Choices_For_Stop_Patterns(network_data.stop_patterns));
-
+	let stop_patterns = $derived.by(() =>
+		Get_Choices_For_Stop_Patterns(network_data.stop_patterns)
+	);
 
 	const Handle_Search_Select = (item: Search_Item): Promise<void> => Handle_Line_Select(item.id);
 

@@ -207,8 +207,7 @@
 {/if}
 
 <style>
-	.timetable-header-cell
-	{
+	.timetable-header-cell {
 		max-width: 3rem;
 		text-overflow: ellipsis;
 		overflow: hidden;

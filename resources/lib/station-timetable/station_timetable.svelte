@@ -3,19 +3,15 @@
 	import type { Timetable_Entry } from "$lib/utils/station_timetable";
 	import type { Station_Timetable_Options } from "$lib/types/options.ts";
 	import type { Color_Map } from "$lib/types/color_map";
-	import { Build_Station_Timetable, Filter_Station_Timetable_Groups } from "$lib/utils/station_timetable";
-	import { T } from "$lib/i18n"
+	import {
+		Build_Station_Timetable,
+		Filter_Station_Timetable_Groups,
+	} from "$lib/utils/station_timetable";
+	import { T } from "$lib/i18n";
 	import Station_Timetable_Hour from "$lib/station-timetable/station_timetable_hour.svelte";
 	import Station_Direction_Switch from "$lib/station-timetable/station_direction_switch.svelte";
-	
 
-	let {
-		station,
-		network,
-		options,
-		On_Train_Selected,
-		color_mode,
-	} = $props<{
+	let { station, network, options, On_Train_Selected, color_mode } = $props<{
 		station: Station;
 		network: Network;
 		options: Station_Timetable_Options;
@@ -41,21 +37,16 @@
 		Filter_Station_Timetable_Groups(base_hour_groups, options)
 	);
 
-	const On_Direction_Change = (station_id: string) => options.direction = station_id;
+	const On_Direction_Change = (station_id: string) => (options.direction = station_id);
 </script>
 
 <div class="station-timetable">
-
 	<div class="station-header">
 		<div class="station-name">{station.label}</div>
 		<label for="station_direction_switch">{T("direction")}</label>
-		<Station_Direction_Switch
-            {station}
-            {network}
-            On_Change={On_Direction_Change}
-        />
+		<Station_Direction_Switch {station} {network} On_Change={On_Direction_Change} />
 	</div>
-	
+
 	<div class="timetable-container">
 		{#if hour_groups.length === 0}
 			<div class="empty">{T("no_departure")}</div>
@@ -74,7 +65,6 @@
 </div>
 
 <style>
-
 	.timetable-container {
 		width: 60%;
 		margin: 0 auto;

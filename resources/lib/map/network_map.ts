@@ -229,8 +229,7 @@ class Network_Map extends SVG_Map {
 		labels.forEach((label) => {
 			if (!label.id) return;
 			const label_id_first_part = Utils.Get_First_Part(label.id);
-			if (labels_to_higlight.has(label_id_first_part))
-			{
+			if (labels_to_higlight.has(label_id_first_part)) {
 				this._Change_Obj_Color(
 					label as Fabric_With_Props,
 					line_colors[label_id_first_part],
@@ -238,11 +237,9 @@ class Network_Map extends SVG_Map {
 				);
 				this._Change_Obj_Color(
 					label as Fabric_With_Props,
-					line_colors[label_id_first_part],
+					line_colors[label_id_first_part]
 				);
-			}
-			else
-			{
+			} else {
 				this._Change_Obj_Color(
 					label as Fabric_With_Props,
 					this.network_config!.DISABLE_ELEMENT_COLOR,

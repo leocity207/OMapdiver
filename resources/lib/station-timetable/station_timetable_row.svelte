@@ -5,13 +5,7 @@
 	import ExpandButton from "$lib/componants/expand_button.svelte";
 	import Utils from "$lib/utils/utils";
 
-	let {
-		entry,
-		show_arrival,
-		on_expand,
-		color_mode,
-		selected_direction
-	} = $props<{
+	let { entry, show_arrival, on_expand, color_mode, selected_direction } = $props<{
 		entry: Timetable_Entry;
 		show_arrival: boolean;
 		on_expand: (entry: Timetable_Entry) => void;
@@ -43,63 +37,63 @@
 </script>
 
 {#if is_visible}
-<div class="timetable-row">
-	<!-- Warning -->
-	<div class="col-warning">
-		{#if entry.has_info}
-			<span class="warning-icon" title={entry.timetable.info_messages[0]?.message}>
-				⚠️
+	<div class="timetable-row">
+		<!-- Warning -->
+		<div class="col-warning">
+			{#if entry.has_info}
+				<span class="warning-icon" title={entry.timetable.info_messages[0]?.message}>
+					⚠️
+				</span>
+			{/if}
+		</div>
+
+		<!-- Arrival (hidden by default, shown via option) -->
+		<div class="col-arrival">
+			{#if show_arrival && entry.arrival_seconds !== null}
+				<span class="time-arrival">
+					{Utils.Format_Minute(entry.arrival_seconds)}
+				</span>
+			{/if}
+		</div>
+
+		<!-- Departure -->
+		<div class="col-time">
+			<span class="time-main">
+				{Utils.Format_Minute(entry.departure_seconds)}
 			</span>
-		{/if}
-	</div>
+		</div>
 
-	<!-- Arrival (hidden by default, shown via option) -->
-	<div class="col-arrival">
-		{#if show_arrival && entry.arrival_seconds !== null}
-			<span class="time-arrival">
-				{Utils.Format_Minute(entry.arrival_seconds)}
-			</span>
-		{/if}
-	</div>
+		<!-- Line icon -->
+		<div class="col-icon" bind:this={line_icon_container}>
+			{@html entry.line.icon}
+		</div>
 
-	<!-- Departure -->
-	<div class="col-time">
-		<span class="time-main">
-			{Utils.Format_Minute(entry.departure_seconds)}
-		</span>
-	</div>
+		<!-- Destination -->
+		<div class="col-destination">
+			<strong>{entry.destination_label}</strong>
+		</div>
 
-	<!-- Line icon -->
-	<div class="col-icon" bind:this={line_icon_container}>
-		{@html entry.line.icon}
-	</div>
+		<!-- Track — placeholder, extend when data provides it -->
+		<div class="col-track"></div>
 
-	<!-- Destination -->
-	<div class="col-destination">
-		<strong>{entry.destination_label}</strong>
+		<!-- Expand -->
+		<div class="col-expand">
+			<ExpandButton bind:active={expanded} onclick={Handle_Expand} />
+		</div>
 	</div>
-
-	<!-- Track — placeholder, extend when data provides it -->
-	<div class="col-track"></div>
-
-	<!-- Expand -->
-	<div class="col-expand">
-		<ExpandButton bind:active={expanded} onclick={Handle_Expand} />
-	</div>
-</div>
 {/if}
 
 <style>
 	.timetable-row {
 		display: grid;
 		grid-template-columns:
-			1.5rem   /* warning */
-			3.5rem   /* arrival */
-			3.5rem   /* departure */
-			5.5rem   /* icon */
-			1fr      /* destination */
-			2.5rem   /* track */
-			2rem;    /* expand */
+			1.5rem /* warning */
+			3.5rem /* arrival */
+			3.5rem /* departure */
+			5.5rem /* icon */
+			1fr /* destination */
+			2.5rem /* track */
+			2rem; /* expand */
 		align-items: center;
 		padding: 0.4rem 1rem;
 		border-bottom: 1px solid #efefef;

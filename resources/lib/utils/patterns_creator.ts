@@ -2,7 +2,9 @@ import type { Calendar_Pattern, Network, Station, Stop_Pattern } from "$lib/type
 import type { Extended_Switch_Choice } from "$lib/types/switch.ts";
 import { T, Translate_Or_Value } from "$lib/i18n";
 
-export function Get_Choices_For_Stop_Patterns( stop_patterns: { [index: string]: Stop_Pattern }): Extended_Switch_Choice[] {
+export function Get_Choices_For_Stop_Patterns(stop_patterns: {
+	[index: string]: Stop_Pattern;
+}): Extended_Switch_Choice[] {
 	return [
 		{
 			id: "all",
@@ -61,7 +63,9 @@ export function Get_Choices_For_Directions(
 
 	return [all_choice, ...normal, ...exceptional];
 }
-export function Get_Choices_For_Calendar_Patterns( calendar_patterns: { [index: string]: Calendar_Pattern }): Extended_Switch_Choice[] {
+export function Get_Choices_For_Calendar_Patterns(calendar_patterns: {
+	[index: string]: Calendar_Pattern;
+}): Extended_Switch_Choice[] {
 	return [
 		{
 			id: "all",

@@ -12,6 +12,7 @@ const en = {
 	search_all: "Search a station or a line",
 	search_line: "Search a line",
 	search_station: "Search a station",
+	search: "Search",
 	all_directions: "All Directions",
 	direction: "Direction",
 	line: "Line",

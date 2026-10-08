@@ -12,8 +12,8 @@
 	) as Color_Map;
 
 	function Handle_Train_Select(_: Timetable_Entry) {
-        // TODO: open right panel with entry details
-    }
+		// TODO: open right panel with entry details
+	}
 </script>
 
 <Station_Timetable

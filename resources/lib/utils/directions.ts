@@ -13,15 +13,12 @@ export function Get_Direction_Choices(
 	for (const line_id of station.lines) {
 		const line = network.lines[line_id];
 		if (!line) continue;
-		for (const station_id of line.stations)
-			reachable_ids.add(station_id);
+		for (const station_id of line.stations) reachable_ids.add(station_id);
 	}
 
 	// Exceptional: reachable but not normal and not the station itself
 	const exceptional_ids = new Set(
-		[...reachable_ids].filter(
-			(id) => !normal_ids.has(id) && id !== station.id
-		)
+		[...reachable_ids].filter((id) => !normal_ids.has(id) && id !== station.id)
 	);
 
 	const To_Choice = (id: string, is_exceptional: boolean): Extended_Switch_Choice | null => {

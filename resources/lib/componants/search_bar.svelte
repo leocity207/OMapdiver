@@ -1,27 +1,16 @@
 <script lang="ts">
-	import { create_search_state } from "$lib/utils/search_logic.svelte";
+	import { Create_Search_State } from "$lib/utils/search_logic.svelte";
 	import SearchResults from "$lib/componants/search_results.svelte";
 	import type { Search_Item } from "$lib/types/search_items";
-	import { T } from "$lib/i18n"
+	import { T } from "$lib/i18n";
 
-	let {
-		current_text = $bindable(""),
-		placeholder,
-		items,
-		On_Select,
-	} = $props<{
-		current_text?: string;
+	let { placeholder, items, on_select } = $props<{
 		placeholder: string;
 		items: Search_Item[];
-		On_Select: (item: Search_Item) => void;
+		on_select: (item: Search_Item) => void;
 	}>();
 
-	const search = create_search_state(() => items);
-
-	function on_select(item: Search_Item) {
-		current_text = item.label;
-		search.handle_select(item, On_Select);
-	}
+	const search = Create_Search_State(() => items);
 </script>
 
 <div class="search-bar-wrapper">
@@ -29,10 +18,10 @@
 		class="search-input"
 		bind:value={search.search_text}
 		{placeholder}
-		onfocus={search.handle_focus}
-		onblur={search.handle_blur}
-		oninput={search.handle_input}
-		onkeydown={(e) => search.handle_key_down(e, on_select)}
+		onfocus={search.Handle_Focus}
+		onblur={search.Handle_Blur}
+		oninput={search.Handle_Input}
+		onkeydown={(e) => search.Handle_Key_Down(e, on_select)}
 		autocomplete="off"
 	/>
 	{#if search.focused && search.filtered.length > 0}
@@ -41,8 +30,11 @@
 				items={search.filtered}
 				current_focus={search.current_focus}
 				search_text={search.search_text}
-				on_select={on_select}
-				on_keydown={(e) => search.handle_key_down(e, on_select)}
+				{on_select}
+				on_keydown={(e) =>
+					search.Handle_Key_Down(e, (item: Search_Item) =>
+						search.Handle_Select(item, on_select)
+					)}
 				empty_label={T("no_results")}
 			/>
 		</div>
@@ -80,7 +72,11 @@
 		width: calc(10rem + 5px);
 	}
 	@media (max-width: 900px) {
-		.search-input { width: 8rem; }
-		.autocomplete-items { width: calc(8rem + 5px); }
+		.search-input {
+			width: 8rem;
+		}
+		.autocomplete-items {
+			width: calc(8rem + 5px);
+		}
 	}
 </style>

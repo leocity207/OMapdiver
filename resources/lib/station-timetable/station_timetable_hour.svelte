@@ -1,16 +1,10 @@
 <script lang="ts">
 	import type { Hour_Group, Timetable_Entry } from "$lib/utils/station_timetable";
 	import type { Color_Map } from "$lib/types/color_map";
-	import { T } from "$lib/i18n"
+	import { T } from "$lib/i18n";
 	import StationTimetableRow from "$lib/station-timetable/station_timetable_row.svelte";
 
-	let {
-		group,
-		show_arrival,
-		on_expand,
-		color_mode,
-		selected_direction
-	} = $props<{
+	let { group, show_arrival, on_expand, color_mode, selected_direction } = $props<{
 		group: Hour_Group;
 		show_arrival: boolean;
 		on_expand: (entry: Timetable_Entry) => void;
@@ -30,29 +24,29 @@
 </script>
 
 {#if visible_entries.length > 0}
-<div class="hour-group">
-	<div class="hour-header">
-		<span class="hour-label">
-			{group.hour} <span class="hour-min">00</span>
-		</span>
-		<div class="hour-rule-wrapper">
-			<span class="voie-label">{T("platform")}</span>
-			<div class="hour-rule"></div>
+	<div class="hour-group">
+		<div class="hour-header">
+			<span class="hour-label">
+				{group.hour} <span class="hour-min">00</span>
+			</span>
+			<div class="hour-rule-wrapper">
+				<span class="voie-label">{T("platform")}</span>
+				<div class="hour-rule"></div>
+			</div>
+		</div>
+
+		<div class="hour-rows">
+			{#each visible_entries as entry (entry.timetable.id + entry.departure_seconds)}
+				<StationTimetableRow
+					{entry}
+					{show_arrival}
+					{on_expand}
+					{color_mode}
+					{selected_direction}
+				/>
+			{/each}
 		</div>
 	</div>
-
-	<div class="hour-rows">
-		{#each visible_entries as entry (entry.timetable.id + entry.departure_seconds)}
-			<StationTimetableRow
-				{entry}
-				{show_arrival}
-				{on_expand}
-				{color_mode}
-				selected_direction={selected_direction}
-			/>
-		{/each}
-	</div>
-</div>
 {/if}
 
 <style>

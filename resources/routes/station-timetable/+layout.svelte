@@ -6,7 +6,10 @@
 	import { Get_Station_Timetable_Options } from "$lib/utils/options.svelte.js";
 	import { Get_Global_Options } from "$lib/utils/options.svelte.js";
 	import { Get_Station_Search_Items } from "$lib/utils/search_items";
-	import { Get_Choices_For_Calendar_Patterns, Get_Choices_For_Stop_Patterns } from "$lib/utils/patterns_creator";
+	import {
+		Get_Choices_For_Calendar_Patterns,
+		Get_Choices_For_Stop_Patterns,
+	} from "$lib/utils/patterns_creator";
 	import Extended_Switch_Dropdown from "$lib/componants/extended_switch_dropdown.svelte";
 	import Top_Bar from "$lib/componants/top_bar.svelte";
 	import Side_Panel from "$lib/componants/side_panel.svelte";
@@ -22,12 +25,16 @@
 
 	const network_data = $derived(data.network_data as Network);
 
-	let calendar_patterns = $derived.by(() => Get_Choices_For_Calendar_Patterns(network_data.calendar_patterns));
+	let calendar_patterns = $derived.by(() =>
+		Get_Choices_For_Calendar_Patterns(network_data.calendar_patterns)
+	);
 
-	let stop_patterns = $derived.by(() => Get_Choices_For_Stop_Patterns(network_data.stop_patterns));
+	let stop_patterns = $derived.by(() =>
+		Get_Choices_For_Stop_Patterns(network_data.stop_patterns)
+	);
 
-
-	const Handle_Search_Select = (item: Search_Item): Promise<void> => Handle_Station_Select(item.id);
+	const Handle_Search_Select = (item: Search_Item): Promise<void> =>
+		Handle_Station_Select(item.id);
 
 	const Handle_Station_Select = (station_id: string): Promise<void> =>
 		goto(`/station-timetable/${encodeURIComponent(station_id)}`);
@@ -63,7 +70,7 @@
 
 		<div class="panel-options">
 			<div class="options-title">{T("options")}:</div>
-			    <Switch label={T("easy_color_mode")} bind:checked={global_options.easy_color_mode} />
+			<Switch label={T("easy_color_mode")} bind:checked={global_options.easy_color_mode} />
 			<br />
 		</div>
 	</Side_Panel>

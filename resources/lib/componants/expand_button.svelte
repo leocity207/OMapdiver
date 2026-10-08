@@ -1,5 +1,9 @@
 <script lang="ts">
-	let { active = $bindable(), title = "Expand", onclick } = $props<{
+	let {
+		active = $bindable(),
+		title = "Expand",
+		onclick,
+	} = $props<{
 		active: boolean;
 		title?: string;
 		onclick?: () => void;

@@ -16,7 +16,7 @@ describe("search bar component", () => {
 			props: {
 				placeholder: "Search",
 				items,
-				On_Select: On_Select,
+				on_select: On_Select,
 			},
 		});
 
@@ -38,7 +38,7 @@ describe("search bar component", () => {
 			props: {
 				placeholder: "Search",
 				items,
-				On_Select: On_Select,
+				on_select: On_Select,
 			},
 		});
 
@@ -62,7 +62,7 @@ describe("search bar component", () => {
 			props: {
 				placeholder: "Search",
 				items,
-				On_Select: On_Select,
+				on_select: On_Select,
 			},
 		});
 
@@ -88,7 +88,7 @@ describe("search bar component", () => {
 			props: {
 				placeholder: "Search",
 				items,
-				On_Select: On_Select,
+				on_select: On_Select,
 			},
 		});
 
@@ -108,7 +108,7 @@ describe("search bar component", () => {
 
 	it("pressing Enter when dropdown is closed sets focused to true", async () => {
 		const search_bar_mock = render(Search_Bar, {
-			props: { placeholder: "Search", items, On_Select: vi.fn() },
+			props: { placeholder: "Search", items, on_select: vi.fn() },
 		});
 
 		const input = search_bar_mock.getByPlaceholderText("Search") as HTMLInputElement;
@@ -122,7 +122,7 @@ describe("search bar component", () => {
 	it("pressing Enter when focused but no suggestions does nothing", async () => {
 		const On_Select = vi.fn();
 		const search_bar_mock = render(Search_Bar, {
-			props: { placeholder: "Search", items, On_Select: On_Select },
+			props: { placeholder: "Search", items, on_select: On_Select },
 		});
 
 		const input = search_bar_mock.getByPlaceholderText("Search") as HTMLInputElement;
@@ -137,7 +137,7 @@ describe("search bar component", () => {
 	it("navigates up through suggestions with ArrowUp", async () => {
 		const On_Select = vi.fn();
 		const search_bar_mock = render(Search_Bar, {
-			props: { placeholder: "Search", items, On_Select: On_Select },
+			props: { placeholder: "Search", items, on_select: On_Select },
 		});
 
 		const input = search_bar_mock.getByPlaceholderText("Search") as HTMLInputElement;
@@ -156,7 +156,7 @@ describe("search bar component", () => {
 	it("pressing Enter with no highlighted suggestion does not select", async () => {
 		const On_Select = vi.fn();
 		const search_bar_mock = render(Search_Bar, {
-			props: { placeholder: "Search", items, On_Select: On_Select },
+			props: { placeholder: "Search", items, on_select: On_Select },
 		});
 
 		const input = search_bar_mock.getByPlaceholderText("Search") as HTMLInputElement;
@@ -170,7 +170,7 @@ describe("search bar component", () => {
 	it("pressing a non-Enter key while dropdown is closed does nothing", async () => {
 		const On_Select = vi.fn();
 		const search_bar_mock = render(Search_Bar, {
-			props: { placeholder: "Search", items, On_Select: On_Select },
+			props: { placeholder: "Search", items, on_select: On_Select },
 		});
 
 		const input = search_bar_mock.getByPlaceholderText("Search") as HTMLInputElement;

@@ -822,7 +822,7 @@ class SVG_Map {
 		// Find the centering object by ID
 		const centering_objects = this._Find_Map_Objs_By_Id(
 			this.config.INITIAL_CENTERING_OBJECT_ID,
-			true,
+			true
 		);
 
 		// Check if exactly one centering object is found

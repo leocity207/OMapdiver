@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { T } from "$lib/i18n";
 	import type { Extended_Switch_Choice } from "$lib/types/switch.ts";
-	import { create_search_state } from "$lib/utils/search_logic.svelte";
+	import { Create_Search_State } from "$lib/utils/search_logic.svelte";
 	import SearchResults from "$lib/componants/search_results.svelte";
 
 	let { choices, default_choice, On_Change } = $props<{
@@ -27,11 +27,10 @@
 	let container: HTMLElement;
 	let track: HTMLElement;
 
-	const search = create_search_state(() => special_choices);
+	const search = Create_Search_State(() => special_choices);
 
 	$effect(() => {
-		if (default_choice && all_states.includes(default_choice))
-			current_state = default_choice;
+		if (default_choice && all_states.includes(default_choice)) current_state = default_choice;
 		else current_state = all_states[0] ?? "";
 	});
 
@@ -106,27 +105,27 @@
 		const value = (event.currentTarget as HTMLElement).dataset.value!;
 		current_state = value;
 		search_open = false;
-		search.reset();
+		search.Reset();
 		On_Change?.(value);
 	}
 
 	function Handle_Special_Toggle(event: MouseEvent) {
 		event.stopPropagation();
 		search_open = !search_open;
-		if (!search_open) search.reset();
+		if (!search_open) search.Reset();
 	}
 
 	function Handle_Search_Select(choice: Extended_Switch_Choice) {
 		current_state = choice.id;
 		search_open = false;
-		search.reset();
+		search.Reset();
 		On_Change?.(choice.id);
 	}
 
 	function Handle_Outside_Click(event: MouseEvent) {
 		if (!event.composedPath().includes(container)) {
 			search_open = false;
-			search.reset();
+			search.Reset();
 		}
 	}
 
@@ -175,7 +174,7 @@
 							type="text"
 							bind:value={search.search_text}
 							placeholder={T("search")}
-							onkeydown={(e) => search.handle_key_down(e, Handle_Search_Select)}
+							onkeydown={(e) => search.Handle_Key_Down(e, Handle_Search_Select)}
 							autocomplete="off"
 						/>
 						<!-- Results dropdown below the track -->
@@ -186,7 +185,8 @@
 									current_focus={search.current_focus}
 									search_text={search.search_text}
 									on_select={Handle_Search_Select}
-									on_keydown={(e) => search.handle_key_down(e, Handle_Search_Select)}
+									on_keydown={(e) =>
+										search.Handle_Key_Down(e, Handle_Search_Select)}
 									empty_label={T("no_results")}
 								/>
 							</div>
@@ -244,7 +244,9 @@
 		padding: 0.55rem 0.95rem;
 		background: transparent;
 		cursor: pointer;
-		transition: color 0.22s ease, transform 0.22s ease;
+		transition:
+			color 0.22s ease,
+			transform 0.22s ease;
 		white-space: nowrap;
 		font: inherit;
 

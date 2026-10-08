@@ -13,6 +13,7 @@ const fr = {
 	search_all: "Rechercher une gare ou une ligne",
 	search_station: "Rechercher une gare",
 	search_line: "Rechercher une ligne",
+	search: "Rechercher",
 	all_directions: "Toutes les directions",
 	direction: "direction",
 	line: "Ligne",
@@ -26,7 +27,7 @@ const fr = {
 	other: "Autre",
 	no_departure: "Aucun depart pour cette station",
 	platform: "quai",
-	
+
 	all: "Tout",
 	week_end: "Weekend",
 	week: "Semaine",
