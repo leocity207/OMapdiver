@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from "vitest";
 import { render } from "@testing-library/svelte";
 import { createRawSnippet } from "svelte";
 import Search_Results from "$lib/componants/search_results.svelte";
-import type { Search_Item } from "$lib/types/search_items";
 
 describe("search results component", () => {
 	it("shows the empty-state label when there are no items", () => {
@@ -21,14 +20,15 @@ describe("search results component", () => {
 	});
 
 	it("renders a custom row snippet", () => {
+		const items = [{ id: "station-a", label: "Station A", type: "station" }];
 		const search_results_mock = render(Search_Results, {
 			props: {
-				items: [{ id: "station-a", label: "Station A" }],
+				items,
 				current_focus: -1,
 				search_text: "",
 				on_select: vi.fn(),
 				on_keydown: vi.fn(),
-				row: createRawSnippet((get_item: () => Search_Item) => ({
+				row: createRawSnippet((get_item: () => { id: string; label: string }) => ({
 					render: () => `<span>${get_item().label} custom row</span>`,
 				})),
 			},
