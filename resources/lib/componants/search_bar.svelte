@@ -21,7 +21,8 @@
 		onfocus={search.Handle_Focus}
 		onblur={search.Handle_Blur}
 		oninput={search.Handle_Input}
-		onkeydown={(e) => search.Handle_Key_Down(e, on_select)}
+		onkeydown={(e) =>
+			search.Handle_Key_Down(e, (item: Search_Item) => search.Handle_Select(item, on_select))}
 		autocomplete="off"
 	/>
 	{#if search.focused && search.filtered.length > 0}
@@ -30,7 +31,7 @@
 				items={search.filtered}
 				current_focus={search.current_focus}
 				search_text={search.search_text}
-				{on_select}
+				on_select={(item: Search_Item) => search.Handle_Select(item, on_select)}
 				on_keydown={(e) =>
 					search.Handle_Key_Down(e, (item: Search_Item) =>
 						search.Handle_Select(item, on_select)

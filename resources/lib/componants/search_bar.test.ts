@@ -56,6 +56,29 @@ describe("search bar component", () => {
 		expect(input.value).toBe("Station A");
 	});
 
+	it("handles keyboard events from a suggestion", async () => {
+		const On_Select = vi.fn();
+		const search_bar_mock = render(Search_Bar, {
+			props: {
+				placeholder: "Search",
+				items,
+				on_select: On_Select,
+			},
+		});
+
+		const input = search_bar_mock.getByPlaceholderText("Search") as HTMLInputElement;
+		await fireEvent.focus(input);
+		await fireEvent.input(input, { target: { value: "Station" } });
+
+		const suggestions = search_bar_mock.getAllByRole("option");
+		await fireEvent.keyDown(suggestions[0], { key: "ArrowDown" });
+		expect(suggestions[0].getAttribute("aria-selected")).toBe("true");
+
+		await fireEvent.keyDown(suggestions[0], { key: "Enter" });
+		expect(On_Select).toHaveBeenCalledWith(items[0]);
+		expect(input.value).toBe("Station A");
+	});
+
 	it("hides suggestions on Escape and Tab keys", async () => {
 		const On_Select = vi.fn();
 		const search_bar_mock = render(Search_Bar, {

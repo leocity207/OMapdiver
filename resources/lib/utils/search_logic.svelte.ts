@@ -7,7 +7,7 @@ export function Create_Search_State<T extends Search_Item>(get_items: () => T[])
 
 	const filtered = $derived.by(() => {
 		const query = search_text.trim().toLowerCase();
-		if (!query) return get_items();
+		if (!query) return [];
 		return get_items().filter((item) => item.label.toLowerCase().includes(query));
 	});
 
