@@ -33,8 +33,8 @@
 			href={resolve("/line-timetable", {})}
 			data-sveltekit-preload-data
 			class:selected={Is_Active("/line-timetable")}
-			aria-label={T("timetable_lines")}
-			title={T("timetable_lines")}
+			aria-label={T("lines_timetable")}
+			title={T("lines_timetable")}
 		>
 			<div class="icon">
 				<img src="/icons/line_timetable.svg" alt="" />
@@ -47,8 +47,8 @@
 			href={resolve("/station-timetable", {})}
 			data-sveltekit-preload-data
 			class:selected={Is_Active("/station-timetable")}
-			aria-label={T("timetable_stations")}
-			title={T("timetable_stations")}
+			aria-label={T("stations_timetable")}
+			title={T("stations_timetable")}
 		>
 			<div class="icon">
 				<img src="/icons/station_timetable.svg" alt="" />

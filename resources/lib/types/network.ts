@@ -9,7 +9,7 @@ export interface Territorry {
 	label: string;
 }
 
-export interface Stop_Patterns {
+export interface Stop_Pattern {
 	id: string;
 	label: string;
 	level: number;
@@ -108,6 +108,6 @@ export interface Network {
 	stations: { [index: string]: Station };
 	operator: { [index: string]: Operators };
 	organiser: { [index: string]: Organiser };
-	stop_patterns: { [index: string]: Stop_Patterns };
+	stop_patterns: { [index: string]: Stop_Pattern };
 	territories: { [index: string]: Territorry };
 }

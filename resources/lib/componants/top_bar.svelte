@@ -24,7 +24,7 @@
 		<SearchBar
 			items={search_items}
 			placeholder={search_placeholder}
-			On_Select={on_search_select}
+			on_select={on_search_select}
 		/>
 	</div>
 	<div class="topbar-side"></div>
@@ -40,6 +40,7 @@
 		z-index: 1000;
 		background-color: #f5f5f5;
 	}
+
 	.topbar-side {
 		flex: 0 0 auto;
 		display: flex;

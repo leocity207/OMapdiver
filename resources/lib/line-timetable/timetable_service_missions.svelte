@@ -2,7 +2,7 @@
 	/* eslint-disable svelte/no-at-html-tags */
 	import type { Line, Network, Timetable } from "$lib/types/network";
 	import type { Line_Timetable_Options } from "$lib/types/options";
-	import type { Extended_Switch_Choice } from "$lib/componants/extended_switch_dropdown.svelte";
+	import type { Extended_Switch_Choice } from "$lib/types/switch";
 	import type { Color_Map } from "$lib/types/color_map";
 	import Extended_Switch_Dropdown from "$lib/componants/extended_switch_dropdown.svelte";
 	import Utils from "$lib/utils/utils";
@@ -207,6 +207,12 @@
 {/if}
 
 <style>
+	.timetable-header-cell {
+		max-width: 3rem;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+
 	tbody tr:nth-child(even),
 	thead tr {
 		background-color: var(--line-color-light);

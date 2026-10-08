@@ -1,14 +1,21 @@
 <script lang="ts">
-	let { active = $bindable(), title = "Expand" } = $props<{
+	let {
+		active = $bindable(),
+		title = "Expand",
+		onclick,
+	} = $props<{
 		active: boolean;
 		title?: string;
+		onclick?: () => void;
 	}>();
 
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	const onclick = () => (active = !active);
+	function Handle_Click() {
+		active = !active;
+		onclick?.();
+	}
 </script>
 
-<button {onclick} aria-pressed={active} {title}>
+<button onclick={Handle_Click} aria-pressed={active} {title}>
 	<div class={active ? "minus" : "plus"}>
 		<div class="horizontal"></div>
 		<div class="vertical"></div>

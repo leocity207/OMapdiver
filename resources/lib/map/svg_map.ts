@@ -334,8 +334,7 @@ class SVG_Map {
 		if (this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
 		const background_object = this._Find_Map_Objs_By_Id(
 			this.config.INITIAL_CENTERING_OBJECT_ID,
-			true,
-			"path"
+			true
 		)[0];
 		if (!background_object) return;
 
@@ -823,8 +822,7 @@ class SVG_Map {
 		// Find the centering object by ID
 		const centering_objects = this._Find_Map_Objs_By_Id(
 			this.config.INITIAL_CENTERING_OBJECT_ID,
-			true,
-			"path"
+			true
 		);
 
 		// Check if exactly one centering object is found
@@ -912,6 +910,14 @@ class SVG_Map {
 		full_match: boolean = true
 	): void => {
 		for (const obj of objects) {
+			const value = (obj as Fabric_With_Props)[attribute_name];
+			const matches =
+				typeof value === "string" &&
+				(full_match
+					? value === attribute_value
+					: !!attribute_value && value.includes(attribute_value));
+			if (matches) result.push(obj);
+
 			if (obj.type.includes("group")) {
 				const group = obj as fabric.Group;
 				this._Traverse_All_Canvas_Objects(
@@ -921,14 +927,6 @@ class SVG_Map {
 					result,
 					full_match
 				);
-			} else {
-				const value = (obj as Fabric_With_Props)[attribute_name];
-				if (typeof value !== "string") continue;
-				if (full_match) {
-					if (value === attribute_value) result.push(obj);
-				} else {
-					if (attribute_value && value.includes(attribute_value)) result.push(obj);
-				}
 			}
 		}
 	};

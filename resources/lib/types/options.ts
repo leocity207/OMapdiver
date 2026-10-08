@@ -13,5 +13,6 @@ export interface Line_Timetable_Options {
 export interface Station_Timetable_Options {
 	selected_calendar_pattern: "all" | string;
 	selected_stop_pattern: "all" | string;
+	direction: "all" | string;
 	show_arrival_times: boolean;
 }
