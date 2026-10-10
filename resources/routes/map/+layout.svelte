@@ -107,29 +107,21 @@
 
 <style>
 	.shell {
-		height: 100dvh;
-		min-height: 0;
 		display: flex;
 		flex-direction: column;
+		width: 100%;
+		height: 100%;
+		min-height: 0;
+		overflow: hidden;
 		background: #fafafa;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
 	}
 
 	.workspace {
-		position: absolute;
-		flex: 1 1 auto;
-		min-height: 0;
-		display: grid;
-		grid-template-columns: minmax(0, 1fr);
+		inset: 0;
+		width: 100%;
+		height: 100%;
 	}
 
-	.map-pane {
-		min-width: 0;
-		min-height: 0;
-	}
 
 	.route-loading {
 		position: fixed;
