@@ -3,7 +3,7 @@
  */
 export interface Map_Config_Type {
 	/**
-	 * turn on debug mode, which logs additional information to the console and turns on the debug mode of fabricjs, which shows the bounding boxes of objects
+	 * turn on additional debug Information
 	 */
 	DEBUG: boolean;
 
@@ -17,7 +17,8 @@ export interface Map_Config_Type {
 	INITIAL_CENTERING_OBJECT_ID: string;
 
 	/**
-	 * add this to bound zoom calculation to not be on the canvas border
+	 * Add this to bound zoom calculation to not be on the canvas border
+	 * Aditional apply to every zoom
 	 */
 	INITIAL_ADDITIONAL_BOUND_ZOOM_SPACE_DESKTOP: number;
 	INITIAL_ADDITIONAL_BOUND_ZOOM_SPACE_MOBILE: number;
@@ -25,12 +26,12 @@ export interface Map_Config_Type {
 	ADDITIONAL_BOUND_ZOOM_SPACE_DESKTOP: number;
 
 	/**
-	 * max zoom in by scrolling
+	 * Maximum zoom scale for Leaflet (the configured scale is converted to a Leaflet zoom level)
 	 */
 	MAX_ZOOM_IN: number;
 
 	/**
-	 * max zoom out, never reached, because the max zoom out is restricted if the map would not cover the canvas
+	 * Minimum zoom scale for Leaflet (the configured scale is converted to a Leaflet zoom level)
 	 */
 	MAX_ZOOM_OUT: number;
 
