@@ -10,7 +10,7 @@ export default defineConfig({
 	plugins: [sveltekit(), svelteTesting()],
 
 	optimizeDeps: {
-		include: ['fabric', 'animejs', 'hammerjs', 'normalize-wheel', 'rxjs']
+		include: ['leaflet']
 	},
 
 	server: {
