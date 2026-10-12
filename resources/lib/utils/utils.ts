@@ -97,6 +97,15 @@ class Utils {
 
 		return `rgb(${lr}, ${lg}, ${lb})`;
 	}
+
+	static Format_String(template: string, values: Record<string, string | number> ): string
+	{
+		return template.replace(/\{([^{}]+)\}/g, (match, key: string) => {
+			return Object.prototype.hasOwnProperty.call(values, key)
+			? String(values[key])
+			: match;
+		});
+	}
 }
 
 export default Utils;

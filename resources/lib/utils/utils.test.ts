@@ -78,3 +78,21 @@ describe("Lighten_Color", () => {
 		expect(Utils.Lighten_Color("#FFFFFF")).toBe("rgb(255, 255, 255)");
 	});
 });
+
+describe("Format_String", () => {
+	it("replaces string and number placeholders", () => {
+		expect(
+			Utils.Format_String("Hello, {name}! You have {count} messages.", {
+				name: "Ada",
+				count: 3,
+				unused: "This value is not used in the template",
+			})
+		).toBe("Hello, Ada! You have 3 messages.");
+	});
+
+	it("preserves placeholders without matching values", () => {
+		expect(Utils.Format_String("Hello, {name}! {missing}", { name: "Ada" })).toBe(
+			"Hello, Ada! {missing}"
+		);
+	});
+});
