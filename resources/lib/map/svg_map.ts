@@ -1,29 +1,17 @@
-import * as fabric from "fabric";
-import {
-	loadSVGFromURL,
-	util,
-	FabricObject,
-	Path,
-	Line,
-	Text,
-	Rect,
-	Circle,
-	Polygon,
-	Canvas,
-} from "fabric";
-import { animate, utils } from "animejs";
-import normalizeWheel from "normalize-wheel";
-import Utils from "../utils/utils";
+import type * as Leaflet from "leaflet";
 import type { Map_Config_Type } from "$lib/types/map_config";
-import { String_Error } from "../utils/constant";
+import { String_Error } from "$lib/utils/constant";
+import Utils from "$lib/utils/utils"
 
-export type Fabric_With_Props = FabricObject & {
-	[key: string]: unknown;
-};
+type Map_Bounds = Leaflet.LatLngBounds;
 
-export interface Map_Fabric_Object extends FabricObject {
-	id?: string;
-	class?: string;
+interface SVG_View_Box {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	scale_x: number;
+	scale_y: number;
 }
 
 interface Zoom_Box {
@@ -32,949 +20,565 @@ interface Zoom_Box {
 	zoom_level: number;
 }
 
-interface Bound {
-	center_left: number;
-	center_top: number;
-	left: number;
-	top: number;
-	width: number;
-	height: number;
-	zoom_level: number;
+interface Leaflet_Runtime {
+	CRS: { Simple: Leaflet.CRS }; // coordinate reference system
+	map: (container: HTMLElement, options: Leaflet.MapOptions) => Leaflet.Map;
+	svgOverlay: (
+		svg: SVGSVGElement,
+		bounds: Leaflet.LatLngBoundsExpression,
+		options?: Leaflet.ImageOverlayOptions
+	) => Leaflet.SVGOverlay;
+	latLngBounds: (bounds: Leaflet.LatLngBoundsLiteral) => Leaflet.LatLngBounds;
+	latLng: (latitude: number, longitude: number) => Leaflet.LatLng;
+	point: (x: number, y: number) => Leaflet.Point;
 }
 
 /**
- * SVG_Map declare a picture SVG map where we can manipulate object and zoom to object inside the map
+ * Loads an SVG into Leaflet's simple coordinate system and provides SVG-aware navigation.
  */
 class SVG_Map {
-	/**
-	 * Filename and path to the ressource of the svg map
-	 */
 	filename: string;
-
-	/**
-	 * The configurration of the svg map please look at ``config``
-	 */
 	config: Map_Config_Type;
-
-	/**
-	 * The fabric canvas for the svg map
-	 */
-	fabric_canvas: Canvas | null = null;
-
-	/**
-	 * The svg main group that all object inherit
-	 */
-	groupSVGElements = null;
-
-	/**
-	 * the language that should be used in the map
-	 */
+	client_type: string;
 	language: string | null = null;
-
-	/**
-	 * the right panel width if open
-	 */
+	leaflet_map: Leaflet.Map | null = null;
+	svg_root: SVGSVGElement | null = null;
+	svg_bounds: Leaflet.LatLngBounds | null = null;
+	view_box: SVG_View_Box | null = null;
 	panel_detail_space = 0;
-
-	/**
-	 * the right panel header height
-	 */
 	panel_header_height = 0;
-
-	/**
-	 * the type of client, can be mobile | tablet | desktop
-	 */
-	client_type;
-
-	/**
-	 * keep object with animation parameters to stop it
-	 */
-	move_zoom_animation_obj = { x: 0, y: 0, zoom: 1 };
-
-	/**
-	 * Position data to know if we are movving
-	 */
-	last_bounding_data = { left: 0, top: 0, right: 0, bottom: 0 };
-
-	/**
-	 * Tells wether or not we are in an animation
-	 */
 	map_animation_run = false;
 
-	/**
-	 * The scale for when the user start a scroll/pinch	gesture
-	 */
-	pinch_start_scale = 0;
+	private leaflet_module: Leaflet_Runtime | null = null;
+	private svg_layer: Leaflet.SVGOverlay | null = null;
+	private svg_event_listeners: Array<{
+		type: string;
+		event_listener: EventListener;
+	}> = [];
+	private initial_zoom_timer: ReturnType<typeof setTimeout> | null = null;
+	private cancel_initial_zoom: (() => void) | null = null;
+	private cancel_map_animation: (() => void) | null = null;
+	private initial_zoom_cancelled = false;
 
-	/**
-	 * Last saved scroll/pinch factor
-	 */
-	last_scale = 0;
-
-	/**
-	 * Save the last pointer position on mousedown, to prevent ghost clicks
-	 */
-	last_pointer: { x: number; y: number } = { x: 0, y: 0 };
-
-	svg_main_group: fabric.FabricObject | null = null;
-
-	/**
-	 *
-	 * @param {String} client_type if you areusing mobile or desktop
-	 * @param {String} filename the filename of the svg map
-	 * @param {Object} config config of the svg map (see config)
-	 */
 	constructor(client_type: string, filename: string, config: Map_Config_Type) {
 		this.filename = filename;
-		SVG_Map._Initialize_Fabric();
 		this.config = config;
-		this.client_type = client_type;
-
-		// binding this to event handlers
-		this._Handle_User_Mousewheel_Zoom = this._Handle_User_Mousewheel_Zoom.bind(this);
-		this._Handle_User_Map_Move_Touch = this._Handle_User_Map_Move_Touch.bind(this);
-		this._Handle_User_Gesture_Zoom = this._Handle_User_Gesture_Zoom.bind(this);
-		this._Handle_Pinch_Start = this._Handle_Pinch_Start.bind(this);
-		this._Handle_Pinch_End = this._Handle_Pinch_End.bind(this);
-		this._Handle_Mouse_Over_Obj = this._Handle_Mouse_Over_Obj.bind(this);
-		this._Handle_Mouse_Out_Obj = this._Handle_Mouse_Out_Obj.bind(this);
-		this._Handle_Main_Group_Mousedown = this._Handle_Main_Group_Mousedown.bind(this);
+		this.client_type = client_type.toLowerCase();
 	}
 
-	////////////////////
-	/// Public function
-	////////////////////
-
-	/**
-	 * Setup the map to be viewd
-	 * @param {String} language language of the map
-	 * @param {String} id id to create the canva to
-	 */
-	Setup = async (language: string, id: string | HTMLCanvasElement) => {
+	Setup = async (language: string, container: HTMLElement): Promise<void> => {
 		this.language = language;
+		const [leaflet, response] = await Promise.all([import("leaflet"), fetch(this.filename)]);
 
-		this.fabric_canvas = new Canvas(id, {
-			imageSmoothingEnabled: false,
-			width: window.innerWidth,
-			height: window.innerHeight,
-			enableRetinaScaling: true,
-			renderOnAddRemove: true,
-			allowTouchScrolling: true,
-			selection: false,
+		if (!response.ok)
+			throw new Error(
+				Utils.Format_String(String_Error.MAP_LOADING_FAILED, {
+					filename: this.filename,
+					status: response.status,
+				})
+			);
+
+		const svg_text = await response.text();
+		const parsed_document = new DOMParser().parseFromString(svg_text, "image/svg+xml");
+		const svg_root = parsed_document.querySelector<SVGSVGElement>("svg");
+		if (!svg_root || parsed_document.querySelector("parsererror") !== null)
+			throw new Error(
+				Utils.Format_String(String_Error.MAP_NOT_SVG, { filename: this.filename })
+			);
+
+		const view_box = this._Read_View_Box(svg_root);
+		svg_root.setAttribute(
+			"viewBox",
+			`${view_box.x} ${view_box.y} ${view_box.width} ${view_box.height}`
+		);
+		const imported_svg = document.importNode(svg_root, true) as SVGSVGElement;
+
+		this.leaflet_module = leaflet;
+		this.svg_root = imported_svg;
+		this.view_box = view_box;
+		this.svg_bounds = leaflet.latLngBounds([
+			[0, 0],
+			[view_box.height * view_box.scale_y, view_box.width * view_box.scale_x],
+		]);
+
+		const min_zoom = this._Scale_To_Zoom(this.config.MAX_ZOOM_OUT);
+		const max_zoom = this._Scale_To_Zoom(this.config.MAX_ZOOM_IN);
+		if (min_zoom > max_zoom) throw new Error(String_Error.MIN_MAX_ERROR_ZOOM);
+		this.leaflet_map = leaflet.map(container, {
+			crs: leaflet.CRS.Simple,
+			minZoom: min_zoom,
+			maxZoom: max_zoom,
+			zoomSnap: 0,
+			zoomDelta: 0.25,
+			zoomControl: false,
+			scrollWheelZoom: true,
+			tapTolerance: this.config.TAP_MAX_DIFF,
+			maxBounds: this.svg_bounds,
+			maxBoundsViscosity: 1,
+			attributionControl: false,
 		});
+		this.svg_layer = leaflet.svgOverlay(imported_svg, this.svg_bounds, {
+			interactive: true,
+		});
+		this.svg_layer.addTo(this.leaflet_map);
+		this.leaflet_map.setView(
+			[(view_box.height * view_box.scale_y) / 2, (view_box.width * view_box.scale_x) / 2],
+			this._Scale_To_Zoom(this.config.INITIAL_ZOOM),
+			{ animate: false }
+		);
+		this.leaflet_map.setMaxBounds(this.svg_bounds);
 
-		// load map from public folder
-		try {
-			const { objects, options } = await loadSVGFromURL(this.filename);
-			const valid_objects = objects.filter((o): o is NonNullable<typeof o> => o !== null);
-			const obj = util.groupSVGElements(valid_objects, options) as fabric.Group;
-			obj.forEachObject((o) => {
-				o.set({
-					objectCaching: false,
-					dirty: true,
-					noScaleCache: true,
-				});
-			});
-			Object.assign(obj, {
-				originX: "center",
-				originY: "center",
-				subTargetCheck: true,
-				skipOffscreen: true,
-				hasControls: false,
-				objectCaching: false,
-				dirty: true,
-				noScaleCache: true,
-			});
-			this.fabric_canvas.add(obj);
-			this.svg_main_group = obj;
-
-			const initial_zoom = this._Best_Initial_Zoom();
-			if (initial_zoom) this.fabric_canvas.setZoom(initial_zoom);
-			this.fabric_canvas.viewportCenterObject(obj);
-			this.fabric_canvas.requestRenderAll();
-
-			this.last_bounding_data = {
-				left: obj.left,
-				top: obj.top,
-				right: obj.left,
-				bottom: obj.top,
-			};
-		} catch (err) {
-			throw Error("Failed to load SVG:", { cause: err });
-		}
+		if (this.config.DEBUG)
+			console.info(String_Error.SVG_MAP_LOADED_SUCCESSFULLY, this.filename);
 	};
 
-	/**
-	 * Setup all the callback on the map
-	 */
-	async Setup_Mouse_Handlers() {
-		this.fabric_canvas!.on("mouse:wheel", this._Handle_User_Mousewheel_Zoom);
-		this.fabric_canvas!.on("object:moving", this._Handle_User_Map_Move_Touch);
-
-		// gesture is not well handled with fabricjs, use hammerjs
-		// Dynamically import Hammer to avoid SSR issues (window is not defined on server)
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		const Hammer = (await import("hammerjs")).default;
-		const hammer = new Hammer.Manager(this.fabric_canvas!.upperCanvasEl); // Initialize hammer
-		const pinch = new Hammer.Pinch({ threshold: 0.2 }); // Initialize pinch
-		const tap = new Hammer.Tap();
-
-		hammer.add([pinch, tap]);
-		hammer.on("pinch", this._Handle_User_Gesture_Zoom);
-		hammer.on("pinchstart", this._Handle_Pinch_Start);
-		hammer.on("pinchend", this._Handle_Pinch_End);
-		hammer.on("pinchcancel", this._Handle_Pinch_End);
-
-		// main mouse down, prevent ghost clicks from dragging
-		this.svg_main_group!.on("mousedown", this._Handle_Main_Group_Mousedown);
+	async Setup_Mouse_Handlers(): Promise<void> {
+		if (!this.leaflet_map || !this.svg_root) throw new Error(String_Error.SVG_MAP_NOT_SET_UP);
 	}
 
-	/**
-	 * Find objects by complete classname, and optional type
-	 * @param {string} class_name   The class to match exactly
-	 * @param {class_name} obj_type The type of svg object
-	 */
-	Find_Map_Objs_By_Classname = (
-		class_name: string,
-		obj_type: string | undefined = undefined
-	): FabricObject[] => {
-		const result_list: FabricObject[] = [];
-		this._Traverse_All_Canvas_Objects(
-			this.fabric_canvas!.getObjects(),
-			"class",
-			class_name,
-			result_list
+	Add_SVG_Event_Listener(type: string, event_listener: EventListener): void {
+		if (!this.svg_root) throw new Error(String_Error.SVG_MAP_NOT_SET_UP);
+		this.svg_root.addEventListener(type, event_listener);
+		this.svg_event_listeners.push({ type, event_listener });
+	}
+
+	Find_Map_Objs_By_Classname = (class_name: string): SVGElement[] => {
+		if (!this.svg_root) return [];
+		return Array.from(this.svg_root.querySelectorAll<SVGElement>("[class]")).filter((obj) =>
+			obj.classList.contains(class_name)
 		);
-		if (obj_type !== undefined) {
-			const typed_result_list: FabricObject[] = [];
-			this._Traverse_All_Canvas_Objects(result_list, "type", obj_type, typed_result_list);
-			return typed_result_list;
-		}
-		return result_list;
 	};
 
-	/**
-	 * As we can not anmiate absolute pan x and y at the same time with given fabricjs functions. We take the animjs package todo the work.
-	 * @param {Bound} zoom_box The target to zoom too an object that contain
-	 *                 center_left
-	 *                 center_top
-	 *                 zoom_level
-	 */
+	Find_Map_Objs_By_Id = (id_part: string, full_match = false): SVGElement[] => {
+		if (!this.svg_root) return [];
+		return Array.from(this.svg_root.querySelectorAll<SVGElement>("[id]")).filter((obj) =>
+			full_match ? obj.id === id_part : obj.id.includes(id_part)
+		);
+	};
+
 	Animated_Pan_Zoom = async (zoom_box: Zoom_Box): Promise<void> => {
-		if (!this.fabric_canvas) throw Error(String_Error.NULL_FABRIC_CANVAS);
-		// if an animation is running, interrupt it
-		utils.remove(this.move_zoom_animation_obj);
-		// reset animation state
-		this._Handle_Animation_State(true);
-
-		const orig_zoom = this.fabric_canvas!.getZoom();
-		this.fabric_canvas!.setZoom(1); // this is very important to get the right viewport width and height
-		const viewport_width = this.fabric_canvas.getWidth();
-		const viewport_height = this.fabric_canvas.getHeight();
-		const target_x =
-			zoom_box.center_left -
-			(this.client_type !== "mobile"
-				? viewport_height / zoom_box.zoom_level / 2
-				: (viewport_width - this.panel_detail_space) / zoom_box.zoom_level / 2);
-		const target_y = zoom_box.center_top - viewport_height / zoom_box.zoom_level / 2;
-		// Set the animation zoom objects
-		this.move_zoom_animation_obj.x = fabric.util.invertTransform(
-			this.fabric_canvas.viewportTransform
-		)[4];
-		this.move_zoom_animation_obj.y = fabric.util.invertTransform(
-			this.fabric_canvas.viewportTransform
-		)[5];
-		this.move_zoom_animation_obj.zoom = orig_zoom;
-		this.fabric_canvas!.setZoom(orig_zoom); // zoom back without changing the view
-		// find the bigger distance that we have to move
-		const move_x =
-			target_x > this.move_zoom_animation_obj.x
-				? target_x - this.move_zoom_animation_obj.x
-				: this.move_zoom_animation_obj.x - target_x;
-		const move_y =
-			target_y > this.move_zoom_animation_obj.y
-				? target_y - this.move_zoom_animation_obj.y
-				: this.move_zoom_animation_obj.y - target_y;
-		// eslint-disable-next-line unused-imports/no-unused-vars
-		const point_diff_distance = move_x > move_y ? move_x : move_y;
-		// find the zoom difference
-		// eslint-disable-next-line unused-imports/no-unused-vars
-		const zoom_diff_distance =
-			zoom_box.zoom_level > orig_zoom
-				? zoom_box.zoom_level - orig_zoom
-				: orig_zoom - zoom_box.zoom_level;
-		const animation_time = 0; // this.Calc_Map_Animation_Timing(point_diff_distance, zoom_diff_distance)
-
-		await animate(this.move_zoom_animation_obj, {
-			zoom: { to: zoom_box.zoom_level, modifier: utils.round(3) },
-			x: { to: target_x, modifier: utils.round(2) },
-			y: { to: target_y, modifier: utils.round(2) },
-			ease: this.config.DEFAULT_ANIMATION_EASING,
-			duration: animation_time,
-			onUpdate: () => {
-				if (!this.fabric_canvas) throw Error(String_Error.NULL_FABRIC_CANVAS);
-				this.fabric_canvas.setZoom(1); // critical reset
-				this.fabric_canvas.absolutePan(
-					new fabric.Point(this.move_zoom_animation_obj.x, this.move_zoom_animation_obj.y)
-				);
-				this.fabric_canvas!.setZoom(this.move_zoom_animation_obj.zoom);
-				//that.fabric_canvas.renderAll();
-			},
-		});
-
-		this.fabric_canvas.requestRenderAll();
-		this._Handle_Animation_State(false);
+		if (!this.leaflet_map || !this.leaflet_module)
+			throw new Error(String_Error.SVG_MAP_NOT_SET_UP);
+		this._Cancel_Initial_Zoom();
+		const center = this.leaflet_module.latLng(zoom_box.center_top, zoom_box.center_left);
+		await this._Animate_Pan_Zoom(
+			center,
+			zoom_box.zoom_level,
+			this._Get_Animation_Duration(center, zoom_box.zoom_level)
+		);
 	};
 
-	/**
-	 * Initial animation toward the initial ID of an element inside the map
-	 * This function is synchronous and wait for the end of the animation
-	 */
-	async Initial_Zoom_Move() {
-		if (this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
-		const background_object = this._Find_Map_Objs_By_Id(
+	Initial_Zoom_Move = async (): Promise<void> => {
+		if (!this.leaflet_map || !this.leaflet_module || !this.svg_bounds) return;
+		const focus_object = this._Find_SVG_Objs_By_Id(
 			this.config.INITIAL_CENTERING_OBJECT_ID,
 			true
 		)[0];
-		if (!background_object) return;
+		if (!focus_object) return;
+		const bounds = this.Get_Object_Bounds([focus_object]);
+		if (!bounds) return;
 
-		if (this.config.DEBUG) console.log("initial zoom move!");
-		this.map_animation_run = true;
-
-		const zoom_box = this.Zoom_Box_For_Objs(background_object);
-		const orig_zoom = this.fabric_canvas.getZoom();
-		const target_zoom =
-			orig_zoom +
-			(this.client_type === "mobile"
-				? this.config.INITIAL_ZOOM_MOVE_STEP_MOBILE
-				: this.config.INITIAL_ZOOM_MOVE_STEP_DESKTOP);
-
-		// Viewport calculations should be done before modifying zoom
-		const viewport_width = this.fabric_canvas.width / target_zoom;
-		const viewport_height = this.fabric_canvas.height / target_zoom;
-		const target_x = zoom_box.center_left - viewport_width / 2;
-		const target_y = zoom_box.center_top - viewport_height / 2;
-
-		const initial_zoom_move_obj = {
-			zoom: orig_zoom,
-			x: fabric.util.invertTransform(this.fabric_canvas.viewportTransform)[4],
-			y: fabric.util.invertTransform(this.fabric_canvas.viewportTransform)[5],
-		};
-
-		// Wait for delay before starting animation
-		await new Promise((resolve) => setTimeout(resolve, this.config.INITIAL_ZOOM_MOVE_DELAY));
-
-		// Wait for the animation to complete
-		await animate(initial_zoom_move_obj, {
-			zoom: { to: target_zoom, modifier: utils.round(4) },
-			x: { to: target_x, modifier: utils.round(2) },
-			y: { to: target_y, modifier: utils.round(2) },
-			ease: this.config.DEFAULT_ANIMATION_EASING,
-			duration:
-				this.client_type === "mobile"
-					? this.config.INITIAL_ZOOM_MOVE_TIME_MOBILE
-					: this.config.INITIAL_ZOOM_MOVE_TIME_DESKTOP,
-			onUpdate: () => {
-				this.fabric_canvas!.setZoom(1);
-				this.fabric_canvas!.absolutePan(
-					new fabric.Point(initial_zoom_move_obj.x, initial_zoom_move_obj.y)
-				);
-				this.fabric_canvas!.setZoom(initial_zoom_move_obj.zoom);
-				this.fabric_canvas!.renderAll();
-			},
+		this.initial_zoom_cancelled = false;
+		await new Promise<void>((resolve) => {
+			this.initial_zoom_timer = setTimeout(() => {
+				this.initial_zoom_timer = null;
+				this.cancel_initial_zoom = null;
+				resolve();
+			}, this.config.INITIAL_ZOOM_MOVE_DELAY);
+			this.cancel_initial_zoom = () => {
+				if (this.initial_zoom_timer !== null) clearTimeout(this.initial_zoom_timer);
+				this.initial_zoom_timer = null;
+				this.cancel_initial_zoom = null;
+				resolve();
+			};
 		});
 
-		this.map_animation_run = false;
-	}
-
-	/**
-	 * Find the rectangle around one or two objects on the map. If only one object is given, calculate it for only one object
-	 *
-	 * @param {FabricObject} obj1 - the first object to calculate the bounds for
-	 * @param {FabricObject} [obj2] - the second object to calculate the bounds for (if given)
-	 * @return {Bound} new bounds that can be used for zooming inside the ''Animated_Pan_Zoom'' function
-	 */
-	Zoom_Box_For_Objs(obj1: FabricObject, obj2: FabricObject | undefined = undefined): Bound {
-		let bounds: Bound = {
-			left: 0,
-			top: 0,
-			width: 0,
-			height: 0,
-			center_left: 0,
-			center_top: 0,
-			zoom_level: 2, // fix for now
-		};
-
-		// Compute the bounds for each objects
-		const {
-			left: obj_1_left,
-			right: obj_1_right,
-			top: obj_1_top,
-			bottom: obj_1_bottom,
-		} = this._GetObjectBounds(obj1);
-		let obj_2_left, obj_2_right, obj_2_top, obj_2_bottom;
-		if (obj2 !== undefined) {
-			({
-				left: obj_2_left,
-				right: obj_2_right,
-				top: obj_2_top,
-				bottom: obj_2_bottom,
-			} = this._GetObjectBounds(obj2));
+		if (this.initial_zoom_cancelled || !this.leaflet_map || !this.leaflet_module) return;
+		const map_size = this.leaflet_map.getSize();
+		if (map_size.x <= 0 || map_size.y <= 0) {
+			if (this.config.DEBUG) console.warn(String_Error.SKIPPING_INITIAL_MAP_ANIMATION);
+			return;
 		}
-
-		// find the min and max of the two objects bounds
-		bounds.left = Math.min(obj_1_left, obj_2_left ?? obj_1_left);
-		bounds.width = Math.max(obj_1_right, obj_2_right ?? obj_1_right) - bounds.left;
-		bounds.top = Math.min(obj_1_top, obj_2_top ?? obj_1_top);
-		bounds.height = Math.max(obj_1_bottom, obj_2_bottom ?? obj_1_bottom) - bounds.top;
-
-		// add extra space if only a second ovject is present
-		const extra_space = obj2 === undefined;
-		bounds = this._Optimize_Zoom_Box_For_Viewport(bounds, extra_space);
-		return bounds;
-	}
-
-	/**
-	 * Return the bounding box square of an object
-	 * @param {FabricObject} object
-	 * @returns {Bound}
-	 */
-	_GetObjectBounds(object: FabricObject) {
-		const matrix = object.calcTransformMatrix(false);
-		const x_left = matrix[4] - object.width / 2;
-		const x_right = matrix[4] + object.width / 2;
-		const y_top = matrix[5] - object.height / 2;
-		const y_bottom = matrix[5] + object.height / 2;
-
-		return { left: x_left, right: x_right, top: y_top, bottom: y_bottom };
-	}
-
-	//////////////////////
-	/// Protected function
-	//////////////////////
-
-	/**
-	 * Handle when the user hover on a object isnide the canva to change the cursor
-	 * @protected
-	 */
-	_Handle_Mouse_Over_Obj = () => {
-		if (this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
-		this.fabric_canvas.hoverCursor = "pointer";
-	};
-
-	/**
-	 * Handle when the user hover on a object isnide the canva to change the cursor
-	 * @protected
-	 */
-	_Handle_Mouse_Out_Obj = () => {
-		if (this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
-		this.fabric_canvas.hoverCursor = "move";
-	};
-
-	/**
-	 * Find objects by complete id, and optional type
-	 * @param {string}  id          The id to match exactly
-	 * @param {Boolean} exact_match If true the id must exactly match otherwise its partial ID
-	 * @param {string}  obj_type    The type of svg object
-	 * @returns {fabric.Object[]}  The list of objects that match the conditions
-	 * @protected
-	 */
-	_Find_Map_Objs_By_Id(
-		id: string,
-		exact_match: boolean = false,
-		obj_type: string | null = null
-	): Map_Fabric_Object[] {
-		if (!this.fabric_canvas) throw Error(String_Error.NULL_FABRIC_CANVAS);
-		const result_list: Map_Fabric_Object[] = [];
-		this._Traverse_All_Canvas_Objects(
-			this.fabric_canvas.getObjects(),
-			"id",
-			id,
-			result_list,
-			exact_match
+		const padding = this._Get_Initial_Padding();
+		const target_zoom = this._Bounds_Zoom(bounds, padding);
+		const zoom_step =
+			this.client_type === "mobile"
+				? this.config.INITIAL_ZOOM_MOVE_STEP_MOBILE
+				: this.config.INITIAL_ZOOM_MOVE_STEP_DESKTOP;
+		const target_zoom_with_step = Math.min(
+			this._Scale_To_Zoom(this.config.MAX_ZOOM_IN),
+			target_zoom + Math.log2(1 + zoom_step)
 		);
-		if (obj_type !== null) {
-			const typed_result_list: Map_Fabric_Object[] = [];
-			this._Traverse_All_Canvas_Objects(
-				result_list,
-				"type",
-				obj_type,
-				typed_result_list,
-				exact_match
-			);
-			return typed_result_list;
-		}
-		return result_list;
-	}
-
-	/**
-	 * Find the best bounds for the image, taking into account the client type and the viewport size
-	 * @param {Bounds} bounds     Should be a box where to zoom
-	 *                    center_left
-	 *                    center_top
-	 *                    left
-	 *                    top
-	 *                    width
-	 *                    height
-	 *                    zoom_level
-	 * @param {Boolean} extra_space extra space around the box
-	 * @return new bounds that can be used for zooming inside the ''Animated_Pan_Zoom'' function
-	 * @protected
-	 */
-	_Optimize_Zoom_Box_For_Viewport(bounds: Bound, extra_space: boolean): Bound {
-		if (this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
-		// Compute the center of the box
-		bounds.center_left = bounds.left + bounds.width / 2 + this.fabric_canvas._offset.left / 2;
-
-		// Depending on the client type (mobile or desktop) we need to adjust the top and the viewport size
-		if (this.client_type === "mobile") {
-			// We add the header height and the detail space to the top
-			// eslint-disable-next-line no-var
-			var additional_bounding_zoom_space = extra_space
-				? this.config.ADDITIONAL_SINGLE_BOUND_ZOOM_SPACE_MOBILE
-				: this.config.ADDITIONAL_BOUND_ZOOM_SPACE_MOBILE;
-			bounds.center_top = bounds.top + bounds.height / 2 + this.panel_header_height / 2;
-
-			// We substract the detail space and the header height from the viewport height
-			// eslint-disable-next-line no-var
-			var viewport_width = this.fabric_canvas.getWidth();
-			// eslint-disable-next-line no-var
-			var viewport_height =
-				this.fabric_canvas.getHeight() - this.panel_detail_space - this.panel_header_height;
-		} else {
-			// We substract the header height and the detail space from the top
-			// eslint-disable-next-line no-var
-			var additional_bounding_zoom_space = extra_space
-				? this.config.ADDITIONAL_SINGLE_BOUND_ZOOM_SPACE_DESKTOP
-				: this.config.ADDITIONAL_BOUND_ZOOM_SPACE_DESKTOP;
-			bounds.center_top =
-				bounds.top +
-				bounds.height / 2 -
-				(this.panel_header_height + this.panel_detail_space) / 2;
-
-			// We substract the detail space from the viewport width
-			// eslint-disable-next-line no-var
-			var viewport_width = this.fabric_canvas.getWidth() - this.panel_detail_space;
-			// eslint-disable-next-line no-var
-			var viewport_height = this.fabric_canvas.getHeight();
-		}
-
-		// Compute the zoom level
-		const zoom_width = viewport_width / (bounds.width + additional_bounding_zoom_space);
-		const zoom_height = viewport_height / (bounds.height + additional_bounding_zoom_space);
-		const zoom_level = Math.min(zoom_width, zoom_height);
-		bounds.zoom_level = Math.min(this.config.MAX_ZOOM_IN, zoom_level);
-
-		return bounds;
-	}
-
-	/**
-	 * Check if start and current pointer are in a range, else we do not handle click events. on desktop they are always on the same spot. With gestures they can differ around 5 - 10 pixels...
-	 * @param {Point} pointer coordinate of the pointer
-	 * @returns {Boolean}
-	 * @protected
-	 */
-	_Check_Pointer_In_Range(pointer: { x: number; y: number }) {
-		const diff_x =
-			this.last_pointer.x > pointer.x
-				? this.last_pointer.x - pointer.x
-				: pointer.x - this.last_pointer.x;
-		const diff_y =
-			this.last_pointer.y > pointer.y
-				? this.last_pointer.y - pointer.y
-				: pointer.y - this.last_pointer.y;
-
-		if (diff_x < this.config.TAP_MAX_DIFF && diff_y < this.config.TAP_MAX_DIFF) return true;
-		else return false;
-	}
-
-	/**
-	 * Set local state and lock/unlocks the movement axis
-	 * @param {Boolean} run state of the animation true if it's runing or false if not
-	 */
-	_Handle_Animation_State = (run: boolean) => {
-		if (this.svg_main_group === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
-		this.map_animation_run = run;
-		// lock/unlock the mouse moving
-		this.svg_main_group.lockMovementX = run ? true : false;
-		this.svg_main_group.lockMovementY = run ? true : false;
+		const center = this._Bounds_Center(bounds);
+		await this._Animate_Pan_Zoom(
+			center,
+			target_zoom_with_step,
+			this._Get_Initial_Animation_Duration()
+		);
 	};
 
-	/**
-	 * Calculate the animation time for the map animation based on the distance the user
-	 * moved their finger and the zoom difference.
-	 * The formula is designed to make the animation time longer when the zoom distance and point distance are far apart.
-	 *
-	 * @param {number} point_diff_distance The distance in pixels the user moved their finger.
-	 * @param {number} zoom_diff_distance The difference in zoom level.
-	 * @returns {number} The animation time in milliseconds.
-	 * @protected
-	 */
-	_calcMapAnimationTiming(point_diff_distance: number, zoom_diff_distance: number) {
-		// The minimum and maximum animation times are different for desktop and mobile
-		// devices. The times are set in the config object.
-		const min_animation_time =
-			this.client_type === "desktop"
-				? this.config.MIN_MAP_ANIMATION_TIME_DESKTOP
-				: this.config.MIN_MAP_ANIMATION_TIME_MOBILE;
-		const max_animation_time =
-			this.client_type === "desktop"
-				? this.config.MAX_MAP_ANIMATION_TIME_DESKTOP
-				: this.config.MAX_MAP_ANIMATION_TIME_MOBILE;
+	Zoom_To_Objects = (objects: SVGElement[], extra_padding = 24): void => {
+		if (!this.leaflet_map || !this.leaflet_module) return;
+		const map_size = this.leaflet_map.getSize();
+		if (map_size.x <= 0 || map_size.y <= 0) return;
+		const bounds = this.Get_Object_Bounds(objects);
+		if (!bounds) return;
+		const padding_size = extra_padding + this._Get_Visible_Space_Margin();
+		const padding = this.leaflet_module.point(padding_size, padding_size);
+		const zoom_level = this._Bounds_Zoom(bounds, padding);
+		const center = this._Bounds_Center(bounds);
+		void this.Animated_Pan_Zoom({
+			center_left: center.lng,
+			center_top: center.lat,
+			zoom_level,
+		});
+	};
 
-		// Calculate the speed of the movement and the zoom difference in pixels per
-		// millisecond.
-		const move_speed = point_diff_distance / max_animation_time;
-		const zoom_speed = zoom_diff_distance / max_animation_time;
+	Zoom_Check_Map_Resize = (_map_container_width: number, _map_container_height: number): void => {
+		this.leaflet_map?.invalidateSize({ pan: false });
+	};
 
-		// Calculate a factor that will be used to calculate the animation time. The
-		// factor is a value between 0 and 1 that indicates how slow we should go considering the distances and zoom diference
-		const factor = move_speed + zoom_speed;
+	Destroy(): void {
+		this._Cancel_Initial_Zoom();
+		this._Cancel_Map_Animation();
+		this.map_animation_run = false;
+		for (const event_data of this.svg_event_listeners)
+			this.svg_root?.removeEventListener(event_data.type, event_data.event_listener);
 
-		// Calculate the animation time by subtracting the factor from the maximum
-		// animation time. If the result is smaller than the minimum animation time,
-		// use the minimum animation time.
-		const calculated_animation_time = max_animation_time - factor * max_animation_time;
-		return calculated_animation_time < min_animation_time
-			? min_animation_time
-			: calculated_animation_time;
+		this.svg_event_listeners = [];
+		this.svg_layer?.remove();
+		this.svg_layer = null;
+		this.leaflet_map?.remove();
+		this.leaflet_map = null;
+		this.svg_root = null;
+		this.svg_bounds = null;
+		this.view_box = null;
+		this.leaflet_module = null;
 	}
 
-	////////////////////
-	/// Private function
-	////////////////////
+	protected Get_Object_Bounds(objects: SVGElement[]): Leaflet.LatLngBounds | null {
+		if (!this.svg_root || !this.view_box || !this.leaflet_module) return null;
+		const root_matrix = this.svg_root.getScreenCTM();
+		if (!root_matrix) return null;
+		const root_inverse = root_matrix.inverse();
+		let min_x = Number.POSITIVE_INFINITY;
+		let min_y = Number.POSITIVE_INFINITY;
+		let max_x = Number.NEGATIVE_INFINITY;
+		let max_y = Number.NEGATIVE_INFINITY;
 
-	/**
-	 * Handle when the user start a pinching event (save start scale and deactivate movement and lock movement to prevent jiggling around)
-	 * @param {Event} event a hammer event
-	 * @private
-	 */
-	_Handle_Pinch_Start = (event: { scale: number }): void => {
-		if (this.svg_main_group === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
-		this.svg_main_group.lockMovementX = true;
-		this.svg_main_group.lockMovementY = true;
-		this.pinch_start_scale = event.scale;
-		this.last_scale = event.scale;
-	};
-
-	/**
-	 * Handle when the user finish a pinching event (activate movement and remove the move lock)
-	 * @param {Event} event a hammer event
-	 * @private
-	 */
-	_Handle_Pinch_End = (event: { scale: number }): void => {
-		if (this.svg_main_group === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
-		this.last_scale = event.scale;
-		this.svg_main_group.lockMovementX = false;
-		this.svg_main_group.lockMovementY = false;
-	};
-
-	/**
-	 * Handle when the user do a zoom with his finger
-	 * @param {Event} event a hammer event
-	 * @private
-	 */
-	_Handle_User_Gesture_Zoom = (event: {
-		scale: number;
-		center: { x: number; y: number };
-	}): void => {
-		if (this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
-		// uses pinch event from hammerjs
-		if (!this.map_animation_run) {
-			if (this.last_scale !== event.scale) {
-				this.last_scale = event.scale;
-				const current_viewport_transform = this.fabric_canvas.viewportTransform;
-				let zoom = this.fabric_canvas.getZoom();
-
-				zoom *=
-					0.999 **
-					(this.config.PINCH_STEP_FACTOR * (this.pinch_start_scale - event.scale));
-
-				if (zoom > this.config.MAX_ZOOM_IN) zoom = this.config.MAX_ZOOM_IN;
-				if (zoom < this.config.MAX_ZOOM_OUT) zoom = this.config.MAX_ZOOM_OUT;
-				// check if the map still would cover the canvas
-				if (this.svg_main_group !== null) {
-					// but be safe, else do nothing
-					this.fabric_canvas.zoomToPoint(
-						new fabric.Point(event.center.x, event.center.y),
-						zoom
-					);
-					const calc_bounds = this.svg_main_group.getBoundingRect();
-					if (
-						calc_bounds.left + calc_bounds.width < this.fabric_canvas.getWidth() ||
-						calc_bounds.left > 0
-					)
-						this.fabric_canvas.setViewportTransform(current_viewport_transform);
-					if (
-						calc_bounds.top + calc_bounds.height < this.fabric_canvas.getHeight() ||
-						calc_bounds.top > 0
-					)
-						this.fabric_canvas.setViewportTransform(current_viewport_transform);
-					this.fabric_canvas.requestRenderAll();
-				}
+		for (const element of objects) {
+			if (!("getBBox" in element) || !("getScreenCTM" in element)) continue;
+			const graphic = element as SVGGraphicsElement;
+			const box = graphic.getBBox();
+			const matrix = graphic.getScreenCTM();
+			if (!matrix || box.width < 0 || box.height < 0) continue;
+			const transform = root_inverse.multiply(matrix);
+			for (const [x, y] of [
+				[box.x, box.y],
+				[box.x + box.width, box.y],
+				[box.x, box.y + box.height],
+				[box.x + box.width, box.y + box.height],
+			]) {
+				const point_x = transform.a * x + transform.c * y + transform.e;
+				const point_y = transform.b * x + transform.d * y + transform.f;
+				if (!Number.isFinite(point_x) || !Number.isFinite(point_y)) continue;
+				min_x = Math.min(min_x, point_x);
+				min_y = Math.min(min_y, point_y);
+				max_x = Math.max(max_x, point_x);
+				max_y = Math.max(max_y, point_y);
 			}
 		}
-	};
 
-	/**
-	 * Zoom into map with normalized delta. If the zoom would reveal the background, nothing happens.
-	 * @param {Event} event A hammer event.
-	 * @todo If zoomed in a corner and near the edge, no zoom out is possible; we should actually pan and zoom.
-	 * @private
-	 */
-	_Handle_User_Mousewheel_Zoom = (event: fabric.CanvasEvents["mouse:wheel"]): void => {
-		if (this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
-		// Return early if a map animation is running
-		if (this.map_animation_run) return;
+		if (![min_x, min_y, max_x, max_y].every(Number.isFinite) || max_x < min_x || max_y < min_y)
+			return null;
+		const west = (min_x - this.view_box.x) * this.view_box.scale_x;
+		const east = (max_x - this.view_box.x) * this.view_box.scale_x;
+		const north = (this.view_box.height - (min_y - this.view_box.y)) * this.view_box.scale_y;
+		const south = (this.view_box.height - (max_y - this.view_box.y)) * this.view_box.scale_y;
+		const bounds = this.leaflet_module.latLngBounds([
+			[south, west],
+			[north, east],
+		]);
+		return bounds.isValid() ? bounds : null;
+	}
 
-		// Normalize the wheel event delta for consistent zoom behavior
-		const normalized = normalizeWheel(event.e);
+	protected Get_Object_Center(obj: SVGElement): { x: number; y: number } | null {
+		if (!this.svg_root) return null;
+		const root_matrix = this.svg_root.getScreenCTM();
+		if (!root_matrix || !("getBBox" in obj) || !("getScreenCTM" in obj)) return null;
+		const graphic = obj as SVGGraphicsElement;
+		const matrix = graphic.getScreenCTM();
+		if (!matrix) return null;
+		const box = graphic.getBBox();
+		const transform = root_matrix.inverse().multiply(matrix);
+		const x = box.x + box.width / 2;
+		const y = box.y + box.height / 2;
+		return {
+			x: transform.a * x + transform.c * y + transform.e,
+			y: transform.b * x + transform.d * y + transform.f,
+		};
+	}
 
-		// Get the current viewport transform and calculate the new zoom level
-		const current_viewport_transform = this.fabric_canvas.viewportTransform;
-		let zoom_level = this.fabric_canvas.getZoom() * Math.pow(0.999, normalized.pixelY);
-
-		// Bound the zoom_level within the defined max and min limits
-		zoom_level = Utils.Round_Bound(
-			zoom_level,
-			this.config.MAX_ZOOM_OUT,
-			this.config.MAX_ZOOM_IN
-		);
-
-		// If the main SVG group exists, apply zoom to the point
-		if (this.svg_main_group !== null) {
-			this.fabric_canvas.zoomToPoint(
-				new fabric.Point(event.e.offsetX, event.e.offsetY),
-				zoom_level
-			);
-			const bounding_rect = this.svg_main_group.getBoundingRect();
-
-			// Check if the zoom would expose the background and revert if necessary
-			if (
-				bounding_rect.left + bounding_rect.width < this.fabric_canvas.getWidth() ||
-				bounding_rect.left > 0
-			)
-				this.fabric_canvas.setViewportTransform(current_viewport_transform);
-			if (
-				bounding_rect.top + bounding_rect.height < this.fabric_canvas.getHeight() ||
-				bounding_rect.top > 0
-			)
-				this.fabric_canvas.setViewportTransform(current_viewport_transform);
+	private _Read_View_Box(svg: SVGSVGElement): SVG_View_Box {
+		const raw_view_box = svg
+			.getAttribute("viewBox")
+			?.trim()
+			.split(/[\s,]+/)
+			.map(Number);
+		let view_box: SVG_View_Box;
+		if (raw_view_box?.length === 4 && raw_view_box.every(Number.isFinite)) {
+			view_box = {
+				x: raw_view_box[0],
+				y: raw_view_box[1],
+				width: raw_view_box[2],
+				height: raw_view_box[3],
+				scale_x: 1,
+				scale_y: 1,
+			};
+		} else {
+			view_box = {
+				x: 0,
+				y: 0,
+				width: this._Length_To_Pixels(svg.getAttribute("width"), Number.NaN),
+				height: this._Length_To_Pixels(svg.getAttribute("height"), Number.NaN),
+				scale_x: 1,
+				scale_y: 1,
+			};
 		}
-
-		// Prevent default scrolling behavior and stop event propagation
-		event.e.preventDefault();
-		event.e.stopPropagation();
-	};
-
-	/**
-	 * Called when the user drags the map with the mouse or touch. Keep the map inside the canvas, avoiding showing the background.
-	 * @param {Event} event is the hammer event when we are moving around
-	 * @private
-	 */
-	_Handle_User_Map_Move_Touch = (event: fabric.CanvasEvents["object:moving"]): void => {
-		if (this.fabric_canvas === null) throw Error(String_Error.NULL_FABRIC_CANVAS);
-		// if we have a pinch gesture going on, return and let hammerjs handle it in _Handle_User_Gesture_Zoom
-		//if (event.e.touches && event.e.touches.length === 2 || this.map_animation_run) return;
-
-		const object = event.target;
-		const bounding_rect = object.getBoundingRect();
-		const object_left = object.left;
-		const object_top = object.top;
-
-		// Check if the left side of the map is out of bounds
-		if (bounding_rect.left > 0) object.set("left", this.last_bounding_data.left);
-		else this.last_bounding_data.left = object_left;
-
-		// Check if the top side of the map is out of bounds
-		if (bounding_rect.top > 0) object.set("top", this.last_bounding_data.top);
-		else this.last_bounding_data.top = object_top;
-
-		// Check if the bottom side of the map is out of bounds
-		const bottom = bounding_rect.top + bounding_rect.height - this.fabric_canvas.getHeight();
-		if (bottom < 0) object.set("top", this.last_bounding_data.bottom);
-		else this.last_bounding_data.bottom = object_top;
-
-		// Check if the right side of the map is out of bounds
-		const right = bounding_rect.left + bounding_rect.width - this.fabric_canvas.getWidth();
-		if (right < 0) object.set("left", this.last_bounding_data.right);
-		else this.last_bounding_data.right = object_left;
-
-		object.setCoords();
-	};
-
-	/**
-	 * Save the last pointer position to prevent ghost click
-	 * @param {Event} event hammer event
-	 * @private
-	 */
-	_Handle_Main_Group_Mousedown = (event: fabric.TPointerEventInfo) => {
-		this.last_pointer = event.pointer;
-	};
-
-	/**
-	 * Calculate the optimal initial zoom for displaying the map using the main centering object.
-	 * @return {number} The optimal scale value as a float.
-	 * @private
-	 */
-	_Best_Initial_Zoom() {
-		if (this.fabric_canvas === null || this.svg_main_group === null) return null;
-		// Find the centering object by ID
-		const centering_objects = this._Find_Map_Objs_By_Id(
-			this.config.INITIAL_CENTERING_OBJECT_ID,
-			true
-		);
-
-		// Check if exactly one centering object is found
-		if (centering_objects.length !== 1) {
-			if (this.config.DEBUG)
-				console.warn("Best_Initial_Zoom: Cannot calculate initial zoom, object not found!");
-			return this.config.INITIAL_ZOOM;
+		if (
+			!Number.isFinite(view_box.width) ||
+			!Number.isFinite(view_box.height) ||
+			view_box.width <= 0 ||
+			view_box.height <= 0
+		) {
+			throw new Error(`The map at ${this.filename} has no usable SVG viewBox or dimensions.`);
 		}
+		view_box.scale_x =
+			this._Length_To_Pixels(svg.getAttribute("width"), view_box.width) / view_box.width;
+		view_box.scale_y =
+			this._Length_To_Pixels(svg.getAttribute("height"), view_box.height) / view_box.height;
+		return view_box;
+	}
 
-		const centering_object = centering_objects[0];
-		const viewport_width = this.fabric_canvas.getWidth();
-		const viewport_height = this.fabric_canvas.getHeight();
+	private _Length_To_Pixels(length: string | null, fallback: number): number {
+		if (!length) return fallback;
+		const match = length.trim().match(/^([+-]?(?:\d+\.?\d*|\.\d+))(px|mm|cm|in|pt|pc)?$/i);
+		if (!match) return fallback;
+		const value = Number(match[1]);
+		const unit = match[2]?.toLowerCase();
+		const unit_scale =
+			unit === "mm"
+				? 96 / 25.4
+				: unit === "cm"
+					? 96 / 2.54
+					: unit === "in"
+						? 96
+						: unit === "pt"
+							? 96 / 72
+							: unit === "pc"
+								? 16
+								: 1;
+		return value * unit_scale;
+	}
 
-		// Determine additional bound space based on client type
-		const additional_bound_space =
+	private _Bounds_Zoom(bounds: Map_Bounds, padding: Leaflet.Point): number {
+		if (!this.leaflet_map || !this.leaflet_module)
+			throw new Error(String_Error.SVG_MAP_NOT_SET_UP);
+		if (!bounds.isValid()) throw new Error("Cannot zoom to invalid SVG bounds.");
+		const size = this.leaflet_map.getSize();
+		if (size.x <= 0 || size.y <= 0)
+			throw new Error("Cannot calculate map zoom while the Leaflet container has no size.");
+		const fit_zoom = this.leaflet_map.getBoundsZoom(bounds, false, padding);
+		if (!Number.isFinite(fit_zoom))
+			throw new Error(`Leaflet returned an invalid zoom level for map bounds: ${fit_zoom}.`);
+		return Math.min(
+			this._Scale_To_Zoom(this.config.MAX_ZOOM_IN),
+			Math.max(this._Scale_To_Zoom(this.config.MAX_ZOOM_OUT), fit_zoom)
+		);
+	}
+
+	private _Bounds_Center(bounds: Leaflet.LatLngBounds): Leaflet.LatLng {
+		if (!this.leaflet_module) throw new Error(String_Error.SVG_MAP_NOT_SET_UP);
+		return bounds.getCenter();
+	}
+
+	private _Get_Initial_Padding(): Leaflet.Point {
+		if (!this.leaflet_module) throw new Error(String_Error.SVG_MAP_NOT_SET_UP);
+		const padding =
 			this.client_type === "mobile"
 				? this.config.INITIAL_ADDITIONAL_BOUND_ZOOM_SPACE_MOBILE
 				: this.config.INITIAL_ADDITIONAL_BOUND_ZOOM_SPACE_DESKTOP;
+		return this.leaflet_module.point(padding, padding);
+	}
 
-		let zoom_width, zoom_height, calculated_zoom;
+	private _Get_Padding(): Leaflet.Point {
+		if (!this.leaflet_module) throw new Error(String_Error.SVG_MAP_NOT_SET_UP);
+		const padding =
+			this.client_type === "mobile"
+				? this.config.ADDITIONAL_BOUND_ZOOM_SPACE_MOBILE
+				: this.config.ADDITIONAL_BOUND_ZOOM_SPACE_DESKTOP;
+		return this.leaflet_module.point(padding, padding);
+	}
 
-		// Check if centering object is smaller than the viewport
-		if (centering_object.width < viewport_width || centering_object.height < viewport_height) {
-			zoom_width = viewport_width / this.svg_main_group.width;
-			zoom_height = viewport_height / this.svg_main_group.height;
+	private _Get_Visible_Space_Margin(): number {
+		return this.client_type === "mobile"
+			? this.config.ADDITIONAL_VISIBLE_SPACE_MARGIN_MOBILE
+			: this.config.ADDITIONAL_VISIBLE_SPACE_MARGIN_DESKTOP;
+	}
 
-			// Adjust zoom width if centering object width exceeds viewport
-			if (centering_object.width >= viewport_width)
-				zoom_width = viewport_width / (centering_object.width + additional_bound_space);
-
-			// Adjust zoom height if centering object height exceeds viewport
-			if (centering_object.height >= viewport_height)
-				zoom_height = viewport_height / (centering_object.height + additional_bound_space);
-
-			calculated_zoom = Math.max(zoom_width, zoom_height);
-		} else {
-			zoom_width = viewport_width / (centering_object.width + additional_bound_space);
-			zoom_height = viewport_height / (centering_object.height + additional_bound_space);
-
-			calculated_zoom = Math.min(zoom_width, zoom_height);
-
-			let correction_factor = 0;
-
-			// Correct zoom if scaled group width is less than viewport width
-			if (this.svg_main_group.width * calculated_zoom < viewport_width) {
-				const width_difference =
-					viewport_width - this.svg_main_group.width * calculated_zoom;
-				correction_factor =
-					(this.svg_main_group.width - width_difference) / viewport_width / 100;
-			}
-
-			// Correct zoom if scaled group height is less than viewport height
-			if (this.svg_main_group.height * calculated_zoom < viewport_height) {
-				const height_difference =
-					viewport_height - this.svg_main_group.height * calculated_zoom;
-				correction_factor =
-					(this.svg_main_group.height - height_difference) / viewport_height / 100;
-			}
-
-			calculated_zoom += correction_factor;
-		}
-
-		// Bound the calculated zoom value within defined limits
-		return Utils.Round_Bound(
-			calculated_zoom,
-			this.config.MAX_ZOOM_OUT,
-			this.config.MAX_ZOOM_IN
+	private _Get_Animation_Duration(target: Leaflet.LatLngExpression, target_zoom: number): number {
+		if (!this.leaflet_map) throw new Error(String_Error.SVG_MAP_NOT_SET_UP);
+		const min_duration =
+			this.client_type === "mobile"
+				? this.config.MIN_MAP_ANIMATION_TIME_MOBILE
+				: this.config.MIN_MAP_ANIMATION_TIME_DESKTOP;
+		const max_duration =
+			this.client_type === "mobile"
+				? this.config.MAX_MAP_ANIMATION_TIME_MOBILE
+				: this.config.MAX_MAP_ANIMATION_TIME_DESKTOP;
+		const current_center_point = this.leaflet_map.project(this.leaflet_map.getCenter());
+		const target_center_point = this.leaflet_map.project(target);
+		const size = this.leaflet_map.getSize();
+		const move_ratio = Math.min(
+			1,
+			current_center_point.distanceTo(target_center_point) / Math.max(size.x, size.y)
+		);
+		const zoom_range =
+			this._Scale_To_Zoom(this.config.MAX_ZOOM_IN) -
+			this._Scale_To_Zoom(this.config.MAX_ZOOM_OUT);
+		const zoom_ratio =
+			zoom_range === 0
+				? 0
+				: Math.min(1, Math.abs(this.leaflet_map.getZoom() - target_zoom) / zoom_range);
+		return (
+			(min_duration + (max_duration - min_duration) * Math.max(move_ratio, zoom_ratio)) / 1000
 		);
 	}
 
-	/**
-	 * Recursively traverse through all objects, find attribute with value
-	 *
-	 * @param {Array<FabricObject>} objects         An array of objects where we will look for
-	 * @param {string}   attribute_name   The attribute we are checking of the objects
-	 * @param {string}   attribute_value  The value of the attribute we are looking for
-	 * @param {Array<FabricObject>} result          The result list that will contain all the objects that match the attribute_value for this attribute_name
-	 * @param {boolean}  full_match       If true, the attribute_value should be exactly equal to the object's attribute value. If false, the attribute_value should be a substring of the object's attribute value
-	 */
-	_Traverse_All_Canvas_Objects = (
-		objects: FabricObject[],
-		attribute_name: string,
-		attribute_value: string | null,
-		result: FabricObject[],
-		full_match: boolean = true
-	): void => {
-		for (const obj of objects) {
-			const value = (obj as Fabric_With_Props)[attribute_name];
-			const matches =
-				typeof value === "string" &&
-				(full_match
-					? value === attribute_value
-					: !!attribute_value && value.includes(attribute_value));
-			if (matches) result.push(obj);
+	private _Ease_In_Out_Quart(t: number): number {
+		return t < 0.5 ? 8 * t ** 4 : 1 - (-2 * t + 2) ** 4 / 2;
+	}
 
-			if (obj.type.includes("group")) {
-				const group = obj as fabric.Group;
-				this._Traverse_All_Canvas_Objects(
-					group.getObjects(),
-					attribute_name,
-					attribute_value,
-					result,
-					full_match
-				);
-			}
+	private async _Animate_Pan_Zoom(
+		center: Leaflet.LatLng,
+		zoom_level: number,
+		duration: number
+	): Promise<void> {
+		const map = this.leaflet_map;
+		const leaflet = this.leaflet_module;
+		if (!map || !leaflet) throw new Error(String_Error.SVG_MAP_NOT_SET_UP);
+		if (!Number.isFinite(center.lat) || !Number.isFinite(center.lng))
+			throw new Error(
+				Utils.Format_String(String_Error.INVALID_MAP_COORDINATES, {
+					lat: center.lat,
+					lng: center.lng,
+				})
+			);
+		if (!Number.isFinite(zoom_level) || !Number.isFinite(duration))
+			throw new Error(
+				Utils.Format_String(String_Error.INVALID_MAP_ZOOM_DURATION, {
+					zoom_level,
+					duration,
+				})
+			);
+		this._Cancel_Map_Animation();
+		const map_size = map.getSize();
+		if (map_size.x <= 0 || map_size.y <= 0) {
+			if (this.config.DEBUG) console.warn(String_Error.SKIP_MAP_ANIMATION_NO_SIZE);
+			this.map_animation_run = false;
+			return;
 		}
-	};
-
-	///////////////////////////
-	/// Private static function
-	///////////////////////////
-
-	/**
-	 *Staticaly initialize fabric
-	 */
-	static _Initialize_Fabric(): void {
-		FabricObject.prototype.noScaleCache = false;
-
-		FabricObject.customProperties = FabricObject.customProperties || [];
-		if (!FabricObject.customProperties.includes("class")) {
-			FabricObject.customProperties.push("class");
+		if (map.getCenter().equals(center) && map.getZoom() === zoom_level) {
+			this.map_animation_run = false;
+			return;
 		}
 
-		[Path, Line, Text, Rect, Circle, Polygon].forEach((klass) => {
-			klass.ATTRIBUTE_NAMES = klass.ATTRIBUTE_NAMES || [];
-			if (!klass.ATTRIBUTE_NAMES.includes("class")) {
-				klass.ATTRIBUTE_NAMES.push("class");
-			}
+		const start_center = map.getCenter();
+		const start_zoom = map.getZoom();
+		const start_point = map.project(start_center, 0);
+		const end_point = map.project(center, 0);
+		const start_time = performance.now();
+		const duration_ms = Math.max(0, duration * 1000);
+		this.map_animation_run = true;
+
+		await new Promise<void>((resolve, reject) => {
+			let frame_id: number | null = null;
+			const Finish = (): void => {
+				if (this.cancel_map_animation === Cancel) {
+					this.cancel_map_animation = null;
+					this.map_animation_run = false;
+				}
+				resolve();
+			};
+			const Cancel = (): void => {
+				if (frame_id !== null) cancelAnimationFrame(frame_id);
+				Finish();
+			};
+			const Frame = (now: number): void => {
+				if (this.cancel_map_animation !== Cancel) return;
+				frame_id = null;
+
+				try {
+					const t = duration_ms === 0 ? 1 : Math.min((now - start_time) / duration_ms, 1);
+					const eased = this._Ease_In_Out_Quart(t);
+					const point = leaflet.point(
+						start_point.x + (end_point.x - start_point.x) * eased,
+						start_point.y + (end_point.y - start_point.y) * eased
+					);
+					const current_center = map.unproject(point, 0);
+					const current_zoom = start_zoom + (zoom_level - start_zoom) * eased;
+
+					map.setView(current_center, current_zoom, { animate: false });
+
+					if (t < 1) {
+						frame_id = requestAnimationFrame(Frame);
+					} else {
+						Finish();
+					}
+				} catch (error) {
+					if (this.cancel_map_animation === Cancel) {
+						this.cancel_map_animation = null;
+						this.map_animation_run = false;
+					}
+					reject(error);
+				}
+			};
+
+			this.cancel_map_animation = Cancel;
+			frame_id = requestAnimationFrame(Frame);
 		});
 	}
 
-	/**
-	 * Change the inner map container width and height to the desired size
-	 * @param {float} map_container_width desired width of the map canvas
-	 * @param {float} map_container_height desired height of the map canvas
-	 */
-	Zoom_Check_Map_Resize = (map_container_width: number, map_container_height: number) => {
-		if (this.fabric_canvas === null) return;
+	private _Cancel_Map_Animation(): void {
+		this.cancel_map_animation?.();
+		this.cancel_map_animation = null;
+		this.map_animation_run = false;
+	}
 
-		const dim: fabric.TSize = { width: map_container_width, height: map_container_height };
+	private _Get_Initial_Animation_Duration(): number {
+		return (
+			(this.client_type === "mobile"
+				? this.config.INITIAL_ZOOM_MOVE_TIME_MOBILE
+				: this.config.INITIAL_ZOOM_MOVE_TIME_DESKTOP) / 1000
+		);
+	}
 
-		//@ts-expect-error this is acceptable in fabric
-		const option: fabric.TCanvasSizeOptions = { cssOnly: false, backstoreOnly: false };
-		//@ts-expect-error this is acceptable in fabric
-		this.fabric_canvas.setDimensions(dim, option);
+	private _Scale_To_Zoom(scale: number): number {
+		if (!Number.isFinite(scale) || scale <= 0)
+			throw new Error(Utils.Format_String(String_Error.MAP_ZOOM_SCALE_INVALID, { scale }));
+		return Math.log2(scale);
+	}
 
-		// recalcul des offsets (DOM)
-		this.fabric_canvas.calcOffset();
+	private _Cancel_Initial_Zoom(): void {
+		if (!this.cancel_initial_zoom) return;
+		this.initial_zoom_cancelled = true;
+		this.cancel_initial_zoom();
+		this.cancel_initial_zoom = null;
+	}
 
-		// relance le rendu
-		//this.fabric_canvas.requestRenderAll();
-	};
+	private _Find_SVG_Objs_By_Id(id_part: string, full_match = false): SVGElement[] {
+		return this.Find_Map_Objs_By_Id(id_part, full_match);
+	}
 }
 
 export default SVG_Map;

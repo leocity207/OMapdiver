@@ -1,4 +1,5 @@
 <script lang="ts">
+	import "leaflet/dist/leaflet.css";
 	import { onMount } from "svelte";
 	import Network_Map from "./network_map";
 	import { Get_Map_Config, Get_Network_Config } from "$lib/config/config_loader";
@@ -19,11 +20,11 @@
 		On_Line_Click,
 	}: Props = $props();
 
-	let canvas_element!: HTMLCanvasElement;
+	let map_element!: HTMLDivElement;
 	let container_element!: HTMLDivElement;
-
 	let map = $state<Network_Map | null>(null);
 	let ready = $state(false);
+	let load_error = $state<string | null>(null);
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	let Detach_Listeners = () => {};
@@ -42,7 +43,9 @@
 	}
 
 	onMount(() => {
+		// helper if map is destroyed before async initialization
 		let destroyed = false;
+		let map_instance: Network_Map | null = null;
 
 		const On_Map_Station_Click = (event: Event) => {
 			const id = (event as CustomEvent<string>).detail;
@@ -58,46 +61,60 @@
 
 		resize_observer = new ResizeObserver((entries) => {
 			if (!map) return;
-
 			const entry = entries[0];
 			if (!entry) return;
-
 			const { width, height } = entry.contentRect;
 			map.Zoom_Check_Map_Resize(width, height);
 		});
-
 		resize_observer.observe(container_element);
 
-		(async () => {
-			const map_instance = new Network_Map(
-				"Desktop",
-				"/customization/image/map.svg",
-				Get_Map_Config(),
-				Get_Network_Config()
-			);
-
-			await map_instance.Setup("en", canvas_element);
-
-			if (destroyed) return;
-
-			map = map_instance;
-
-			await map.Setup_Mouse_Handlers_With_Data(network_data.lines, network_data.stations);
-
-			document.addEventListener("station-click", On_Map_Station_Click as EventListener);
-			document.addEventListener("line-click", On_Map_Line_Click as EventListener);
-
-			Detach_Listeners = () => {
-				document.removeEventListener(
-					"station-click",
-					On_Map_Station_Click as EventListener
+		void (async () => {
+			try {
+				map_instance = new Network_Map(
+					"Desktop",
+					"/customization/image/map.svg",
+					Get_Map_Config(),
+					Get_Network_Config()
 				);
-				document.removeEventListener("line-click", On_Map_Line_Click as EventListener);
-			};
+				await map_instance.Setup("en", map_element);
+				if (destroyed) {
+					map_instance.Destroy();
+					return;
+				}
 
-			ready = true;
+				map = map_instance;
+				await map_instance.Setup_Mouse_Handlers_With_Data(
+					network_data.lines,
+					network_data.stations
+				);
+				if (destroyed) {
+					map_instance.Destroy();
+					return;
+				}
 
-			map.Initial_Zoom_Move();
+				document.addEventListener("station-click", On_Map_Station_Click);
+				document.addEventListener("line-click", On_Map_Line_Click);
+				Detach_Listeners = () => {
+					document.removeEventListener("station-click", On_Map_Station_Click);
+					document.removeEventListener("line-click", On_Map_Line_Click);
+				};
+
+				ready = true;
+				void map_instance.Initial_Zoom_Move().catch((error: unknown) => {
+					if (!destroyed) {
+						load_error = error instanceof Error ? error.message : String(error);
+						console.error("Failed to animate the initial Leaflet map view.", error);
+					}
+				});
+			} catch (error) {
+				map_instance?.Destroy();
+				map = null;
+				ready = false;
+				if (!destroyed) {
+					load_error = error instanceof Error ? error.message : String(error);
+					console.error("Failed to initialize the Leaflet network map.", error);
+				}
+			}
 		})();
 
 		return () => {
@@ -105,6 +122,7 @@
 			Detach_Listeners();
 			resize_observer?.disconnect();
 			resize_observer = null;
+			map_instance?.Destroy();
 			map = null;
 			ready = false;
 		};
@@ -117,7 +135,10 @@
 </script>
 
 <div class="viewer" bind:this={container_element}>
-	<canvas bind:this={canvas_element}></canvas>
+	<div class="map-canvas" bind:this={map_element} aria-label="Interactive network map"></div>
+	{#if load_error}
+		<div class="map-error" role="alert">{load_error}</div>
+	{/if}
 </div>
 
 <style>
@@ -130,9 +151,25 @@
 		background: #f7f7f7;
 	}
 
-	canvas {
+	.map-canvas {
 		display: block;
 		width: 100%;
 		height: 100%;
+		background: #f7f7f7;
+	}
+
+	.map-error {
+		position: absolute;
+		inset: 1rem 1rem auto;
+		z-index: 1000;
+		padding: 0.75rem 1rem;
+		color: #842029;
+		background: #f8d7da;
+		border: 1px solid #f5c2c7;
+		border-radius: 0.375rem;
+	}
+
+	:global(.leaflet-map-selectable) {
+		cursor: pointer;
 	}
 </style>

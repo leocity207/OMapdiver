@@ -169,4 +169,8 @@
 		line-height: 1.7;
 		font-weight: 600;
 	}
+
+	.map-pane {
+		height: 100%;
+	}
 </style>
