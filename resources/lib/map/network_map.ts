@@ -128,19 +128,19 @@ class Network_Map extends SVG_Map {
 				? this.Find_Map_Objs_By_Id(`highlight_pos_${to_station_code}`, true)
 				: []),
 		];
-		this.Zoom_To_Objects(objects);
+		this.Zoom_To_Objects(objects, this.REMToPX(24));
 	};
 
 	Zoom_Highlighted_Tracks = (station_codes: string[]): void => {
 		const objects = station_codes.flatMap((station_code) =>
 			this.Find_Map_Objs_By_Id(`highlight_pos_${station_code}`, true)
 		);
-		this.Zoom_To_Objects(objects);
+		this.Zoom_To_Objects(objects, this.REMToPX(24));
 	};
 
 	Zoom_Not_Visible_Station = (station_code: string): void => {
 		const objects = this.Find_Map_Objs_By_Id(`highlight_pos_${station_code}`, true);
-		this.Zoom_To_Objects(objects);
+		this.Zoom_To_Objects(objects, this.REMToPX(24));
 	};
 
 	Highlight_Station = (station_code: string, station_type: string): void => {
@@ -181,7 +181,7 @@ class Network_Map extends SVG_Map {
 	Check_Station_Visible = (station_code: string): boolean => {
 		const station = this.Find_Map_Objs_By_Id(`highlight_pos_${station_code}`, true)[0];
 		if (!station || !this.leaflet_map) return true;
-		const bounds = this.Get_Object_Bounds([station]);
+		const bounds = this.Get_Object_Bounds([station], 0);
 		return bounds ? this.leaflet_map.getBounds().contains(bounds) : true;
 	};
 
@@ -198,7 +198,7 @@ class Network_Map extends SVG_Map {
 				(obj) => obj.id === label_id || obj.id.startsWith(`${label_id}-`)
 			),
 		];
-		this.Zoom_To_Objects(objects);
+		this.Zoom_To_Objects(objects, this.REMToPX(24));
 	}
 
 	private _Change_Object_Color(

@@ -62,8 +62,9 @@
 	}
 
 	/* ── Right ────────────────────────────── */
+	/* WARNING: aside.right width is used to compute the xoom padding bounds */
 	aside.right {
-		--width: 24rem;
+		--width: 24rem; 
 		--bg: white;
 		right: -24rem;
 		border-left: 1px solid #e5e5e5;

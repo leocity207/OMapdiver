@@ -98,7 +98,7 @@
 	}
 
 	.line-icon {
-		width: 100px;
+		width: 5rem;
 		flex: 0 0 auto;
 		cursor: pointer;
 		transition: transform 0.2s ease;

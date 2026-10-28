@@ -84,6 +84,7 @@
 	.logo {
 		width: 8rem;
 		margin-right: 0.5em;
+		max-height: 3rem;
 	}
 
 	.logo :global(svg) {

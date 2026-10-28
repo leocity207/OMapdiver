@@ -175,7 +175,7 @@ class SVG_Map {
 			true
 		)[0];
 		if (!focus_object) return;
-		const bounds = this.Get_Object_Bounds([focus_object]);
+		const bounds = this.Get_Object_Bounds([focus_object], 0);
 		if (!bounds) return;
 
 		this.initial_zoom_cancelled = false;
@@ -217,13 +217,14 @@ class SVG_Map {
 		);
 	};
 
-	Zoom_To_Objects = (objects: SVGElement[], extra_padding = 24): void => {
+	Zoom_To_Objects = (objects: SVGElement[], extra_right_padding: number): void => {
 		if (!this.leaflet_map || !this.leaflet_module) return;
 		const map_size = this.leaflet_map.getSize();
 		if (map_size.x <= 0 || map_size.y <= 0) return;
-		const bounds = this.Get_Object_Bounds(objects);
+		console.log(extra_right_padding)
+		const bounds = this.Get_Object_Bounds(objects, extra_right_padding);
 		if (!bounds) return;
-		const padding_size = extra_padding + this._Get_Visible_Space_Margin();
+		const padding_size = this._Get_Visible_Space_Margin();
 		const padding = this.leaflet_module.point(padding_size, padding_size);
 		const zoom_level = this._Bounds_Zoom(bounds, padding);
 		const center = this._Bounds_Center(bounds);
@@ -256,7 +257,7 @@ class SVG_Map {
 		this.leaflet_module = null;
 	}
 
-	protected Get_Object_Bounds(objects: SVGElement[]): Leaflet.LatLngBounds | null {
+	protected Get_Object_Bounds(objects: SVGElement[], extra_right_padding: number): Leaflet.LatLngBounds | null {
 		if (!this.svg_root || !this.view_box || !this.leaflet_module) return null;
 		const root_matrix = this.svg_root.getScreenCTM();
 		if (!root_matrix) return null;
@@ -292,7 +293,7 @@ class SVG_Map {
 		if (![min_x, min_y, max_x, max_y].every(Number.isFinite) || max_x < min_x || max_y < min_y)
 			return null;
 		const west = (min_x - this.view_box.x) * this.view_box.scale_x;
-		const east = (max_x - this.view_box.x) * this.view_box.scale_x;
+		const east = (max_x - this.view_box.x) * this.view_box.scale_x + extra_right_padding;
 		const north = (this.view_box.height - (min_y - this.view_box.y)) * this.view_box.scale_y;
 		const south = (this.view_box.height - (max_y - this.view_box.y)) * this.view_box.scale_y;
 		const bounds = this.leaflet_module.latLngBounds([
@@ -317,6 +318,13 @@ class SVG_Map {
 			x: transform.a * x + transform.c * y + transform.e,
 			y: transform.b * x + transform.d * y + transform.f,
 		};
+	}
+
+	protected REMToPX(rem: number) {
+		const remInPx = parseFloat(
+			getComputedStyle(document.documentElement).fontSize
+		);
+		return rem * remInPx;
 	}
 
 	private _Read_View_Box(svg: SVGSVGElement): SVG_View_Box {
